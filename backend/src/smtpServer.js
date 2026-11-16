@@ -1,6 +1,7 @@
 import { SMTPServer } from 'smtp-server';
 import { simpleParser } from 'mailparser';
 import { storage } from './storage.js';
+import { analyzeSecurityHeaders } from './security.js';
 
 export function createSmtpServer(onNewEmail) {
   const settings = storage.getSettings();
@@ -72,6 +73,9 @@ export function createSmtpServer(onNewEmail) {
           if (match) targetMailbox = match[0].toLowerCase();
         }
 
+        const headersObj = Object.fromEntries(parsed.headers);
+        const securityStatus = analyzeSecurityHeaders(headersObj);
+
         // Save email to storage routed to the target mailbox
         const savedEmail = storage.saveEmail({
           mailbox: targetMailbox,
@@ -85,7 +89,8 @@ export function createSmtpServer(onNewEmail) {
           date: parsed.date ? parsed.date.toISOString() : new Date().toISOString(),
           read: false,
           attachments,
-          headers: Object.fromEntries(parsed.headers),
+          headers: headersObj,
+          security: securityStatus,
           rawSize: session.envelope?.size || 0
         });
 
