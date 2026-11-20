@@ -2,7 +2,7 @@
 
 A modern, functional, and self-hosted mail server with a sleek React webmail interface and an embedded Node.js RFC-compliant SMTP engine. Connect your custom domain, receive incoming emails directly via SMTP, and send emails to any address worldwide.
 
-Built as a group project by **Ansh Sharma**, **Swaraj Agarwal**, and **Mayank Chauhan**.
+Built as a group project by **Ansh Sharma**, **Swaraj Agarwal**, **Mayank Chauhan**, and **Arpit Rajput**.
 
 ---
 
@@ -112,6 +112,7 @@ To receive incoming mail for your domain (e.g. `user@yourdomain.com`):
 - **Ansh Sharma** (`anshsxa@gmail.com`)
 - **Swaraj Agarwal** (`agarwalswaraj123@gmail.com`)
 - **Mayank Chauhan** (`mchauhantha@gmail.com`)
+- **Arpit Rajput** (`imironman7599@gmail.com`)
 
 ---
 

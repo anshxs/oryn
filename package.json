@@ -11,6 +11,6 @@
     "install:all": "cd backend && npm install && cd ../frontend && npm install"
   },
   "keywords": ["mailserver", "smtp", "mta", "webmail", "email-client"],
-  "author": "Ansh Sharma, Swaraj Agarwal, Mayank Chauhan",
+  "author": "Ansh Sharma, Swaraj Agarwal, Mayank Chauhan, Arpit Rajput",
   "license": "MIT"
 }

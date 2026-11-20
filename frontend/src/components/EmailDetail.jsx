@@ -10,7 +10,9 @@ import {
   Code, 
   Calendar, 
   User,
-  ArrowLeft
+  ArrowLeft,
+  ShieldCheck,
+  ShieldAlert
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -182,6 +184,30 @@ export default function EmailDetail({
                 <p><span className="text-slate-400">To:</span> <span className="text-slate-300 font-mono text-[11px]">{email.to}</span></p>
                 {email.cc && <p><span className="text-slate-400">Cc:</span> <span className="text-slate-300 font-mono text-[11px]">{email.cc}</span></p>}
               </div>
+
+              {/* Security Header Authentication Status */}
+              {email.security && (
+                <div className="flex flex-wrap items-center gap-1.5 pt-1.5">
+                  <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                    email.security.isSafe !== false
+                      ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
+                      : 'bg-rose-500/15 text-rose-400 border border-rose-500/20'
+                  }`}>
+                    {email.security.isSafe !== false ? <ShieldCheck className="w-3 h-3 text-emerald-400" /> : <ShieldAlert className="w-3 h-3 text-rose-400" />}
+                    <span>{email.security.isSafe !== false ? 'Authenticated' : 'Unverified'}</span>
+                  </span>
+                  {email.security.spf && email.security.spf !== 'none' && (
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+                      SPF: {email.security.spf}
+                    </span>
+                  )}
+                  {email.security.dkim && email.security.dkim !== 'none' && (
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+                      DKIM: {email.security.dkim}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
