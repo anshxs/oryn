@@ -127,27 +127,32 @@ export default function ComposeModal({
             {/* From Address */}
             <div className="flex items-center gap-3 border-b border-slate-800/80 pb-2">
               <span className="text-xs font-semibold text-slate-400 w-14">From:</span>
-              {mailboxes && mailboxes.length > 0 ? (
-                <select
-                  value={from}
-                  onChange={(e) => setFrom(e.target.value)}
-                  className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-xs text-white focus:outline-none font-mono"
-                >
-                  {mailboxes.map(mb => (
-                    <option key={mb.email} value={mb.email}>
-                      {mb.name} &lt;{mb.email}&gt;
-                    </option>
-                  ))}
-                </select>
-              ) : (
+              <div className="flex-1 flex items-center gap-2">
                 <input
                   type="text"
                   value={from}
                   onChange={(e) => setFrom(e.target.value)}
-                  placeholder="your-name@yourdomain.com"
-                  className="flex-1 bg-transparent text-xs text-white focus:outline-none"
+                  placeholder="sender@yourdomain.com"
+                  className="flex-1 bg-slate-900/60 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-blue-500 font-mono"
+                  required
                 />
-              )}
+                {mailboxes && mailboxes.length > 0 && (
+                  <select
+                    value={mailboxes.some(m => m.email === from) ? from : ''}
+                    onChange={(e) => {
+                      if (e.target.value) setFrom(e.target.value);
+                    }}
+                    className="bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-xs text-slate-400 focus:outline-none max-w-[150px] truncate"
+                  >
+                    <option value="" disabled>Pick Mailbox...</option>
+                    {mailboxes.map(mb => (
+                      <option key={mb.email} value={mb.email}>
+                        {mb.email}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
             </div>
 
             {/* To Address */}
