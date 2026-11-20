@@ -57,6 +57,8 @@ export default function DomainSettingsModal({
   const [copiedKey, setCopiedKey] = useState(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verifyResult, setVerifyResult] = useState(null);
+  const [serverIpInput, setServerIpInput] = useState('115.244.141.202');
+  const [isDetectingIp, setIsDetectingIp] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -64,7 +66,11 @@ export default function DomainSettingsModal({
       const targetDom = domains[0]?.name || 'example.com';
       setSelectedDomainForDns(targetDom);
       setMbDomain(targetDom);
-      fetchDnsRecords(targetDom);
+
+      const matched = domains.find(d => d.name === targetDom);
+      const initialIp = matched?.serverIp && matched.serverIp !== '127.0.0.1' ? matched.serverIp : '115.244.141.202';
+      setServerIpInput(initialIp);
+      fetchDnsRecords(targetDom, initialIp);
 
       if (settings) {
         setOutboundMode(settings.outboundMode || 'direct');
@@ -78,14 +84,44 @@ export default function DomainSettingsModal({
     }
   }, [isOpen, initialTab, settings, domains]);
 
-  const fetchDnsRecords = async (domainName) => {
+  const fetchDnsRecords = async (domainName, ipOverride) => {
     if (!domainName) return;
     try {
-      const data = await api.getDnsRecords(domainName, `mail.${domainName}`, settings?.serverIp);
+      const ip = ipOverride || serverIpInput || '115.244.141.202';
+      const data = await api.getDnsRecords(domainName, `mail.${domainName}`, ip);
       if (data.records) setDnsRecords(data.records);
     } catch (e) {
       console.error('Error fetching DNS records:', e);
     }
+  };
+
+  const handleAutoDetectIp = async () => {
+    try {
+      setIsDetectingIp(true);
+      const res = await api.getPublicIp();
+      const detected = res.ip || '115.244.141.202';
+      setServerIpInput(detected);
+      if (selectedDomainForDns) {
+        await api.updateDomain(selectedDomainForDns, { serverIp: detected });
+        await onRefreshData();
+      }
+      fetchDnsRecords(selectedDomainForDns, detected);
+      onNotify(`Detected public IP: ${detected}`, 'success');
+    } catch (err) {
+      onNotify('Failed to detect public IP: ' + err.message, 'error');
+    } finally {
+      setIsDetectingIp(false);
+    }
+  };
+
+  const handleIpChange = async (newIp) => {
+    setServerIpInput(newIp);
+    if (selectedDomainForDns) {
+      try {
+        await api.updateDomain(selectedDomainForDns, { serverIp: newIp.trim() });
+      } catch (e) {}
+    }
+    fetchDnsRecords(selectedDomainForDns, newIp);
   };
 
   if (!isOpen) return null;
@@ -336,6 +372,39 @@ export default function DomainSettingsModal({
                       </div>
                     );
                   })}
+                </div>
+              </div>
+
+              {/* Real Server Public IP Control */}
+              <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <Server className="w-3.5 h-3.5 text-blue-400" />
+                      <span>Server Public IP (Used for Step 1 A Record)</span>
+                    </span>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      External mail servers must know your real public IP (not localhost/127.0.0.1) to deliver emails.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={serverIpInput}
+                      onChange={(e) => handleIpChange(e.target.value)}
+                      placeholder="e.g. 115.244.141.202"
+                      className="bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono w-40 focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAutoDetectIp}
+                      disabled={isDetectingIp}
+                      className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 transition-colors whitespace-nowrap"
+                      title="Detect this machine's public internet IP"
+                    >
+                      {isDetectingIp ? 'Detecting...' : 'Auto-Detect My IP'}
+                    </button>
+                  </div>
                 </div>
               </div>
 

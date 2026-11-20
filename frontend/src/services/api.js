@@ -26,6 +26,20 @@ export const api = {
     return res.json();
   },
 
+  async updateDomain(name, updates) {
+    const res = await fetch(`${API_BASE}/domains/${encodeURIComponent(name)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates)
+    });
+    return res.json();
+  },
+
+  async getPublicIp() {
+    const res = await fetch(`${API_BASE}/public-ip`);
+    return res.json();
+  },
+
   // Mailboxes
   async getMailboxes(domain = '') {
     const params = new URLSearchParams();
