@@ -13,7 +13,7 @@ export default function App() {
   const [selectedEmailId, setSelectedEmailId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Theme state: defaults to light SaaS theme
+  // Clean theme state (light by default, with dark toggle)
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('oryn_theme') || 'light';
   });
@@ -230,7 +230,7 @@ export default function App() {
   const selectedEmail = emails.find(e => e.id === selectedEmailId);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans antialiased">
+    <div className="flex h-screen w-screen overflow-hidden bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans antialiased">
       <Toast
         message={toast.message}
         type={toast.type}
