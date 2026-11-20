@@ -4,7 +4,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
-import { storage } from './storage.js';
+import { storage, detectPublicIp } from './storage.js';
 import { sendEmail } from './mailer.js';
 import { getRecommendedDnsRecords, verifyDomainDns } from './dnsHelper.js';
 
@@ -14,6 +14,16 @@ export function createExpressApp() {
   app.use(cors());
   app.use(express.json({ limit: '25mb' }));
   app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+
+  // Auto-detect public IP helper
+  app.get('/api/public-ip', async (req, res) => {
+    try {
+      const ip = await detectPublicIp();
+      res.json({ success: true, ip });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message, ip: '115.244.141.202' });
+    }
+  });
 
   // ---------------- DOMAIN ROUTES ----------------
   app.get('/api/domains', (req, res) => {
@@ -25,19 +35,36 @@ export function createExpressApp() {
     }
   });
 
-  app.post('/api/domains', (req, res) => {
+  app.post('/api/domains', async (req, res) => {
     try {
       const { name, serverHost, serverIp } = req.body;
       if (!name || !name.trim()) {
         return res.status(400).json({ success: false, error: 'Domain name is required (e.g. yourcompany.com)' });
       }
-      const newDomain = storage.addDomain({ name, serverHost, serverIp });
+      const realIp = serverIp || await detectPublicIp();
+      const newDomain = storage.addDomain({ name, serverHost, serverIp: realIp });
 
       if (req.app.get('broadcast')) {
         req.app.get('broadcast')('domain_added', newDomain);
       }
 
       res.json({ success: true, domain: newDomain });
+    } catch (err) {
+      res.status(400).json({ success: false, error: err.message });
+    }
+  });
+
+  app.patch('/api/domains/:name', (req, res) => {
+    try {
+      const { serverIp, serverHost } = req.body;
+      const updated = storage.updateDomain(req.params.name, {
+        ...(serverIp ? { serverIp: serverIp.trim() } : {}),
+        ...(serverHost ? { serverHost: serverHost.trim() } : {})
+      });
+      if (req.app.get('broadcast')) {
+        req.app.get('broadcast')('domain_updated', updated);
+      }
+      res.json({ success: true, domain: updated });
     } catch (err) {
       res.status(400).json({ success: false, error: err.message });
     }
@@ -256,15 +283,21 @@ export function createExpressApp() {
   });
 
   // DNS
-  app.get('/api/dns/records', (req, res) => {
+  app.get('/api/dns/records', async (req, res) => {
     try {
       const settings = storage.getSettings();
-      const domain = req.query.domain || settings.defaultDomain || 'example.com';
-      const host = req.query.host || `mail.${domain}`;
-      const ip = req.query.ip || settings.serverIp || '127.0.0.1';
+      const domainName = req.query.domain || settings.domain || 'example.com';
+      const domains = storage.getDomains();
+      const matchedDomain = domains.find(d => (d.name || '').toLowerCase() === domainName.toLowerCase());
 
-      const records = getRecommendedDnsRecords(domain, host, ip);
-      res.json({ success: true, domain, host, ip, records });
+      const host = req.query.host || matchedDomain?.serverHost || `mail.${domainName}`;
+      let ip = req.query.ip || matchedDomain?.serverIp || settings.serverIp;
+      if (!ip || ip === '127.0.0.1') {
+        ip = await detectPublicIp();
+      }
+
+      const records = getRecommendedDnsRecords(domainName, host, ip);
+      res.json({ success: true, domain: domainName, host, ip, records });
     } catch (err) {
       res.status(500).json({ success: false, error: err.message });
     }

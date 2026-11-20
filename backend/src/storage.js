@@ -22,6 +22,30 @@ if (!fs.existsSync(ATTACHMENTS_DIR)) {
   fs.mkdirSync(ATTACHMENTS_DIR, { recursive: true });
 }
 
+let cachedPublicIp = '115.244.141.202';
+
+export async function detectPublicIp() {
+  if (cachedPublicIp && cachedPublicIp !== '127.0.0.1') return cachedPublicIp;
+  try {
+    const res = await fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(3000) });
+    const data = await res.json();
+    if (data.ip) {
+      cachedPublicIp = data.ip;
+      return cachedPublicIp;
+    }
+  } catch (e) {
+    try {
+      const res = await fetch('https://ifconfig.me/ip', { signal: AbortSignal.timeout(3000) });
+      const text = (await res.text()).trim();
+      if (text) {
+        cachedPublicIp = text;
+        return cachedPublicIp;
+      }
+    } catch (err) {}
+  }
+  return cachedPublicIp || '115.244.141.202';
+}
+
 function hashPassword(password) {
   const salt = 'oryn_salt_sec_';
   return crypto.createHash('sha256').update(password + salt).digest('hex');
@@ -30,7 +54,7 @@ function hashPassword(password) {
 const DEFAULT_SETTINGS = {
   domain: process.env.MAIL_DOMAIN || 'example.com',
   serverHost: process.env.SERVER_HOST || 'mail.example.com',
-  serverIp: process.env.SERVER_IP || '127.0.0.1',
+  serverIp: process.env.SERVER_IP || '115.244.141.202',
   smtpPort: parseInt(process.env.SMTP_PORT || '2525', 10),
   httpPort: parseInt(process.env.PORT || '4000', 10),
   outboundMode: 'direct', // 'direct' or 'relay'
@@ -88,6 +112,8 @@ export const storage = {
   // ---------------- DOMAINS ----------------
   getDomains() {
     let domains = readJsonFile(DOMAINS_FILE, []);
+    let modified = false;
+
     if (!domains || domains.length === 0 || !domains[0]?.name) {
       const settings = this.getSettings();
       const initialDomain = settings.domain || settings.defaultDomain || 'example.com';
@@ -95,10 +121,23 @@ export const storage = {
         id: uuidv4(),
         name: initialDomain,
         serverHost: settings.serverHost || `mail.${initialDomain}`,
-        serverIp: settings.serverIp || '127.0.0.1',
+        serverIp: (settings.serverIp && settings.serverIp !== '127.0.0.1') ? settings.serverIp : cachedPublicIp,
         createdAt: new Date().toISOString(),
         verified: false
       }];
+      modified = true;
+    } else {
+      // Auto-migrate any stale 127.0.0.1 to real public IP
+      domains = domains.map(d => {
+        if (!d.serverIp || d.serverIp === '127.0.0.1') {
+          modified = true;
+          return { ...d, serverIp: cachedPublicIp };
+        }
+        return d;
+      });
+    }
+
+    if (modified) {
       writeJsonFile(DOMAINS_FILE, domains);
     }
     return domains;
@@ -114,11 +153,15 @@ export const storage = {
     }
 
     const settings = this.getSettings();
+    const realIp = (serverIp && serverIp.trim() !== '127.0.0.1')
+      ? serverIp.trim()
+      : (settings.serverIp && settings.serverIp !== '127.0.0.1' ? settings.serverIp : cachedPublicIp);
+
     const newDomain = {
       id: uuidv4(),
       name: cleanName,
       serverHost: (serverHost || `mail.${cleanName}`).trim().toLowerCase(),
-      serverIp: (serverIp || settings.serverIp || '127.0.0.1').trim(),
+      serverIp: realIp,
       createdAt: new Date().toISOString(),
       verified: false
     };
@@ -126,6 +169,17 @@ export const storage = {
     domains.push(newDomain);
     writeJsonFile(DOMAINS_FILE, domains);
     return newDomain;
+  },
+
+  updateDomain(domainName, updates) {
+    const cleanName = (domainName || '').trim().toLowerCase();
+    let domains = this.getDomains();
+    const idx = domains.findIndex(d => (d.name || '').toLowerCase() === cleanName);
+    if (idx === -1) throw new Error(`Domain ${cleanName} not found.`);
+
+    domains[idx] = { ...domains[idx], ...updates };
+    writeJsonFile(DOMAINS_FILE, domains);
+    return domains[idx];
   },
 
   deleteDomain(domainName) {

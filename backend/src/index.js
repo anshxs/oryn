@@ -29,9 +29,12 @@ httpServer.listen(HTTP_PORT, () => {
 
 // Start Inbound SMTP Server
 smtpServer.listen(SMTP_PORT, () => {
+  const domains = storage.getDomains();
+  const primary = domains[0] || { name: 'glennesports.app', serverHost: 'mail.glennesports.app', serverIp: '115.244.141.202' };
   console.log(`📬 Inbound SMTP Server listening on port ${SMTP_PORT}`);
-  console.log(`🏷️  Configured domain: ${settings.domain}`);
-  console.log(`💻 Server Host: ${settings.serverHost}`);
+  console.log(`🏷️  Primary Domain: ${primary.name}`);
+  console.log(`💻 Server Host: ${primary.serverHost}`);
+  console.log(`🌐 Server Public IP: ${primary.serverIp}`);
   console.log(`===============================================`);
 });
 
