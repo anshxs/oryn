@@ -3,38 +3,57 @@ const dnsPromises = dns.promises;
 
 export function getRecommendedDnsRecords(domain, serverHost, serverIp) {
   const cleanDomain = domain.trim().toLowerCase();
-  const cleanHost = serverHost.trim().toLowerCase();
-  const ip = serverIp.trim();
+  const cleanHost = (serverHost || `mail.${cleanDomain}`).trim().toLowerCase();
+  const ip = (serverIp || '127.0.0.1').trim();
 
   return [
     {
+      step: 1,
       type: 'A',
-      name: cleanHost,
+      title: 'A Record (Mail Server Host)',
+      host: 'mail',
+      hostAlternative: cleanHost,
       value: ip,
-      ttl: 3600,
-      description: 'Points your mail server hostname to this server’s public IP address.'
+      priority: null,
+      ttl: 'Auto / 3600',
+      instruction: `Select Type "A", set Host / Name to "mail", and set Points to / Value to "${ip}"`,
+      description: `Maps your mail server sub-domain (${cleanHost}) to your server's public IP address.`
     },
     {
+      step: 2,
       type: 'MX',
-      name: cleanDomain,
-      value: `${cleanHost} (Priority 10)`,
+      title: 'MX Record (Mail Routing)',
+      host: '@',
+      hostAlternative: cleanDomain,
+      value: cleanHost,
       priority: 10,
-      ttl: 3600,
-      description: 'Directs incoming emails for @' + cleanDomain + ' to your mail server.'
+      ttl: 'Auto / 3600',
+      instruction: `Select Type "MX", set Host / Name to "@", set Priority to "10", and set Mail Server / Value to "${cleanHost}"`,
+      description: `Tells the internet to deliver all incoming emails for @${cleanDomain} directly to your mail server.`
     },
     {
-      type: 'TXT (SPF)',
-      name: cleanDomain,
+      step: 3,
+      type: 'TXT',
+      title: 'SPF Record (Sender Policy Framework)',
+      host: '@',
+      hostAlternative: cleanDomain,
       value: `v=spf1 mx a:${cleanHost} ~all`,
-      ttl: 3600,
-      description: 'Authorizes your mail server IP to send emails on behalf of @' + cleanDomain + '.'
+      priority: null,
+      ttl: 'Auto / 3600',
+      instruction: `Select Type "TXT", set Host / Name to "@", and set Content / Value to "v=spf1 mx a:${cleanHost} ~all"`,
+      description: `Verifies that only your mail server is authorized to send emails from @${cleanDomain} (prevents spoofing).`
     },
     {
-      type: 'TXT (DMARC)',
-      name: `_dmarc.${cleanDomain}`,
+      step: 4,
+      type: 'TXT',
+      title: 'DMARC Record (Email Authentication Policy)',
+      host: '_dmarc',
+      hostAlternative: `_dmarc.${cleanDomain}`,
       value: `v=DMARC1; p=none; sp=none; rua=mailto:postmaster@${cleanDomain}`,
-      ttl: 3600,
-      description: 'DMARC policy for email alignment and deliverability reports.'
+      priority: null,
+      ttl: 'Auto / 3600',
+      instruction: `Select Type "TXT", set Host / Name to "_dmarc", and set Content / Value to "v=DMARC1; p=none; sp=none; rua=mailto:postmaster@${cleanDomain}"`,
+      description: `Defines security rules and delivery reports for emails sent from your domain.`
     }
   ];
 }
