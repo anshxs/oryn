@@ -15,7 +15,9 @@ export default function ComposeModal({
   onClose,
   onSend,
   initialData = {},
-  defaultFrom
+  defaultFrom,
+  mailboxes = [],
+  activeMailbox
 }) {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
@@ -30,7 +32,7 @@ export default function ComposeModal({
 
   useEffect(() => {
     if (isOpen) {
-      setFrom(initialData.from || defaultFrom || 'admin@example.com');
+      setFrom(initialData.from || activeMailbox || defaultFrom || (mailboxes[0]?.email) || 'user@domain.com');
       setTo(initialData.to || '');
       setCc(initialData.cc || '');
       setBcc(initialData.bcc || '');
@@ -42,7 +44,7 @@ export default function ComposeModal({
         setShowCcBcc(true);
       }
     }
-  }, [isOpen, initialData, defaultFrom]);
+  }, [isOpen, initialData, defaultFrom, activeMailbox, mailboxes]);
 
   if (!isOpen) return null;
 
@@ -125,13 +127,27 @@ export default function ComposeModal({
             {/* From Address */}
             <div className="flex items-center gap-3 border-b border-slate-800/80 pb-2">
               <span className="text-xs font-semibold text-slate-400 w-14">From:</span>
-              <input
-                type="text"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                placeholder="your-name@yourdomain.com"
-                className="flex-1 bg-transparent text-xs text-white focus:outline-none"
-              />
+              {mailboxes && mailboxes.length > 0 ? (
+                <select
+                  value={from}
+                  onChange={(e) => setFrom(e.target.value)}
+                  className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-xs text-white focus:outline-none font-mono"
+                >
+                  {mailboxes.map(mb => (
+                    <option key={mb.email} value={mb.email}>
+                      {mb.name} &lt;{mb.email}&gt;
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  value={from}
+                  onChange={(e) => setFrom(e.target.value)}
+                  placeholder="your-name@yourdomain.com"
+                  className="flex-1 bg-transparent text-xs text-white focus:outline-none"
+                />
+              )}
             </div>
 
             {/* To Address */}

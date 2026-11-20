@@ -12,6 +12,12 @@ export default function App() {
   const [emails, setEmails] = useState([]);
   const [selectedEmailId, setSelectedEmailId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Domains & Mailboxes
+  const [domains, setDomains] = useState([]);
+  const [mailboxes, setMailboxes] = useState([]);
+  const [activeMailbox, setActiveMailbox] = useState('');
+  
   const [stats, setStats] = useState(null);
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -21,17 +27,38 @@ export default function App() {
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [composeData, setComposeData] = useState({});
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState('domains');
   const [toast, setToast] = useState({ message: '', type: 'info' });
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
   }, []);
 
-  // Fetch emails
-  const fetchEmails = useCallback(async (folder = currentFolder, search = searchQuery) => {
+  // Fetch mailboxes and domains
+  const fetchAccountsData = useCallback(async () => {
+    try {
+      const [domRes, mbRes, setRes] = await Promise.all([
+        api.getDomains(),
+        api.getMailboxes(),
+        api.getSettings()
+      ]);
+      setDomains(domRes.domains || []);
+      setMailboxes(mbRes.mailboxes || []);
+      setSettings(setRes.settings || null);
+
+      if (mbRes.mailboxes && mbRes.mailboxes.length > 0) {
+        setActiveMailbox(prev => prev || mbRes.mailboxes[0].email);
+      }
+    } catch (err) {
+      console.error('Failed to load domains/mailboxes:', err);
+    }
+  }, []);
+
+  // Fetch emails for active mailbox
+  const fetchEmails = useCallback(async (mailbox = activeMailbox, folder = currentFolder, search = searchQuery) => {
     try {
       setLoading(true);
-      const data = await api.getEmails(folder, search);
+      const data = await api.getEmails(mailbox, folder, search);
       setEmails(data.emails || []);
       if (data.emails && data.emails.length > 0 && !selectedEmailId) {
         setSelectedEmailId(data.emails[0].id);
@@ -41,64 +68,61 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  }, [currentFolder, searchQuery, selectedEmailId]);
+  }, [activeMailbox, currentFolder, searchQuery, selectedEmailId]);
 
-  // Fetch stats & settings
-  const fetchMetadata = useCallback(async () => {
+  // Fetch stats for active mailbox
+  const fetchStats = useCallback(async (mailbox = activeMailbox) => {
     try {
-      const [statsData, settingsData] = await Promise.all([
-        api.getStats(),
-        api.getSettings()
-      ]);
-      setStats(statsData.stats);
-      setSettings(settingsData.settings);
+      const data = await api.getStats(mailbox);
+      setStats(data.stats);
     } catch (err) {
-      console.error('Failed to load metadata:', err);
+      console.error('Failed to fetch stats:', err);
     }
-  }, []);
+  }, [activeMailbox]);
 
-  // Setup WebSocket & Initial Load
+  // Initial mount
   useEffect(() => {
-    fetchEmails(currentFolder, searchQuery);
-    fetchMetadata();
+    fetchAccountsData();
 
     const cleanupWs = setupWebSocket((event) => {
       if (event.type === 'new_email') {
-        showToast(`New email received from ${event.payload.from}`, 'info');
+        showToast(`New email received: "${event.payload.subject}" from ${event.payload.from}`, 'info');
         setEmails(prev => [event.payload, ...prev]);
-        fetchMetadata();
+        fetchStats();
       } else if (event.type === 'email_sent') {
         showToast('Email sent successfully!', 'success');
-        fetchMetadata();
+        fetchStats();
       } else if (event.type === 'email_updated') {
         setEmails(prev => prev.map(e => e.id === event.payload.id ? event.payload : e));
-        fetchMetadata();
+        fetchStats();
       } else if (event.type === 'email_deleted') {
         setEmails(prev => prev.filter(e => e.id !== event.payload.id));
         setSelectedEmailId(prevId => prevId === event.payload.id ? null : prevId);
-        fetchMetadata();
+        fetchStats();
+      } else if (event.type === 'mailbox_created' || event.type === 'mailbox_deleted' || event.type === 'domain_added' || event.type === 'domain_deleted') {
+        fetchAccountsData();
       }
     });
 
-    return () => {
-      cleanupWs();
-    };
-  }, []);
+    return () => cleanupWs();
+  }, [fetchAccountsData, fetchStats, showToast]);
 
-  // Reload emails when folder or search changes
+  // Re-fetch emails when activeMailbox, currentFolder, or searchQuery changes
   useEffect(() => {
-    fetchEmails(currentFolder, searchQuery);
-  }, [currentFolder, searchQuery]);
+    if (activeMailbox) {
+      fetchEmails(activeMailbox, currentFolder, searchQuery);
+      fetchStats(activeMailbox);
+    }
+  }, [activeMailbox, currentFolder, searchQuery]);
 
   const handleSelectEmail = async (id) => {
     setSelectedEmailId(id);
     const email = emails.find(e => e.id === id);
     if (email && !email.read) {
-      // Mark as read
       try {
         await api.updateEmail(id, { read: true });
         setEmails(prev => prev.map(e => e.id === id ? { ...e, read: true } : e));
-        fetchMetadata();
+        fetchStats(activeMailbox);
       } catch (err) {
         console.error('Failed to mark read:', err);
       }
@@ -124,7 +148,7 @@ export default function App() {
         setSelectedEmailId(remaining.length > 0 ? remaining[0].id : null);
       }
       showToast(isTrash ? 'Permanently deleted email' : 'Moved email to trash', 'info');
-      fetchMetadata();
+      fetchStats(activeMailbox);
     } catch (err) {
       showToast('Failed to delete email', 'error');
     }
@@ -133,10 +157,15 @@ export default function App() {
   const handleSimulateInbound = async () => {
     try {
       setIsSimulating(true);
-      const res = await api.simulateEmail();
+      const res = await api.simulateEmail({
+        mailbox: activeMailbox,
+        to: activeMailbox,
+        subject: `Welcome to ${activeMailbox}!`,
+        text: `Hello! This is a test incoming email sent directly to your configured mailbox ${activeMailbox}.`
+      });
       if (res.success) {
-        showToast(`Simulated incoming mail from ${res.email.from}`, 'success');
-        fetchEmails('inbox');
+        showToast(`Simulated incoming mail to ${activeMailbox}`, 'success');
+        fetchEmails(activeMailbox, 'inbox');
         setCurrentFolder('inbox');
       }
     } catch (err) {
@@ -147,15 +176,19 @@ export default function App() {
   };
 
   const handleSendEmail = async (payload) => {
-    await api.sendEmail(payload);
+    await api.sendEmail({
+      ...payload,
+      from: payload.from || activeMailbox
+    });
     showToast('Email delivered successfully!', 'success');
     if (currentFolder === 'sent') {
-      fetchEmails('sent');
+      fetchEmails(activeMailbox, 'sent');
     }
   };
 
   const handleReply = (email) => {
     setComposeData({
+      from: activeMailbox,
       to: email.from,
       subject: email.subject.startsWith('Re:') ? email.subject : `Re: ${email.subject}`,
       body: `\n\n--- On ${new Date(email.date).toLocaleString()}, ${email.from} wrote ---\n> ${email.text || ''}`
@@ -165,6 +198,7 @@ export default function App() {
 
   const handleForward = (email) => {
     setComposeData({
+      from: activeMailbox,
       to: '',
       subject: email.subject.startsWith('Fwd:') ? email.subject : `Fwd: ${email.subject}`,
       body: `\n\n--- Forwarded message ---\nFrom: ${email.from}\nDate: ${new Date(email.date).toLocaleString()}\nSubject: ${email.subject}\n\n${email.text || ''}`
@@ -176,7 +210,6 @@ export default function App() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-slate-950 text-slate-100 font-sans">
-      {/* Toast Notification */}
       <Toast
         message={toast.message}
         type={toast.type}
@@ -191,13 +224,23 @@ export default function App() {
           setSelectedEmailId(null);
         }}
         onOpenCompose={() => {
-          setComposeData({});
+          setComposeData({ from: activeMailbox });
           setIsComposeOpen(true);
         }}
-        onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenSettings={(tab = 'domains') => {
+          setSettingsTab(tab);
+          setIsSettingsOpen(true);
+        }}
         onSimulateInbound={handleSimulateInbound}
         stats={stats}
         settings={settings}
+        domains={domains}
+        mailboxes={mailboxes}
+        activeMailbox={activeMailbox}
+        onSelectMailbox={(mb) => {
+          setActiveMailbox(mb);
+          setSelectedEmailId(null);
+        }}
         isSimulating={isSimulating}
       />
 
@@ -208,7 +251,7 @@ export default function App() {
         onSelectEmail={handleSelectEmail}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        onRefresh={() => fetchEmails(currentFolder, searchQuery)}
+        onRefresh={() => fetchEmails(activeMailbox, currentFolder, searchQuery)}
         loading={loading}
         currentFolder={currentFolder}
         onToggleStar={handleToggleStar}
@@ -231,18 +274,22 @@ export default function App() {
         onClose={() => setIsComposeOpen(false)}
         onSend={handleSendEmail}
         initialData={composeData}
-        defaultFrom={settings?.defaultFromAddress}
+        defaultFrom={activeMailbox}
+        mailboxes={mailboxes}
+        activeMailbox={activeMailbox}
       />
 
-      {/* Domain & Server Settings Modal */}
+      {/* Domain & Email Accounts Control Center */}
       <DomainSettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+        initialTab={settingsTab}
         settings={settings}
-        onSaveSettings={async (updated) => {
-          const res = await api.updateSettings(updated);
-          setSettings(res.settings);
-        }}
+        domains={domains}
+        mailboxes={mailboxes}
+        activeMailbox={activeMailbox}
+        onSelectMailbox={(mb) => setActiveMailbox(mb)}
+        onRefreshData={fetchAccountsData}
         onNotify={showToast}
       />
     </div>
