@@ -13,6 +13,24 @@ export default function App() {
   const [selectedEmailId, setSelectedEmailId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   
+  // Theme state: defaults to light SaaS theme
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('oryn_theme') || 'light';
+  });
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('oryn_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
   // Domains & Mailboxes
   const [domains, setDomains] = useState([]);
   const [mailboxes, setMailboxes] = useState([]);
@@ -60,15 +78,18 @@ export default function App() {
       setLoading(true);
       const data = await api.getEmails(mailbox, folder, search);
       setEmails(data.emails || []);
-      if (data.emails && data.emails.length > 0 && !selectedEmailId) {
-        setSelectedEmailId(data.emails[0].id);
+      if (data.emails && data.emails.length > 0) {
+        setSelectedEmailId(prev => {
+          if (prev && data.emails.some(e => e.id === prev)) return prev;
+          return data.emails[0].id;
+        });
       }
     } catch (err) {
       console.error('Failed to load emails:', err);
     } finally {
       setLoading(false);
     }
-  }, [activeMailbox, currentFolder, searchQuery, selectedEmailId]);
+  }, [activeMailbox, currentFolder, searchQuery]);
 
   // Fetch stats for active mailbox
   const fetchStats = useCallback(async (mailbox = activeMailbox) => {
@@ -90,7 +111,7 @@ export default function App() {
         setEmails(prev => [event.payload, ...prev]);
         fetchStats();
       } else if (event.type === 'email_sent') {
-        showToast('Email sent successfully!', 'success');
+        showToast('Email delivered successfully!', 'success');
         fetchStats();
       } else if (event.type === 'email_updated') {
         setEmails(prev => prev.map(e => e.id === event.payload.id ? event.payload : e));
@@ -209,7 +230,7 @@ export default function App() {
   const selectedEmail = emails.find(e => e.id === selectedEmailId);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-black text-neutral-100 font-sans antialiased">
+    <div className="flex h-screen w-screen overflow-hidden bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans antialiased">
       <Toast
         message={toast.message}
         type={toast.type}
@@ -242,6 +263,8 @@ export default function App() {
           setSelectedEmailId(null);
         }}
         isSimulating={isSimulating}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
 
       {/* Middle Email List */}

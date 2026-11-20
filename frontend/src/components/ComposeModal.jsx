@@ -110,15 +110,15 @@ export default function ComposeModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl bg-zinc-950 border-zinc-800 text-zinc-100 p-0 overflow-hidden shadow-2xl">
-        <DialogHeader className="p-4 border-b border-zinc-800/80 flex flex-row items-center justify-between">
-          <DialogTitle className="text-sm font-semibold tracking-tight text-zinc-100">
+      <DialogContent className="max-w-2xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 p-0 overflow-hidden shadow-2xl">
+        <DialogHeader className="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-row items-center justify-between">
+          <DialogTitle className="text-sm font-bold tracking-tight text-slate-900 dark:text-slate-100">
             New Message
           </DialogTitle>
         </DialogHeader>
 
         {error && (
-          <div className="mx-4 mt-3 p-2.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+          <div className="mx-4 mt-3 p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 dark:bg-rose-500/10 dark:border-rose-500/20 dark:text-rose-400 text-xs font-medium">
             {error}
           </div>
         )}
@@ -127,14 +127,14 @@ export default function ComposeModal({
           <div className="p-4 space-y-3">
             {/* From Address Selector */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-zinc-400 w-12 font-mono">From:</span>
+              <span className="text-xs text-slate-500 w-12 font-mono">From:</span>
               <div className="flex-1 flex gap-2">
                 <Input
                   type="text"
                   value={from}
                   onChange={(e) => setFrom(e.target.value)}
                   placeholder="e.g. you@glennesports.app"
-                  className="h-8 text-xs font-mono bg-zinc-900/60 border-zinc-800"
+                  className="h-8 text-xs font-mono"
                 />
                 {mailboxes.length > 0 && (
                   <select
@@ -142,7 +142,7 @@ export default function ComposeModal({
                       if (e.target.value) setFrom(e.target.value);
                     }}
                     value={mailboxes.some(m => m.email === from) ? from : ''}
-                    className="h-8 px-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 focus:outline-none"
+                    className="h-8 px-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 focus:outline-none"
                   >
                     <option value="">Preset Mailboxes</option>
                     {mailboxes.map(mb => (
@@ -157,21 +157,21 @@ export default function ComposeModal({
 
             {/* To Address */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-zinc-400 w-12 font-mono">To:</span>
+              <span className="text-xs text-slate-500 w-12 font-mono">To:</span>
               <div className="flex-1 flex items-center justify-between gap-2">
                 <Input
                   type="text"
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
                   placeholder="recipient@example.com (comma separated)"
-                  className="h-8 text-xs font-mono bg-zinc-900/60 border-zinc-800"
+                  className="h-8 text-xs font-mono"
                   autoFocus
                 />
                 {!showCc && (
                   <button
                     type="button"
                     onClick={() => setShowCc(true)}
-                    className="text-[11px] text-zinc-400 hover:text-zinc-200 font-mono px-2 py-1 rounded hover:bg-zinc-900"
+                    className="text-[11px] text-slate-500 hover:text-indigo-600 font-mono px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
                     Cc/Bcc
                   </button>
@@ -183,23 +183,23 @@ export default function ComposeModal({
             {showCc && (
               <>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-zinc-400 w-12 font-mono">Cc:</span>
+                  <span className="text-xs text-slate-500 w-12 font-mono">Cc:</span>
                   <Input
                     type="text"
                     value={cc}
                     onChange={(e) => setCc(e.target.value)}
                     placeholder="cc@example.com"
-                    className="h-8 text-xs font-mono bg-zinc-900/60 border-zinc-800 flex-1"
+                    className="h-8 text-xs font-mono flex-1"
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-zinc-400 w-12 font-mono">Bcc:</span>
+                  <span className="text-xs text-slate-500 w-12 font-mono">Bcc:</span>
                   <Input
                     type="text"
                     value={bcc}
                     onChange={(e) => setBcc(e.target.value)}
                     placeholder="bcc@example.com"
-                    className="h-8 text-xs font-mono bg-zinc-900/60 border-zinc-800 flex-1"
+                    className="h-8 text-xs font-mono flex-1"
                   />
                 </div>
               </>
@@ -207,13 +207,13 @@ export default function ComposeModal({
 
             {/* Subject */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-zinc-400 w-12 font-mono">Subject:</span>
+              <span className="text-xs text-slate-500 w-12 font-mono">Subject:</span>
               <Input
                 type="text"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Email subject..."
-                className="h-8 text-xs font-medium bg-zinc-900/60 border-zinc-800 flex-1"
+                className="h-8 text-xs font-medium flex-1"
               />
             </div>
 
@@ -224,7 +224,7 @@ export default function ComposeModal({
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 placeholder="Write your email here..."
-                className="w-full text-xs font-sans bg-zinc-900/60 border-zinc-800 rounded-lg p-3 min-h-[220px]"
+                className="w-full text-xs font-sans rounded-lg p-3 min-h-[220px]"
               />
             </div>
 
@@ -235,14 +235,14 @@ export default function ComposeModal({
                   <Badge
                     key={i}
                     variant="secondary"
-                    className="gap-1.5 py-1 px-2.5 text-[11px] font-mono bg-zinc-900 border-zinc-800 text-zinc-200"
+                    className="gap-1.5 py-1 px-2.5 text-[11px] font-mono"
                   >
-                    <Paperclip className="w-3 h-3 text-zinc-400" />
+                    <Paperclip className="w-3 h-3 text-slate-400" />
                     <span>{att.filename}</span>
                     <button
                       type="button"
                       onClick={() => removeAttachment(i)}
-                      className="text-zinc-400 hover:text-red-400 ml-1"
+                      className="text-slate-400 hover:text-rose-500 ml-1"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -252,10 +252,10 @@ export default function ComposeModal({
             )}
           </div>
 
-          <DialogFooter className="p-3 border-t border-zinc-800/80 bg-zinc-950/80 flex items-center justify-between sm:justify-between">
+          <DialogFooter className="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 flex items-center justify-between sm:justify-between">
             <div className="flex items-center gap-2">
-              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 hover:bg-zinc-900 text-xs text-zinc-300 hover:text-white cursor-pointer transition-colors shadow-xs">
-                <Paperclip className="w-3.5 h-3.5 text-zinc-400" />
+              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs text-slate-700 dark:text-slate-200 cursor-pointer transition-colors shadow-2xs">
+                <Paperclip className="w-3.5 h-3.5 text-slate-400" />
                 <span>Attach</span>
                 <input
                   type="file"
@@ -273,7 +273,7 @@ export default function ComposeModal({
                 size="sm"
                 onClick={onClose}
                 disabled={sending}
-                className="text-xs text-zinc-400 hover:text-white"
+                className="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white"
               >
                 Discard
               </Button>
@@ -281,7 +281,7 @@ export default function ComposeModal({
                 type="submit"
                 size="sm"
                 disabled={sending}
-                className="text-xs"
+                className="text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
               >
                 {sending ? (
                   <>

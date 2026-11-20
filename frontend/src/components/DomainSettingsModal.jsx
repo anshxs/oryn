@@ -14,8 +14,7 @@ import {
   Mail,
   Zap,
   Users,
-  Activity,
-  ArrowRight
+  Activity
 } from 'lucide-react';
 import { api } from '../services/api';
 import {
@@ -125,16 +124,6 @@ export default function DomainSettingsModal({
       onNotify('Failed to detect public IP: ' + err.message, 'error');
     } finally {
       setIsDetectingIp(false);
-    }
-  };
-
-  const handleIpChange = async (newIp) => {
-    setServerIpInput(newIp);
-    if (selectedDomainForDns) {
-      try {
-        await api.updateDomain(selectedDomainForDns, { serverIp: newIp.trim() });
-        fetchDnsRecords(selectedDomainForDns, newIp.trim());
-      } catch (err) {}
     }
   };
 
@@ -296,20 +285,20 @@ export default function DomainSettingsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl max-h-[88vh] bg-zinc-950 border-zinc-800 text-zinc-100 p-0 overflow-hidden shadow-2xl flex flex-col">
+      <DialogContent className="max-w-4xl max-h-[88vh] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 p-0 overflow-hidden shadow-2xl flex flex-col">
         {/* Modal Top Header */}
-        <DialogHeader className="p-4 border-b border-zinc-800/80 flex flex-row items-center justify-between shrink-0">
+        <DialogHeader className="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-row items-center justify-between shrink-0">
           <div>
-            <DialogTitle className="text-base font-semibold tracking-tight text-zinc-100 flex items-center gap-2">
-              <Globe className="w-4 h-4 text-zinc-300" /> Control Center
+            <DialogTitle className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <Globe className="w-4 h-4 text-indigo-600" /> Control Center
             </DialogTitle>
           </div>
         </DialogHeader>
 
         {/* Tab Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <div className="px-5 pt-3 border-b border-zinc-800/80 bg-zinc-950/60 shrink-0">
-            <TabsList className="bg-zinc-900 border-zinc-800 p-1">
+          <div className="px-5 pt-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 shrink-0">
+            <TabsList className="p-1">
               <TabsTrigger value="domains" className="text-xs">
                 Domains & DNS
               </TabsTrigger>
@@ -325,13 +314,13 @@ export default function DomainSettingsModal({
             </TabsList>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-5">
+          <div className="flex-1 overflow-y-auto p-5 bg-slate-50/30 dark:bg-slate-950">
             {/* TAB 1: DOMAINS & DNS */}
             <TabsContent value="domains" className="space-y-6 mt-0">
               <div className="flex flex-col md:flex-row gap-4">
                 {/* Domain selector pills */}
                 <div className="w-full md:w-64 space-y-2">
-                  <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider font-mono">
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-mono">
                     Registered Domains
                   </span>
                   <div className="space-y-1">
@@ -343,13 +332,13 @@ export default function DomainSettingsModal({
                           onClick={() => handleDomainSelect(dom.name)}
                           className={`flex items-center justify-between p-2.5 rounded-lg border text-xs cursor-pointer transition-colors ${
                             isSelected
-                              ? 'bg-zinc-900 border-zinc-300 text-white'
-                              : 'bg-zinc-900/40 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/70'
+                              ? 'bg-indigo-50 border-indigo-500 text-indigo-900 dark:bg-indigo-950/60 dark:border-indigo-400 dark:text-indigo-200 font-semibold shadow-2xs'
+                              : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-400'
                           }`}
                         >
                           <div className="truncate pr-2">
-                            <p className="font-medium truncate">{dom.name}</p>
-                            <p className="text-[10px] text-zinc-500 font-mono truncate">{dom.serverIp}</p>
+                            <p className="truncate">{dom.name}</p>
+                            <p className="text-[10px] text-slate-400 font-mono truncate">{dom.serverIp}</p>
                           </div>
                           {domains.length > 1 && (
                             <button
@@ -357,7 +346,7 @@ export default function DomainSettingsModal({
                                 e.stopPropagation();
                                 handleDeleteDomain(dom.name);
                               }}
-                              className="text-zinc-500 hover:text-red-400 p-1"
+                              className="text-slate-400 hover:text-rose-600 p-1"
                               title="Delete domain"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -376,9 +365,9 @@ export default function DomainSettingsModal({
                         value={newDomainName}
                         onChange={(e) => setNewDomainName(e.target.value)}
                         placeholder="newdomain.com"
-                        className="h-8 text-xs bg-zinc-900/60 border-zinc-800"
+                        className="h-8 text-xs"
                       />
-                      <Button type="submit" size="sm" disabled={isAddingDomain} className="h-8 text-xs">
+                      <Button type="submit" size="sm" disabled={isAddingDomain} className="h-8 text-xs bg-indigo-600 text-white">
                         <Plus className="w-3.5 h-3.5" />
                       </Button>
                     </div>
@@ -387,18 +376,18 @@ export default function DomainSettingsModal({
 
                 {/* DNS Setup Card */}
                 <div className="flex-1 space-y-4">
-                  <Card className="border-zinc-800 bg-zinc-900/40">
+                  <Card>
                     <CardHeader className="pb-3">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div>
-                          <CardTitle className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                          <CardTitle className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                             <span>{selectedDomainForDns}</span>
                             <Badge variant="outline" className="text-[10px] py-0 font-mono">
                               Server IP: {serverIpInput}
                             </Badge>
                           </CardTitle>
-                          <CardDescription className="text-xs text-zinc-400 mt-1">
-                            Add these records into your domain registrar's DNS management console (Cloudflare, Namecheap, GoDaddy, Hostinger).
+                          <CardDescription className="text-xs text-slate-500 mt-1">
+                            Add these records into your domain registrar's DNS dashboard (Cloudflare, Namecheap, GoDaddy, Hostinger).
                           </CardDescription>
                         </div>
                         <div className="flex items-center gap-2">
@@ -407,16 +396,16 @@ export default function DomainSettingsModal({
                             size="sm"
                             onClick={handleAutoDetectIp}
                             disabled={isDetectingIp}
-                            className="h-8 text-xs border-zinc-800"
+                            className="h-8 text-xs"
                           >
-                            <Activity className={cn("w-3 h-3 mr-1.5", isDetectingIp && "animate-spin")} />
+                            <Activity className={cn("w-3 h-3 mr-1.5 text-indigo-500", isDetectingIp && "animate-spin")} />
                             Detect IP
                           </Button>
                           <Button
                             size="sm"
                             onClick={handleVerifyDns}
                             disabled={isVerifying}
-                            className="h-8 text-xs"
+                            className="h-8 text-xs bg-indigo-600 hover:bg-indigo-700 text-white"
                           >
                             <RotateCw className={cn("w-3 h-3 mr-1.5", isVerifying && "animate-spin")} />
                             Verify Live DNS
@@ -425,19 +414,19 @@ export default function DomainSettingsModal({
                       </div>
                     </CardHeader>
 
-                    {/* Live Verification Banner if run */}
+                    {/* Live Verification Banner */}
                     {verifyResult && (
                       <div className="px-5 pb-3">
                         <div className={`p-3 rounded-lg border text-xs flex items-center justify-between ${
                           verifyResult.mxConfigured 
-                            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
-                            : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                            ? 'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-500/10 dark:border-emerald-500/20 dark:text-emerald-400' 
+                            : 'bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-500/10 dark:border-amber-500/20 dark:text-amber-400'
                         }`}>
                           <div className="flex items-center gap-2">
                             {verifyResult.mxConfigured ? (
-                              <CheckCircle2 className="w-4 h-4 shrink-0" />
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                             ) : (
-                              <AlertTriangle className="w-4 h-4 shrink-0" />
+                              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
                             )}
                             <span>
                               {verifyResult.mxConfigured 
@@ -456,57 +445,57 @@ export default function DomainSettingsModal({
                       {dnsRecords.map((rec) => (
                         <div
                           key={rec.step}
-                          className="p-3 rounded-lg border border-zinc-800/90 bg-zinc-950/70 space-y-2"
+                          className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-2 shadow-2xs"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <Badge variant="secondary" className="font-mono text-[10px] font-semibold">
+                              <Badge variant="secondary" className="font-mono text-[10px] font-bold">
                                 {rec.type}
                               </Badge>
-                              <span className="text-xs font-semibold text-zinc-200">
+                              <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
                                 {rec.title}
                               </span>
                             </div>
-                            <span className="text-[10px] text-zinc-500 font-mono">
+                            <span className="text-[10px] text-slate-400 font-mono">
                               Step {rec.step}
                             </span>
                           </div>
 
-                          <p className="text-[11px] text-zinc-400">
+                          <p className="text-[11px] text-slate-600 dark:text-slate-400">
                             {rec.instruction}
                           </p>
 
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                            <div className="flex items-center justify-between p-2 rounded bg-zinc-900 border border-zinc-800 text-xs font-mono">
+                            <div className="flex items-center justify-between p-2 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-mono">
                               <div className="truncate pr-1">
-                                <span className="text-[10px] text-zinc-500 uppercase block">Host / Name</span>
-                                <span className="text-zinc-200">{rec.host}</span>
+                                <span className="text-[10px] text-slate-400 uppercase block">Host / Name</span>
+                                <span className="text-slate-800 dark:text-slate-200">{rec.host}</span>
                               </div>
                               <button
                                 onClick={() => copyToClipboard(rec.host, `host_${rec.step}`)}
-                                className="text-zinc-400 hover:text-white p-1"
+                                className="text-slate-400 hover:text-indigo-600 p-1"
                                 title="Copy Host"
                               >
                                 {copiedKey === `host_${rec.step}` ? (
-                                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
                                 ) : (
                                   <Copy className="w-3.5 h-3.5" />
                                 )}
                               </button>
                             </div>
 
-                            <div className="flex items-center justify-between p-2 rounded bg-zinc-900 border border-zinc-800 text-xs font-mono">
+                            <div className="flex items-center justify-between p-2 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-mono">
                               <div className="truncate pr-1">
-                                <span className="text-[10px] text-zinc-500 uppercase block">Value / Points To</span>
-                                <span className="text-zinc-200 truncate">{rec.value}</span>
+                                <span className="text-[10px] text-slate-400 uppercase block">Value / Points To</span>
+                                <span className="text-slate-800 dark:text-slate-200 truncate">{rec.value}</span>
                               </div>
                               <button
                                 onClick={() => copyToClipboard(rec.value, `val_${rec.step}`)}
-                                className="text-zinc-400 hover:text-white p-1"
+                                className="text-slate-400 hover:text-indigo-600 p-1"
                                 title="Copy Value"
                               >
                                 {copiedKey === `val_${rec.step}` ? (
-                                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
                                 ) : (
                                   <Copy className="w-3.5 h-3.5" />
                                 )}
@@ -526,7 +515,7 @@ export default function DomainSettingsModal({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Active Mailbox List */}
                 <div className="space-y-3">
-                  <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider font-mono">
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-mono">
                     Configured Mailboxes ({mailboxes.length})
                   </span>
                   <div className="space-y-2">
@@ -537,13 +526,13 @@ export default function DomainSettingsModal({
                           key={mb.email}
                           className={`p-3 rounded-lg border flex items-center justify-between transition-colors ${
                             isCurrent
-                              ? 'bg-zinc-900 border-zinc-400 text-white shadow-xs'
-                              : 'bg-zinc-900/40 border-zinc-800 text-zinc-300'
+                              ? 'bg-indigo-50 border-indigo-400 text-indigo-900 dark:bg-indigo-950/60 dark:border-indigo-500 dark:text-indigo-200 shadow-2xs font-medium'
+                              : 'bg-white border-slate-200 text-slate-700 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300'
                           }`}
                         >
                           <div className="truncate pr-2">
-                            <p className="text-xs font-semibold text-zinc-100">{mb.name || mb.username}</p>
-                            <p className="text-[11px] text-zinc-400 font-mono truncate">{mb.email}</p>
+                            <p className="text-xs font-bold text-slate-900 dark:text-slate-100">{mb.name || mb.username}</p>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">{mb.email}</p>
                           </div>
                           <div className="flex items-center gap-1.5">
                             {!isCurrent && (
@@ -551,7 +540,7 @@ export default function DomainSettingsModal({
                                 variant="outline"
                                 size="sm"
                                 onClick={() => onSelectMailbox(mb.email)}
-                                className="h-7 text-xs border-zinc-800"
+                                className="h-7 text-xs border-slate-300 dark:border-slate-700"
                               >
                                 Switch
                               </Button>
@@ -559,7 +548,7 @@ export default function DomainSettingsModal({
                             {mailboxes.length > 1 && (
                               <button
                                 onClick={() => handleDeleteMailbox(mb.email)}
-                                className="p-1 text-zinc-500 hover:text-red-400"
+                                className="p-1 text-slate-400 hover:text-rose-600"
                                 title="Delete mailbox"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -573,46 +562,46 @@ export default function DomainSettingsModal({
                 </div>
 
                 {/* Create Mailbox Form */}
-                <Card className="border-zinc-800 bg-zinc-900/40">
+                <Card>
                   <CardHeader>
-                    <CardTitle className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                      <UserPlus className="w-4 h-4" /> Create New Mailbox
+                    <CardTitle className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                      <UserPlus className="w-4 h-4 text-indigo-600" /> Create New Mailbox
                     </CardTitle>
-                    <CardDescription className="text-xs text-zinc-400">
-                      Provision a new custom address on any of your active domains.
+                    <CardDescription className="text-xs text-slate-500">
+                      Provision a new custom email address on any of your active domains.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleCreateMailbox} className="space-y-3">
                       <div>
-                        <label className="text-[11px] text-zinc-400 uppercase font-mono block mb-1">Display Name</label>
+                        <label className="text-[11px] text-slate-500 uppercase font-mono block mb-1">Display Name</label>
                         <Input
                           type="text"
                           value={mbName}
                           onChange={(e) => setMbName(e.target.value)}
                           placeholder="e.g. Arpit Rajput"
-                          className="h-8 text-xs bg-zinc-950 border-zinc-800"
+                          className="h-8 text-xs"
                         />
                       </div>
 
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="text-[11px] text-zinc-400 uppercase font-mono block mb-1">Username</label>
+                          <label className="text-[11px] text-slate-500 uppercase font-mono block mb-1">Username</label>
                           <Input
                             type="text"
                             value={mbUsername}
                             onChange={(e) => setMbUsername(e.target.value)}
                             placeholder="e.g. arpit"
-                            className="h-8 text-xs font-mono bg-zinc-950 border-zinc-800"
+                            className="h-8 text-xs font-mono"
                             required
                           />
                         </div>
                         <div>
-                          <label className="text-[11px] text-zinc-400 uppercase font-mono block mb-1">Domain</label>
+                          <label className="text-[11px] text-slate-500 uppercase font-mono block mb-1">Domain</label>
                           <select
                             value={mbDomain}
                             onChange={(e) => setMbDomain(e.target.value)}
-                            className="w-full h-8 px-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-200 focus:outline-none"
+                            className="w-full h-8 px-2 rounded-lg bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-200 focus:outline-none"
                           >
                             {domains.map(d => (
                               <option key={d.name} value={d.name}>@{d.name}</option>
@@ -622,13 +611,13 @@ export default function DomainSettingsModal({
                       </div>
 
                       <div>
-                        <label className="text-[11px] text-zinc-400 uppercase font-mono block mb-1">Password</label>
+                        <label className="text-[11px] text-slate-500 uppercase font-mono block mb-1">Password</label>
                         <Input
                           type="password"
                           value={mbPassword}
                           onChange={(e) => setMbPassword(e.target.value)}
                           placeholder="••••••••"
-                          className="h-8 text-xs bg-zinc-950 border-zinc-800"
+                          className="h-8 text-xs"
                           required
                         />
                       </div>
@@ -636,7 +625,7 @@ export default function DomainSettingsModal({
                       <Button
                         type="submit"
                         disabled={isCreatingMb}
-                        className="w-full text-xs h-9 mt-2"
+                        className="w-full text-xs h-9 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white"
                       >
                         {isCreatingMb ? 'Provisioning...' : 'Provision Mailbox'}
                       </Button>
@@ -648,13 +637,13 @@ export default function DomainSettingsModal({
 
             {/* TAB 3: OUTBOUND SMTP RELAY */}
             <TabsContent value="relay" className="space-y-6 mt-0">
-              <Card className="border-zinc-800 bg-zinc-900/40">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                    <Server className="w-4 h-4" /> Outbound Delivery Settings
+                  <CardTitle className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <Server className="w-4 h-4 text-violet-600" /> Outbound Delivery Settings
                   </CardTitle>
-                  <CardDescription className="text-xs text-zinc-400">
-                    Choose how outbound messages are routed to recipients.
+                  <CardDescription className="text-xs text-slate-500">
+                    Choose how outbound messages are dispatched to external recipients.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -663,24 +652,24 @@ export default function DomainSettingsModal({
                       onClick={() => setOutboundMode('direct')}
                       className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                         outboundMode === 'direct'
-                          ? 'bg-zinc-900 border-zinc-300 text-white'
-                          : 'bg-zinc-950/60 border-zinc-800 text-zinc-400'
+                          ? 'bg-indigo-50 border-indigo-500 text-indigo-900 dark:bg-indigo-950/60 dark:border-indigo-400 dark:text-indigo-200 font-semibold shadow-2xs'
+                          : 'bg-white border-slate-200 text-slate-600 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-400'
                       }`}
                     >
-                      <h4 className="text-xs font-semibold mb-1">Direct Delivery (Port 25 MX)</h4>
-                      <p className="text-[11px] text-zinc-500">Resolves recipient domain MX records directly. Note: May be blocked by residential ISPs.</p>
+                      <h4 className="text-xs font-bold mb-1">Direct Delivery (Port 25 MX)</h4>
+                      <p className="text-[11px] text-slate-500 font-normal">Resolves recipient domain MX records directly. Note: Outbound port 25 may be filtered by home ISPs.</p>
                     </div>
 
                     <div
                       onClick={() => setOutboundMode('relay')}
                       className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                         outboundMode === 'relay'
-                          ? 'bg-zinc-900 border-zinc-300 text-white'
-                          : 'bg-zinc-950/60 border-zinc-800 text-zinc-400'
+                          ? 'bg-indigo-50 border-indigo-500 text-indigo-900 dark:bg-indigo-950/60 dark:border-indigo-400 dark:text-indigo-200 font-semibold shadow-2xs'
+                          : 'bg-white border-slate-200 text-slate-600 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-400'
                       }`}
                     >
-                      <h4 className="text-xs font-semibold mb-1">Authenticated SMTP Relay (Port 587)</h4>
-                      <p className="text-[11px] text-zinc-500">Routes through Brevo, SendGrid, or Mailgun for 100% reliable inbox delivery.</p>
+                      <h4 className="text-xs font-bold mb-1">Authenticated SMTP Relay (Port 587)</h4>
+                      <p className="text-[11px] text-slate-500 font-normal">Routes through Brevo, SendGrid, or Mailgun for 100% reliable inbox delivery.</p>
                     </div>
                   </div>
 
@@ -688,7 +677,7 @@ export default function DomainSettingsModal({
                     <form onSubmit={handleSaveOutbound} className="space-y-3 pt-2">
                       {/* Presets */}
                       <div className="flex items-center gap-2 pb-1">
-                        <span className="text-[11px] text-zinc-400 font-mono uppercase">Quick Presets:</span>
+                        <span className="text-[11px] text-slate-500 font-mono uppercase">Quick Presets:</span>
                         <Button
                           type="button"
                           variant="outline"
@@ -697,7 +686,7 @@ export default function DomainSettingsModal({
                             setRelayHost('smtp-relay.brevo.com');
                             setRelayPort(587);
                           }}
-                          className="h-6 text-[11px] px-2 border-zinc-800"
+                          className="h-6 text-[11px] px-2"
                         >
                           Brevo
                         </Button>
@@ -709,7 +698,7 @@ export default function DomainSettingsModal({
                             setRelayHost('smtp.sendgrid.net');
                             setRelayPort(587);
                           }}
-                          className="h-6 text-[11px] px-2 border-zinc-800"
+                          className="h-6 text-[11px] px-2"
                         >
                           SendGrid
                         </Button>
@@ -721,7 +710,7 @@ export default function DomainSettingsModal({
                             setRelayHost('smtp.mailgun.org');
                             setRelayPort(587);
                           }}
-                          className="h-6 text-[11px] px-2 border-zinc-800"
+                          className="h-6 text-[11px] px-2"
                         >
                           Mailgun
                         </Button>
@@ -729,24 +718,24 @@ export default function DomainSettingsModal({
 
                       <div className="grid grid-cols-3 gap-2">
                         <div className="col-span-2">
-                          <label className="text-[11px] text-zinc-400 uppercase font-mono block mb-1">SMTP Host</label>
+                          <label className="text-[11px] text-slate-500 uppercase font-mono block mb-1">SMTP Host</label>
                           <Input
                             type="text"
                             value={relayHost}
                             onChange={(e) => setRelayHost(e.target.value)}
                             placeholder="smtp-relay.brevo.com"
-                            className="h-8 text-xs font-mono bg-zinc-950 border-zinc-800"
+                            className="h-8 text-xs font-mono"
                             required
                           />
                         </div>
                         <div>
-                          <label className="text-[11px] text-zinc-400 uppercase font-mono block mb-1">Port</label>
+                          <label className="text-[11px] text-slate-500 uppercase font-mono block mb-1">Port</label>
                           <Input
                             type="number"
                             value={relayPort}
                             onChange={(e) => setRelayPort(e.target.value)}
                             placeholder="587"
-                            className="h-8 text-xs font-mono bg-zinc-950 border-zinc-800"
+                            className="h-8 text-xs font-mono"
                             required
                           />
                         </div>
@@ -754,24 +743,24 @@ export default function DomainSettingsModal({
 
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="text-[11px] text-zinc-400 uppercase font-mono block mb-1">Username / Login</label>
+                          <label className="text-[11px] text-slate-500 uppercase font-mono block mb-1">Username / Login</label>
                           <Input
                             type="text"
                             value={relayUser}
                             onChange={(e) => setRelayUser(e.target.value)}
                             placeholder="user or api-key"
-                            className="h-8 text-xs font-mono bg-zinc-950 border-zinc-800"
+                            className="h-8 text-xs font-mono"
                             required
                           />
                         </div>
                         <div>
-                          <label className="text-[11px] text-zinc-400 uppercase font-mono block mb-1">Password / API Key</label>
+                          <label className="text-[11px] text-slate-500 uppercase font-mono block mb-1">Password / API Key</label>
                           <Input
                             type="password"
                             value={relayPass}
                             onChange={(e) => setRelayPass(e.target.value)}
                             placeholder="••••••••"
-                            className="h-8 text-xs font-mono bg-zinc-950 border-zinc-800"
+                            className="h-8 text-xs font-mono"
                             required
                           />
                         </div>
@@ -781,7 +770,7 @@ export default function DomainSettingsModal({
                         <Button
                           type="submit"
                           disabled={isSavingOutbound}
-                          className="text-xs h-8"
+                          className="text-xs h-8 bg-indigo-600 hover:bg-indigo-700 text-white"
                         >
                           Save Outbound Settings
                         </Button>
@@ -791,9 +780,9 @@ export default function DomainSettingsModal({
                           size="sm"
                           onClick={handleTestRelay}
                           disabled={isTestingRelay}
-                          className="text-xs h-8 border-zinc-800"
+                          className="text-xs h-8"
                         >
-                          <Zap className={cn("w-3.5 h-3.5 mr-1.5 text-amber-400", isTestingRelay && "animate-bounce")} />
+                          <Zap className={cn("w-3.5 h-3.5 mr-1.5 text-amber-500", isTestingRelay && "animate-bounce")} />
                           {isTestingRelay ? 'Verifying...' : 'Test Connection'}
                         </Button>
                       </div>
@@ -807,42 +796,42 @@ export default function DomainSettingsModal({
             <TabsContent value="diagnostics" className="space-y-6 mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Server Diagnostics */}
-                <Card className="border-zinc-800 bg-zinc-900/40">
+                <Card>
                   <CardHeader>
-                    <CardTitle className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                      <Activity className="w-4 h-4 text-emerald-400" /> Server Runtime Diagnostics
+                    <CardTitle className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                      <Activity className="w-4 h-4 text-emerald-600" /> Server Runtime Diagnostics
                     </CardTitle>
-                    <CardDescription className="text-xs text-zinc-400">
+                    <CardDescription className="text-xs text-slate-500">
                       RFC 5321 SMTP daemon & HTTP REST API status
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-2 text-xs font-mono">
-                    <div className="flex justify-between p-2 rounded bg-zinc-950 border border-zinc-800">
-                      <span className="text-zinc-400">Inbound SMTP Port</span>
-                      <span className="text-zinc-100 font-semibold">{settings?.smtpPort || 2525} (RFC 5321)</span>
+                    <div className="flex justify-between p-2 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                      <span className="text-slate-500">Inbound SMTP Port</span>
+                      <span className="text-slate-900 dark:text-slate-100 font-semibold">{settings?.smtpPort || 2525} (RFC 5321)</span>
                     </div>
-                    <div className="flex justify-between p-2 rounded bg-zinc-950 border border-zinc-800">
-                      <span className="text-zinc-400">HTTP & WebSocket Port</span>
-                      <span className="text-zinc-100 font-semibold">{settings?.httpPort || 4000}</span>
+                    <div className="flex justify-between p-2 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                      <span className="text-slate-500">HTTP & WebSocket Port</span>
+                      <span className="text-slate-900 dark:text-slate-100 font-semibold">{settings?.httpPort || 4000}</span>
                     </div>
-                    <div className="flex justify-between p-2 rounded bg-zinc-950 border border-zinc-800">
-                      <span className="text-zinc-400">Public Server IP</span>
-                      <span className="text-zinc-100 font-semibold">{serverIpInput}</span>
+                    <div className="flex justify-between p-2 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                      <span className="text-slate-500">Public Server IP</span>
+                      <span className="text-slate-900 dark:text-slate-100 font-semibold">{serverIpInput}</span>
                     </div>
-                    <div className="flex justify-between p-2 rounded bg-zinc-950 border border-zinc-800">
-                      <span className="text-zinc-400">Outbound Dispatch Mode</span>
-                      <span className="text-zinc-100 font-semibold uppercase">{settings?.outboundMode || 'Direct'}</span>
+                    <div className="flex justify-between p-2 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                      <span className="text-slate-500">Outbound Dispatch Mode</span>
+                      <span className="text-slate-900 dark:text-slate-100 font-semibold uppercase">{settings?.outboundMode || 'Direct'}</span>
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Team Roster */}
-                <Card className="border-zinc-800 bg-zinc-900/40">
+                <Card>
                   <CardHeader>
-                    <CardTitle className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                      <Users className="w-4 h-4 text-zinc-300" /> Project Contributors
+                    <CardTitle className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                      <Users className="w-4 h-4 text-indigo-600" /> Project Contributors
                     </CardTitle>
-                    <CardDescription className="text-xs text-zinc-400">
+                    <CardDescription className="text-xs text-slate-500">
                       Academic project assignment team members
                     </CardDescription>
                   </CardHeader>
@@ -855,11 +844,11 @@ export default function DomainSettingsModal({
                     ].map((member) => (
                       <div
                         key={member.email}
-                        className="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800 flex items-center justify-between text-xs"
+                        className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs"
                       >
                         <div>
-                          <p className="font-semibold text-zinc-200">{member.name}</p>
-                          <p className="text-[10px] text-zinc-400 font-mono">{member.email}</p>
+                          <p className="font-semibold text-slate-900 dark:text-slate-100">{member.name}</p>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">{member.email}</p>
                         </div>
                         <Badge variant="outline" className="text-[10px] font-mono">
                           {member.role}
