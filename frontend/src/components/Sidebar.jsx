@@ -7,7 +7,6 @@ import {
   Plus, 
   Globe, 
   Settings, 
-  Mail, 
   Zap,
   ChevronDown,
   Check,
@@ -51,44 +50,48 @@ export default function Sidebar({
   const currentMailboxObj = mailboxes.find(m => m.email.toLowerCase() === activeMailbox?.toLowerCase()) || mailboxes[0];
 
   return (
-    <aside className="w-64 bg-slate-900/90 border-r border-slate-800/80 flex flex-col justify-between select-none">
+    <aside className="w-64 bg-black border-r border-neutral-800/80 flex flex-col justify-between select-none">
       <div>
-        {/* Brand & Mailbox Switcher */}
-        <div className="p-4 border-b border-slate-800/60 relative" ref={dropdownRef}>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-md shadow-blue-500/20">
-                <Mail className="w-4 h-4 text-white" />
+        {/* Vercel-style Minimal Header */}
+        <div className="p-4 border-b border-neutral-800/70 relative" ref={dropdownRef}>
+          <div className="flex items-center justify-between mb-3.5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-5 h-5 flex items-center justify-center">
+                {/* Vercel Geometric Triangle Icon */}
+                <svg viewBox="0 0 1155 1000" className="w-4 h-4 fill-white">
+                  <path d="M577.346 0L1154.69 1000H0L577.346 0Z" />
+                </svg>
               </div>
-              <span className="font-bold text-sm tracking-tight text-white flex items-center gap-1.5">
-                Oryn <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">MTA</span>
+              <span className="font-semibold text-sm tracking-tight text-white flex items-center gap-1.5">
+                Oryn <span className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-900 text-neutral-400 font-mono border border-neutral-800">MTA</span>
               </span>
             </div>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-mono border border-emerald-500/20">
-              Live
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">Active</span>
+            </div>
           </div>
 
           {/* Mailbox Selector Button */}
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="w-full flex items-center justify-between p-2 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-slate-700 transition-colors text-left"
+            className="w-full flex items-center justify-between px-3 py-2 rounded-md bg-neutral-950 border border-neutral-800 hover:border-neutral-700 transition-colors text-left group"
           >
             <div className="truncate pr-2">
-              <p className="text-xs font-semibold text-white truncate">
-                {currentMailboxObj?.name || 'My Mailbox'}
+              <p className="text-xs font-medium text-neutral-200 group-hover:text-white truncate">
+                {currentMailboxObj?.name || 'Mailbox'}
               </p>
-              <p className="text-[11px] text-blue-400 font-mono truncate">
-                {activeMailbox || 'No mailbox selected'}
+              <p className="text-[11px] text-neutral-400 font-mono truncate">
+                {activeMailbox || 'Select account'}
               </p>
             </div>
-            <ChevronDown className={`w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-3.5 h-3.5 text-neutral-500 group-hover:text-neutral-300 shrink-0 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {/* Mailbox Dropdown Popover */}
           {dropdownOpen && (
-            <div className="absolute top-[105px] left-3 right-3 z-50 bg-slate-900 border border-slate-700/80 rounded-xl shadow-2xl p-1.5 space-y-1 animate-in fade-in duration-150">
-              <div className="px-2 py-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+            <div className="absolute top-[102px] left-3 right-3 z-50 bg-neutral-950 border border-neutral-800 rounded-lg shadow-2xl p-1.5 space-y-1 animate-in fade-in duration-100">
+              <div className="px-2 py-1 text-[10px] font-mono text-neutral-500 uppercase tracking-wider">
                 Accounts ({mailboxes.length})
               </div>
               <div className="max-h-48 overflow-y-auto space-y-0.5">
@@ -101,61 +104,61 @@ export default function Sidebar({
                         onSelectMailbox(mb.email);
                         setDropdownOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
+                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs transition-colors ${
                         isCurrent
-                          ? 'bg-blue-600/20 text-blue-300 font-semibold'
-                          : 'text-slate-300 hover:bg-slate-800'
+                          ? 'bg-neutral-900 text-white font-medium'
+                          : 'text-neutral-400 hover:text-white hover:bg-neutral-900/60'
                       }`}
                     >
                       <div className="truncate text-left">
-                        <p className="truncate leading-tight">{mb.name}</p>
-                        <p className="text-[10px] font-mono opacity-70 truncate">{mb.email}</p>
+                        <p className="truncate leading-tight text-neutral-200">{mb.name}</p>
+                        <p className="text-[10px] font-mono text-neutral-500 truncate">{mb.email}</p>
                       </div>
-                      {isCurrent && <Check className="w-3.5 h-3.5 text-blue-400 shrink-0 ml-1.5" />}
+                      {isCurrent && <Check className="w-3.5 h-3.5 text-white shrink-0 ml-1.5" />}
                     </button>
                   );
                 })}
               </div>
 
-              <div className="pt-1 border-t border-slate-800 space-y-0.5">
+              <div className="pt-1 border-t border-neutral-800/80 space-y-0.5">
                 <button
                   onClick={() => {
                     setDropdownOpen(false);
                     onOpenSettings('mailboxes');
                   }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-blue-400 hover:bg-blue-500/10 transition-colors"
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium text-neutral-300 hover:text-white hover:bg-neutral-900 transition-colors"
                 >
-                  <UserPlus className="w-3.5 h-3.5" />
-                  <span>+ Create New Email</span>
+                  <UserPlus className="w-3.5 h-3.5 text-neutral-400" />
+                  <span>New Mailbox</span>
                 </button>
                 <button
                   onClick={() => {
                     setDropdownOpen(false);
                     onOpenSettings('domains');
                   }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-indigo-400 hover:bg-indigo-500/10 transition-colors"
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium text-neutral-300 hover:text-white hover:bg-neutral-900 transition-colors"
                 >
-                  <Globe className="w-3.5 h-3.5" />
-                  <span>+ Add Custom Domain</span>
+                  <Globe className="w-3.5 h-3.5 text-neutral-400" />
+                  <span>Connect Domain</span>
                 </button>
               </div>
             </div>
           )}
         </div>
 
-        {/* Compose Button */}
+        {/* Signature Vercel Compose Button */}
         <div className="p-3">
           <button
             onClick={onOpenCompose}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium rounded-xl shadow-lg shadow-blue-600/25 transition-all duration-200 transform hover:-translate-y-0.5"
+            className="w-full flex items-center justify-center gap-2 px-3.5 py-2 bg-white hover:bg-neutral-200 text-black font-semibold text-xs rounded-md shadow-sm transition-all duration-150 active:scale-[0.99]"
           >
-            <Plus className="w-4 h-4 stroke-[2.5]" />
-            <span>Compose Mail</span>
+            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Compose</span>
           </button>
         </div>
 
-        {/* Navigation Folders */}
-        <nav className="px-3 space-y-1">
+        {/* Minimal Navigation Folders */}
+        <nav className="px-2 space-y-0.5">
           {folders.map(folder => {
             const Icon = folder.icon;
             const active = currentFolder === folder.id;
@@ -163,19 +166,19 @@ export default function Sidebar({
               <button
                 key={folder.id}
                 onClick={() => onSelectFolder(folder.id)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-colors ${
                   active 
-                    ? 'bg-blue-600/15 text-blue-400 border border-blue-500/20' 
-                    : 'text-slate-300 hover:bg-slate-800/60 hover:text-white'
+                    ? 'bg-neutral-900 text-white font-semibold' 
+                    : 'text-neutral-400 hover:bg-neutral-950 hover:text-neutral-200'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Icon className={`w-4 h-4 ${active ? 'text-blue-400' : 'text-slate-400'}`} />
+                <div className="flex items-center gap-2.5">
+                  <Icon className={`w-3.5 h-3.5 ${active ? 'text-white' : 'text-neutral-500'}`} />
                   <span>{folder.label}</span>
                 </div>
                 {folder.count > 0 && (
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                    active ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-300'
+                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
+                    active ? 'bg-neutral-800 text-white' : 'bg-neutral-900 text-neutral-400'
                   }`}>
                     {folder.count}
                   </span>
@@ -186,44 +189,41 @@ export default function Sidebar({
         </nav>
       </div>
 
-      {/* Bottom Actions & Domain Status */}
-      <div className="p-3 border-t border-slate-800/60 space-y-2">
+      {/* Bottom Minimal Footer Actions */}
+      <div className="p-3 border-t border-neutral-800/80 space-y-2">
         {/* Test Simulator Button */}
         <button
           onClick={onSimulateInbound}
           disabled={isSimulating}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 transition-colors"
+          className="w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs font-medium text-neutral-300 bg-neutral-950 hover:bg-neutral-900 border border-neutral-800/80 transition-colors"
           title={`Simulate receiving an inbound email to ${activeMailbox}`}
         >
           <div className="flex items-center gap-2">
-            <Zap className="w-3.5 h-3.5 text-amber-400" />
-            <span>{isSimulating ? 'Sending...' : 'Simulate Inbound'}</span>
+            <Zap className="w-3 h-3 text-neutral-400" />
+            <span>{isSimulating ? 'Receiving...' : 'Simulate Inbound'}</span>
           </div>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-400/20 font-mono">TEST</span>
+          <span className="text-[9px] px-1 py-0.2 rounded border border-neutral-800 font-mono text-neutral-500">TEST</span>
         </button>
 
         {/* Domain & Accounts Settings Hub */}
         <button
           onClick={() => onOpenSettings('domains')}
-          className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 bg-slate-800/60 hover:bg-slate-800 hover:text-white border border-slate-700/60 transition-colors"
+          className="w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium text-neutral-300 bg-neutral-950 hover:bg-neutral-900 border border-neutral-800/80 transition-colors"
         >
           <div className="flex items-center gap-2 truncate">
-            <Globe className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+            <Globe className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
             <div className="truncate text-left">
-              <p className="font-semibold truncate text-slate-200">Domains & Accounts</p>
-              <p className="text-[10px] text-slate-400">{domains.length} Domain{domains.length !== 1 ? 's' : ''} • {mailboxes.length} Account{mailboxes.length !== 1 ? 's' : ''}</p>
+              <p className="font-medium truncate text-neutral-200">Domains & Accounts</p>
+              <p className="text-[10px] text-neutral-500 font-mono">{domains.length} dom • {mailboxes.length} acc</p>
             </div>
           </div>
-          <Settings className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <Settings className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
         </button>
 
         {/* Server status indicator */}
-        <div className="px-1 pt-0.5 flex items-center justify-between text-[11px] text-slate-400">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>SMTP :{settings?.smtpPort || 2525}</span>
-          </div>
-          <span className="font-mono text-slate-400">HTTP :{settings?.httpPort || 4000}</span>
+        <div className="px-1 pt-1 flex items-center justify-between text-[10px] font-mono text-neutral-500">
+          <span>SMTP :{settings?.smtpPort || 2525}</span>
+          <span>HTTP :{settings?.httpPort || 4000}</span>
         </div>
       </div>
     </aside>
