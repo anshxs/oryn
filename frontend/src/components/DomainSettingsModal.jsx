@@ -27,6 +27,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/card';
+import { cn } from '../lib/utils';
 
 export default function DomainSettingsModal({
   isOpen,
