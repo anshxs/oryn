@@ -2,10 +2,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import { createExpressApp, createHttpAndWebSocketServer } from './server.js';
-import { createSmtpServer } from './smtpServer.js';
-import { storage } from './storage.js';
+import { createSmtpServer } from './helpers/smtpEngine.js';
+import { SettingsModel } from './models/settings.model.js';
+import { DomainModel } from './models/domain.model.js';
 
-const settings = storage.getSettings();
+const settings = SettingsModel.get();
 const HTTP_PORT = process.env.PORT || settings.httpPort || 4000;
 const SMTP_PORT = process.env.SMTP_PORT || settings.smtpPort || 2525;
 
@@ -13,7 +14,7 @@ const SMTP_PORT = process.env.SMTP_PORT || settings.smtpPort || 2525;
 const app = createExpressApp();
 const { server: httpServer, broadcast } = createHttpAndWebSocketServer(app);
 
-// Initialize Inbound SMTP Server
+// Initialize Inbound SMTP Server Engine
 const smtpServer = createSmtpServer((newEmail) => {
   // Broadcast new email to all connected frontend clients in real time
   broadcast('new_email', newEmail);
@@ -29,7 +30,7 @@ httpServer.listen(HTTP_PORT, () => {
 
 // Start Inbound SMTP Server
 smtpServer.listen(SMTP_PORT, () => {
-  const domains = storage.getDomains();
+  const domains = DomainModel.getAll();
   const primary = domains[0] || { name: 'glennesports.app', serverHost: 'mail.glennesports.app', serverIp: '115.244.141.202' };
   console.log(`📬 Inbound SMTP Server listening on port ${SMTP_PORT}`);
   console.log(`🏷️  Primary Domain: ${primary.name}`);
