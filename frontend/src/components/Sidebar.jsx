@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { 
   Inbox, 
   Send, 
@@ -10,8 +10,22 @@ import {
   Zap,
   ChevronDown,
   Check,
-  UserPlus
+  Server,
+  ShieldCheck,
+  Radio
 } from 'lucide-react';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Avatar, AvatarFallback } from './ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import { Separator } from './ui/separator';
 
 export default function Sidebar({
   currentFolder,
@@ -27,19 +41,6 @@ export default function Sidebar({
   onSelectMailbox,
   isSimulating
 }) {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const folders = [
     { id: 'inbox', label: 'Inbox', icon: Inbox, count: stats?.unreadInbox },
     { id: 'sent', label: 'Sent', icon: Send, count: stats?.sentCount },
@@ -47,183 +48,206 @@ export default function Sidebar({
     { id: 'trash', label: 'Trash', icon: Trash2, count: stats?.trashCount }
   ];
 
-  const currentMailboxObj = mailboxes.find(m => m.email.toLowerCase() === activeMailbox?.toLowerCase()) || mailboxes[0];
+  const currentMailboxObj = mailboxes.find(
+    m => m.email.toLowerCase() === activeMailbox?.toLowerCase()
+  ) || mailboxes[0];
+
+  const getInitials = (name) => {
+    if (!name) return 'O';
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+  };
 
   return (
-    <aside className="w-64 bg-black border-r border-neutral-800/80 flex flex-col justify-between select-none">
-      <div>
-        {/* Vercel-style Minimal Header */}
-        <div className="p-4 border-b border-neutral-800/70 relative" ref={dropdownRef}>
-          <div className="flex items-center justify-between mb-3.5">
+    <aside className="w-64 bg-zinc-950/95 border-r border-zinc-800/80 flex flex-col justify-between select-none backdrop-blur-md">
+      <div className="flex flex-col h-full">
+        {/* Modern SaaS Header */}
+        <div className="p-4 border-b border-zinc-800/80 space-y-3.5">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-5 h-5 flex items-center justify-center">
-                {/* Vercel Geometric Triangle Icon */}
-                <svg viewBox="0 0 1155 1000" className="w-4 h-4 fill-white">
-                  <path d="M577.346 0L1154.69 1000H0L577.346 0Z" />
-                </svg>
+              <div className="h-7 w-7 rounded-lg bg-gradient-to-tr from-zinc-800 to-zinc-700 border border-zinc-700/60 flex items-center justify-center shadow-xs">
+                <Radio className="w-3.5 h-3.5 text-zinc-100" />
               </div>
-              <span className="font-semibold text-sm tracking-tight text-white flex items-center gap-1.5">
-                Oryn <span className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-900 text-neutral-400 font-mono border border-neutral-800">MTA</span>
-              </span>
+              <div>
+                <span className="font-semibold text-sm tracking-tight text-zinc-100 flex items-center gap-1.5">
+                  Oryn <Badge variant="secondary" className="text-[10px] py-0 px-1 font-mono">MTA</Badge>
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">Active</span>
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="text-[10px] font-medium tracking-wide">Live</span>
             </div>
           </div>
 
-          {/* Mailbox Selector Button */}
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="w-full flex items-center justify-between px-3 py-2 rounded-md bg-neutral-950 border border-neutral-800 hover:border-neutral-700 transition-colors text-left group"
-          >
-            <div className="truncate pr-2">
-              <p className="text-xs font-medium text-neutral-200 group-hover:text-white truncate">
-                {currentMailboxObj?.name || 'Mailbox'}
-              </p>
-              <p className="text-[11px] text-neutral-400 font-mono truncate">
-                {activeMailbox || 'Select account'}
-              </p>
-            </div>
-            <ChevronDown className={`w-3.5 h-3.5 text-neutral-500 group-hover:text-neutral-300 shrink-0 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
-          </button>
+          {/* Mailbox Selector Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="w-full flex items-center justify-between p-2 rounded-lg bg-zinc-900/70 border border-zinc-800/90 hover:border-zinc-700 transition-all text-left group cursor-pointer shadow-xs">
+                <div className="flex items-center gap-2.5 min-w-0 pr-1">
+                  <Avatar className="h-7 w-7 rounded-md border border-zinc-700/50">
+                    <AvatarFallback className="text-[11px] bg-zinc-800 text-zinc-200">
+                      {getInitials(currentMailboxObj?.name || activeMailbox)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="truncate">
+                    <p className="text-xs font-medium text-zinc-200 group-hover:text-white truncate">
+                      {currentMailboxObj?.name || 'My Mailbox'}
+                    </p>
+                    <p className="text-[11px] text-zinc-400 font-mono truncate">
+                      {activeMailbox || 'Select account'}
+                    </p>
+                  </div>
+                </div>
+                <ChevronDown className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 shrink-0 transition-transform" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="start">
+              <DropdownMenuLabel>Mailbox Accounts ({mailboxes.length})</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {mailboxes.map((mb) => {
+                const isCurrent = mb.email.toLowerCase() === activeMailbox?.toLowerCase();
+                return (
+                  <DropdownMenuItem
+                    key={mb.id || mb.email}
+                    onClick={() => onSelectMailbox(mb.email)}
+                    className="flex items-center justify-between cursor-pointer py-1.5"
+                  >
+                    <div className="truncate pr-2">
+                      <p className="text-xs font-medium text-zinc-200 truncate">{mb.name || mb.username}</p>
+                      <p className="text-[10px] text-zinc-400 font-mono truncate">{mb.email}</p>
+                    </div>
+                    {isCurrent && <Check className="w-3.5 h-3.5 text-zinc-100 shrink-0" />}
+                  </DropdownMenuItem>
+                );
+              })}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => onOpenSettings('mailboxes')}
+                className="cursor-pointer text-xs text-zinc-300"
+              >
+                <Plus className="w-3.5 h-3.5 mr-2" />
+                Add Mailbox Account
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-          {/* Mailbox Dropdown Popover */}
-          {dropdownOpen && (
-            <div className="absolute top-[102px] left-3 right-3 z-50 bg-neutral-950 border border-neutral-800 rounded-lg shadow-2xl p-1.5 space-y-1 animate-in fade-in duration-100">
-              <div className="px-2 py-1 text-[10px] font-mono text-neutral-500 uppercase tracking-wider">
-                Accounts ({mailboxes.length})
-              </div>
-              <div className="max-h-48 overflow-y-auto space-y-0.5">
-                {mailboxes.map((mb) => {
-                  const isCurrent = mb.email.toLowerCase() === activeMailbox?.toLowerCase();
-                  return (
-                    <button
-                      key={mb.id || mb.email}
-                      onClick={() => {
-                        onSelectMailbox(mb.email);
-                        setDropdownOpen(false);
-                      }}
-                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs transition-colors ${
-                        isCurrent
-                          ? 'bg-neutral-900 text-white font-medium'
-                          : 'text-neutral-400 hover:text-white hover:bg-neutral-900/60'
-                      }`}
-                    >
-                      <div className="truncate text-left">
-                        <p className="truncate leading-tight text-neutral-200">{mb.name}</p>
-                        <p className="text-[10px] font-mono text-neutral-500 truncate">{mb.email}</p>
-                      </div>
-                      {isCurrent && <Check className="w-3.5 h-3.5 text-white shrink-0 ml-1.5" />}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="pt-1 border-t border-neutral-800/80 space-y-0.5">
-                <button
-                  onClick={() => {
-                    setDropdownOpen(false);
-                    onOpenSettings('mailboxes');
-                  }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium text-neutral-300 hover:text-white hover:bg-neutral-900 transition-colors"
-                >
-                  <UserPlus className="w-3.5 h-3.5 text-neutral-400" />
-                  <span>New Mailbox</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setDropdownOpen(false);
-                    onOpenSettings('domains');
-                  }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium text-neutral-300 hover:text-white hover:bg-neutral-900 transition-colors"
-                >
-                  <Globe className="w-3.5 h-3.5 text-neutral-400" />
-                  <span>Connect Domain</span>
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Signature Vercel Compose Button */}
-        <div className="p-3">
-          <button
+          {/* Primary Compose Action */}
+          <Button
             onClick={onOpenCompose}
-            className="w-full flex items-center justify-center gap-2 px-3.5 py-2 bg-white hover:bg-neutral-200 text-black font-semibold text-xs rounded-md shadow-sm transition-all duration-150 active:scale-[0.99]"
+            className="w-full justify-center shadow-sm"
           >
-            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-            <span>Compose</span>
-          </button>
+            <Plus className="w-4 h-4 mr-1.5" />
+            Compose Message
+          </Button>
         </div>
 
-        {/* Minimal Navigation Folders */}
-        <nav className="px-2 space-y-0.5">
-          {folders.map(folder => {
+        {/* Navigation Folders */}
+        <div className="p-2 space-y-0.5 flex-1 overflow-y-auto">
+          <div className="px-2.5 py-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+            Folders
+          </div>
+          {folders.map((folder) => {
             const Icon = folder.icon;
-            const active = currentFolder === folder.id;
+            const isActive = currentFolder === folder.id;
             return (
               <button
                 key={folder.id}
                 onClick={() => onSelectFolder(folder.id)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-colors ${
-                  active 
-                    ? 'bg-neutral-900 text-white font-semibold' 
-                    : 'text-neutral-400 hover:bg-neutral-950 hover:text-neutral-200'
+                className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                  isActive
+                    ? 'bg-zinc-800/90 text-zinc-100 shadow-xs'
+                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
-                  <Icon className={`w-3.5 h-3.5 ${active ? 'text-white' : 'text-neutral-500'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-zinc-100' : 'text-zinc-400'}`} />
                   <span>{folder.label}</span>
                 </div>
-                {folder.count > 0 && (
-                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
-                    active ? 'bg-neutral-800 text-white' : 'bg-neutral-900 text-neutral-400'
-                  }`}>
+                {folder.count !== undefined && folder.count > 0 && (
+                  <Badge
+                    variant={folder.id === 'inbox' ? 'default' : 'secondary'}
+                    className="text-[10px] h-4 min-w-4 px-1 flex items-center justify-center font-mono"
+                  >
                     {folder.count}
-                  </span>
+                  </Badge>
                 )}
               </button>
             );
           })}
-        </nav>
-      </div>
 
-      {/* Bottom Minimal Footer Actions */}
-      <div className="p-3 border-t border-neutral-800/80 space-y-2">
-        {/* Test Simulator Button */}
-        <button
-          onClick={onSimulateInbound}
-          disabled={isSimulating}
-          className="w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs font-medium text-neutral-300 bg-neutral-950 hover:bg-neutral-900 border border-neutral-800/80 transition-colors"
-          title={`Simulate receiving an inbound email to ${activeMailbox}`}
-        >
-          <div className="flex items-center gap-2">
-            <Zap className="w-3 h-3 text-neutral-400" />
-            <span>{isSimulating ? 'Receiving...' : 'Simulate Inbound'}</span>
+          <Separator className="my-3 opacity-60" />
+
+          {/* Configuration & Controls */}
+          <div className="px-2.5 py-1 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+            Control Center
           </div>
-          <span className="text-[9px] px-1 py-0.2 rounded border border-neutral-800 font-mono text-neutral-500">TEST</span>
-        </button>
 
-        {/* Domain & Accounts Settings Hub */}
-        <button
-          onClick={() => onOpenSettings('domains')}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium text-neutral-300 bg-neutral-950 hover:bg-neutral-900 border border-neutral-800/80 transition-colors"
-        >
-          <div className="flex items-center gap-2 truncate">
-            <Globe className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-            <div className="truncate text-left">
-              <p className="font-medium truncate text-neutral-200">Domains & Accounts</p>
-              <p className="text-[10px] text-neutral-500 font-mono">{domains.length} dom • {mailboxes.length} acc</p>
+          <button
+            onClick={() => onOpenSettings('domains')}
+            className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60 transition-colors cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5">
+              <Globe className="w-4 h-4 text-zinc-400" />
+              <span>Domains & DNS</span>
             </div>
-          </div>
-          <Settings className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
-        </button>
+            <Badge variant="outline" className="text-[10px] py-0 px-1.5 font-mono">
+              {domains.length}
+            </Badge>
+          </button>
 
-        {/* Server status indicator */}
-        <div className="px-1 pt-1 flex items-center justify-between text-[10px] font-mono text-neutral-500">
-          <span>SMTP :{settings?.smtpPort || 2525}</span>
-          <span>HTTP :{settings?.httpPort || 4000}</span>
+          <button
+            onClick={() => onOpenSettings('relay')}
+            className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60 transition-colors cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5">
+              <Server className="w-4 h-4 text-zinc-400" />
+              <span>Outbound Relay</span>
+            </div>
+            <Badge variant="secondary" className="text-[10px] py-0 px-1 font-mono uppercase">
+              {settings?.outboundMode || 'Direct'}
+            </Badge>
+          </button>
+
+          <button
+            onClick={() => onOpenSettings('diagnostics')}
+            className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60 transition-colors cursor-pointer"
+          >
+            <Settings className="w-4 h-4 text-zinc-400" />
+            <span>Diagnostics & Team</span>
+          </button>
+        </div>
+
+        {/* Bottom Actions Card */}
+        <div className="p-3 border-t border-zinc-800/80 space-y-2">
+          {/* Simulate Inbound Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onSimulateInbound}
+            disabled={isSimulating}
+            className="w-full text-xs font-normal border-zinc-800 hover:border-zinc-700 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100"
+          >
+            <Zap className={`w-3.5 h-3.5 mr-1.5 text-amber-400 ${isSimulating ? 'animate-bounce' : ''}`} />
+            {isSimulating ? 'Receiving Mail...' : 'Simulate Inbound'}
+          </Button>
+
+          {/* Server Info Pill */}
+          <div className="px-2.5 py-2 rounded-lg bg-zinc-900/50 border border-zinc-800/80 text-[11px] text-zinc-400 flex items-center justify-between">
+            <div className="truncate pr-1">
+              <p className="font-mono text-zinc-300 truncate">
+                {domains[0]?.name || 'glennesports.app'}
+              </p>
+              <p className="text-[10px] text-zinc-500 font-mono">
+                Port {settings?.smtpPort || 2525} • SMTP
+              </p>
+            </div>
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+          </div>
         </div>
       </div>
     </aside>
