@@ -5,7 +5,7 @@ import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
 import { storage, detectPublicIp } from './storage.js';
-import { sendEmail } from './mailer.js';
+import { sendEmail, testRelayConnection } from './mailer.js';
 import { getRecommendedDnsRecords, verifyDomainDns } from './dnsHelper.js';
 
 export function createExpressApp() {
@@ -22,6 +22,17 @@ export function createExpressApp() {
       res.json({ success: true, ip });
     } catch (err) {
       res.status(500).json({ success: false, error: err.message, ip: '115.244.141.202' });
+    }
+  });
+
+  // Test SMTP Relay
+  app.post('/api/relay/test', async (req, res) => {
+    try {
+      const { host, port, secure, user, pass } = req.body;
+      await testRelayConnection({ host, port, secure, user, pass });
+      res.json({ success: true, message: 'SMTP relay connection verified successfully!' });
+    } catch (err) {
+      res.status(400).json({ success: false, error: err.message });
     }
   });
 

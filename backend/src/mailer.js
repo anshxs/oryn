@@ -5,6 +5,29 @@ import { storage } from './storage.js';
 const dnsPromises = dns.promises;
 
 /**
+ * Tests an SMTP relay configuration and verifies credentials.
+ */
+export async function testRelayConnection({ host, port, secure, user, pass }) {
+  if (!host) throw new Error('Relay host is required.');
+
+  const transporter = nodemailer.createTransport({
+    host: host.trim(),
+    port: parseInt(port || '587', 10),
+    secure: !!secure,
+    auth: (user && pass) ? {
+      user: user.trim(),
+      pass: pass.trim()
+    } : undefined,
+    tls: {
+      rejectUnauthorized: false
+    },
+    connectionTimeout: 7000
+  });
+
+  return await transporter.verify();
+}
+
+/**
  * Sends an email either directly to the recipient's MX server or through an SMTP Relay.
  */
 export async function sendEmail({ from, to, cc, bcc, subject, text, html, attachments = [] }) {
@@ -56,15 +79,15 @@ export async function sendEmail({ from, to, cc, bcc, subject, text, html, attach
       } : undefined,
       tls: {
         rejectUnauthorized: false
-      }
+      },
+      connectionTimeout: 10000
     });
 
     info = await transporter.sendMail(mailOptions);
   } else {
-    // Mode 2: Direct delivery via recipient domain MX record or direct nodemailer transport
+    // Mode 2: Direct delivery via recipient domain MX record
     console.log(`[Mailer] Resolving MX and sending direct email to: ${to}`);
     
-    // Extract recipient domain
     const recipientDomain = to.split('@')[1];
     let targetHost = 'localhost';
     let targetPort = 25;
@@ -78,7 +101,7 @@ export async function sendEmail({ from, to, cc, bcc, subject, text, html, attach
           console.log(`[Mailer] Found MX for ${recipientDomain}: ${targetHost} (priority ${mxRecords[0].priority})`);
         }
       } catch (err) {
-        console.warn(`[Mailer] Could not resolve MX for ${recipientDomain}, falling back to direct host or local:`, err.message);
+        console.warn(`[Mailer] Could not resolve MX for ${recipientDomain}:`, err.message);
       }
     }
 
@@ -89,24 +112,25 @@ export async function sendEmail({ from, to, cc, bcc, subject, text, html, attach
       name: settings.serverHost || 'localhost',
       tls: {
         rejectUnauthorized: false
-      }
+      },
+      connectionTimeout: 6000
     });
 
     try {
       info = await transporter.sendMail(mailOptions);
     } catch (directErr) {
-      // If direct delivery on port 25 fails (common in residential ISPs that block port 25 outbound),
-      // we log a clear explanation and throw a helpful error
       console.error(`[Mailer] Direct delivery failed: ${directErr.message}`);
       throw new Error(
         `Failed to deliver directly to ${to} (${directErr.message}). ` +
-        `Note: Most home ISPs block outbound port 25. You can configure an SMTP Relay in Settings (SendGrid, Mailgun, Brevo, or custom SMTP) for 100% reliable delivery.`
+        `Your residential ISP is blocking outbound TCP Port 25. ` +
+        `Go to "Domains & Accounts" -> "3. Outbound Delivery" in the app, select "SMTP Relay" and enter your Gmail, Brevo, or SendGrid credentials to send external mail reliably.`
       );
     }
   }
 
   // Save the sent email to Sent folder
   const savedEmail = storage.saveEmail({
+    mailbox: fromAddress.toLowerCase(),
     folder: 'sent',
     from: fromAddress,
     to,
