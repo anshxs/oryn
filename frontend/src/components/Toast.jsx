@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
+import { X, Check, AlertCircle, Info } from 'lucide-react';
 
 export default function Toast({ message, type = 'info', onClose, duration = 4000 }) {
   useEffect(() => {
@@ -12,28 +12,16 @@ export default function Toast({ message, type = 'info', onClose, duration = 4000
 
   if (!message) return null;
 
-  const bgStyles = {
-    success: 'bg-emerald-950/90 border-emerald-500/50 text-emerald-200',
-    error: 'bg-rose-950/90 border-rose-500/50 text-rose-200',
-    info: 'bg-blue-950/90 border-blue-500/50 text-blue-200'
-  }[type] || 'bg-slate-900 border-slate-700 text-slate-200';
-
-  const icons = {
-    success: <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />,
-    error: <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />,
-    info: <Info className="w-5 h-5 text-blue-400 shrink-0" />
-  }[type];
-
   return (
-    <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-5 duration-300">
-      <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-2xl backdrop-blur-md ${bgStyles}`}>
-        {icons}
-        <p className="text-sm font-medium">{message}</p>
+    <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-3 duration-200">
+      <div className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg border border-neutral-800 bg-neutral-950/95 text-white shadow-2xl backdrop-blur-md">
+        <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+        <p className="text-xs font-normal text-neutral-200 tracking-tight">{message}</p>
         <button
           onClick={onClose}
-          className="p-1 rounded-lg hover:bg-white/10 transition-colors ml-2"
+          className="p-1 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors ml-2"
         >
-          <X className="w-4 h-4 opacity-70 hover:opacity-100" />
+          <X className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>

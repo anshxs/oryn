@@ -209,7 +209,7 @@ export default function App() {
   const selectedEmail = emails.find(e => e.id === selectedEmailId);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-950 text-slate-100 font-sans">
+    <div className="flex h-screen w-screen overflow-hidden bg-black text-neutral-100 font-sans antialiased">
       <Toast
         message={toast.message}
         type={toast.type}
