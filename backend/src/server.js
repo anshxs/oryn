@@ -15,20 +15,109 @@ export function createExpressApp() {
   app.use(express.json({ limit: '25mb' }));
   app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
-  // REST API Routes
+  // ---------------- DOMAIN ROUTES ----------------
+  app.get('/api/domains', (req, res) => {
+    try {
+      const domains = storage.getDomains();
+      res.json({ success: true, domains });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
 
-  // 1. Get emails by folder and search
+  app.post('/api/domains', (req, res) => {
+    try {
+      const { name, serverHost, serverIp } = req.body;
+      if (!name || !name.trim()) {
+        return res.status(400).json({ success: false, error: 'Domain name is required (e.g. yourcompany.com)' });
+      }
+      const newDomain = storage.addDomain({ name, serverHost, serverIp });
+
+      if (req.app.get('broadcast')) {
+        req.app.get('broadcast')('domain_added', newDomain);
+      }
+
+      res.json({ success: true, domain: newDomain });
+    } catch (err) {
+      res.status(400).json({ success: false, error: err.message });
+    }
+  });
+
+  app.delete('/api/domains/:name', (req, res) => {
+    try {
+      storage.deleteDomain(req.params.name);
+      if (req.app.get('broadcast')) {
+        req.app.get('broadcast')('domain_deleted', { name: req.params.name });
+      }
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // ---------------- MAILBOX ROUTES ----------------
+  app.get('/api/mailboxes', (req, res) => {
+    try {
+      const { domain } = req.query;
+      const mailboxes = storage.getMailboxes(domain);
+      res.json({ success: true, mailboxes });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  app.post('/api/mailboxes', (req, res) => {
+    try {
+      const { email, username, domain, password, name } = req.body;
+      const newMailbox = storage.createMailbox({ email, username, domain, password, name });
+
+      if (req.app.get('broadcast')) {
+        req.app.get('broadcast')('mailbox_created', newMailbox);
+      }
+
+      res.json({ success: true, mailbox: newMailbox });
+    } catch (err) {
+      res.status(400).json({ success: false, error: err.message });
+    }
+  });
+
+  app.post('/api/mailboxes/verify', (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const valid = storage.verifyMailbox(email, password);
+      if (!valid) {
+        return res.status(401).json({ success: false, error: 'Invalid email or password.' });
+      }
+      const mailbox = storage.getMailboxByEmail(email);
+      res.json({ success: true, mailbox });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  app.delete('/api/mailboxes/:email', (req, res) => {
+    try {
+      storage.deleteMailbox(req.params.email);
+      if (req.app.get('broadcast')) {
+        req.app.get('broadcast')('mailbox_deleted', { email: req.params.email });
+      }
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // ---------------- EMAIL ROUTES ----------------
   app.get('/api/emails', (req, res) => {
     try {
-      const { folder, search } = req.query;
-      const emails = storage.getEmails({ folder, search });
+      const { mailbox, folder, search } = req.query;
+      const emails = storage.getEmails({ mailbox, folder, search });
       res.json({ success: true, emails });
     } catch (err) {
       res.status(500).json({ success: false, error: err.message });
     }
   });
 
-  // 2. Get single email by ID
   app.get('/api/emails/:id', (req, res) => {
     try {
       const email = storage.getEmailById(req.params.id);
@@ -41,17 +130,18 @@ export function createExpressApp() {
     }
   });
 
-  // 3. Send outbound email
   app.post('/api/emails/send', async (req, res) => {
     try {
       const { from, to, cc, bcc, subject, text, html, attachments } = req.body;
       if (!to || !to.trim()) {
-        return res.status(400).json({ success: false, error: 'Recipient "to" address is required.' });
+        return res.status(400).json({ success: false, error: 'Recipient address is required.' });
+      }
+      if (!from || !from.trim()) {
+        return res.status(400).json({ success: false, error: 'Sender "from" mailbox is required.' });
       }
 
       const result = await sendEmail({ from, to, cc, bcc, subject, text, html, attachments });
       
-      // Notify WS clients of sent email
       if (req.app.get('broadcast')) {
         req.app.get('broadcast')('email_sent', result.savedEmail);
       }
@@ -63,19 +153,19 @@ export function createExpressApp() {
     }
   });
 
-  // 4. Simulate inbound email (for quick developer testing without an external SMTP client)
   app.post('/api/emails/simulate', (req, res) => {
     try {
-      const settings = storage.getSettings();
-      const { from, to, subject, text, html } = req.body;
+      const { mailbox, from, to, subject, text, html } = req.body;
+      const targetMailbox = (mailbox || to || 'ansh@example.com').toLowerCase();
 
       const simulatedEmail = storage.saveEmail({
+        mailbox: targetMailbox,
         folder: 'inbox',
-        from: from || `customer@client-domain.com`,
-        to: to || `hello@${settings.domain}`,
-        subject: subject || 'Welcome to your custom domain mailserver!',
-        text: text || 'This is a test inbound email received on your configured domain.',
-        html: html || `<p>This is a <strong>test inbound email</strong> received on your configured domain <code>${settings.domain}</code>.</p>`,
+        from: from || `customer@clientdomain.com`,
+        to: to || targetMailbox,
+        subject: subject || `Welcome to ${targetMailbox}!`,
+        text: text || `This is a test inbound email sent to your custom address ${targetMailbox}.`,
+        html: html || `<p>This is a <strong>test inbound email</strong> sent to your mailbox <code>${targetMailbox}</code>.</p>`,
         date: new Date().toISOString(),
         read: false,
         starred: false
@@ -91,7 +181,6 @@ export function createExpressApp() {
     }
   });
 
-  // 5. Update email (mark as read/unread, star, move folder)
   app.patch('/api/emails/:id', (req, res) => {
     try {
       const updated = storage.updateEmail(req.params.id, req.body);
@@ -109,7 +198,6 @@ export function createExpressApp() {
     }
   });
 
-  // 6. Delete email (move to trash or permanently remove)
   app.delete('/api/emails/:id', (req, res) => {
     try {
       const permanent = req.query.permanent === 'true';
@@ -128,7 +216,7 @@ export function createExpressApp() {
     }
   });
 
-  // 7. Download / view attachment
+  // Attachments
   app.get('/api/attachments/:fileId', (req, res) => {
     try {
       const fileId = req.params.fileId;
@@ -145,7 +233,7 @@ export function createExpressApp() {
     }
   });
 
-  // 8. Settings & Domain configuration
+  // Settings
   app.get('/api/settings', (req, res) => {
     try {
       const settings = storage.getSettings();
@@ -167,13 +255,13 @@ export function createExpressApp() {
     }
   });
 
-  // 9. DNS Records guide & Live verification
+  // DNS
   app.get('/api/dns/records', (req, res) => {
     try {
       const settings = storage.getSettings();
-      const domain = req.query.domain || settings.domain;
-      const host = req.query.host || settings.serverHost;
-      const ip = req.query.ip || settings.serverIp;
+      const domain = req.query.domain || settings.defaultDomain || 'example.com';
+      const host = req.query.host || `mail.${domain}`;
+      const ip = req.query.ip || settings.serverIp || '127.0.0.1';
 
       const records = getRecommendedDnsRecords(domain, host, ip);
       res.json({ success: true, domain, host, ip, records });
@@ -184,10 +272,11 @@ export function createExpressApp() {
 
   app.get('/api/dns/verify', async (req, res) => {
     try {
-      const settings = storage.getSettings();
-      const domain = req.query.domain || settings.domain;
-      const host = req.query.host || settings.serverHost;
-
+      const domain = req.query.domain;
+      if (!domain) {
+        return res.status(400).json({ success: false, error: 'Domain parameter is required' });
+      }
+      const host = req.query.host || `mail.${domain}`;
       const check = await verifyDomainDns(domain, host);
       res.json({ success: true, check });
     } catch (err) {
@@ -195,16 +284,16 @@ export function createExpressApp() {
     }
   });
 
-  // 10. Server stats
+  // Stats
   app.get('/api/stats', (req, res) => {
     try {
-      const stats = storage.getStats();
+      const { mailbox } = req.query;
+      const stats = storage.getStats(mailbox);
       const settings = storage.getSettings();
       res.json({
         success: true,
         stats,
         server: {
-          domain: settings.domain,
           smtpPort: settings.smtpPort,
           outboundMode: settings.outboundMode,
           uptime: process.uptime()
