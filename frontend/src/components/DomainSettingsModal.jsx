@@ -54,7 +54,7 @@ export default function DomainSettingsModal({
 
   // DNS records & verification
   const [dnsRecords, setDnsRecords] = useState([]);
-  const [copiedIndex, setCopiedIndex] = useState(null);
+  const [copiedKey, setCopiedKey] = useState(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verifyResult, setVerifyResult] = useState(null);
 
@@ -90,10 +90,10 @@ export default function DomainSettingsModal({
 
   if (!isOpen) return null;
 
-  const handleCopy = (text, idx) => {
+  const handleCopy = (text, key) => {
     navigator.clipboard.writeText(text);
-    setCopiedIndex(idx);
-    setTimeout(() => setCopiedIndex(null), 2000);
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 2000);
   };
 
   const handleAddDomain = async (e) => {
@@ -339,21 +339,23 @@ export default function DomainSettingsModal({
                 </div>
               </div>
 
-              {/* Generated DNS Records for selected domain */}
-              <div className="space-y-3 pt-2 border-t border-slate-800">
-                <div className="flex items-center justify-between">
+              {/* Generated DNS Records for selected domain with clear, step-by-step registrar instructions */}
+              <div className="space-y-4 pt-2 border-t border-slate-800">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-blue-950/30 border border-blue-500/20 p-3.5 rounded-xl">
                   <div>
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                      <span>DNS Setup for</span>
-                      <span className="text-blue-400 font-mono normal-case">@{selectedDomainForDns}</span>
+                    <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-blue-400"></span>
+                      <span>How to add records in your DNS Provider</span>
                     </h4>
-                    <p className="text-[11px] text-slate-400">Add these records to your domain provider (Cloudflare, GoDaddy, Namecheap) to receive mail.</p>
+                    <p className="text-[11px] text-slate-300 mt-0.5 leading-relaxed">
+                      Go to your DNS manager (Cloudflare, Namecheap, GoDaddy, Hostinger, etc.) for <strong className="text-white font-mono">{selectedDomainForDns}</strong>. Click <strong className="text-white">"Add record"</strong> for each step below:
+                    </p>
                   </div>
                   <button
                     type="button"
                     onClick={handleVerifyDns}
                     disabled={isVerifying}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 transition-colors shrink-0"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${isVerifying ? 'animate-spin' : ''}`} />
                     <span>Check Live DNS</span>
@@ -361,55 +363,172 @@ export default function DomainSettingsModal({
                 </div>
 
                 {verifyResult && (
-                  <div className={`p-3 rounded-xl border text-xs ${
+                  <div className={`p-3.5 rounded-xl border text-xs ${
                     verifyResult.mxConfigured 
                       ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-300' 
                       : 'bg-amber-950/40 border-amber-500/30 text-amber-300'
                   }`}>
                     <div className="flex items-center gap-2 font-semibold">
                       {verifyResult.mxConfigured ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <AlertTriangle className="w-4 h-4 text-amber-400" />}
-                      <span>{verifyResult.mxConfigured ? 'MX records successfully detected on DNS!' : 'MX records not yet detected on live DNS'}</span>
+                      <span>{verifyResult.mxConfigured ? 'MX records successfully detected on public DNS!' : 'MX records not yet detected on live DNS'}</span>
                     </div>
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  {dnsRecords.map((rec, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1.5"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-blue-400 px-2 py-0.5 rounded bg-blue-500/10 font-mono">
-                            {rec.type}
-                          </span>
-                          <span className="text-xs text-slate-300 font-mono font-medium">{rec.name}</span>
+                <div className="space-y-3">
+                  {dnsRecords.map((rec, idx) => {
+                    const hostKey = `${idx}_host`;
+                    const valKey = `${idx}_val`;
+                    const prioKey = `${idx}_prio`;
+                    const instrKey = `${idx}_instr`;
+
+                    return (
+                      <div
+                        key={idx}
+                        className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3 hover:border-slate-700 transition-colors"
+                      >
+                        {/* Step Header & Plain English Instruction */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-800/80">
+                          <div className="flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 font-bold text-xs flex items-center justify-center border border-blue-500/40">
+                              {rec.step || idx + 1}
+                            </span>
+                            <span className="text-xs font-bold text-white tracking-wide">
+                              {rec.title || `${rec.type} Record`}
+                            </span>
+                          </div>
+                          
+                          <button
+                            type="button"
+                            onClick={() => handleCopy(rec.instruction, instrKey)}
+                            className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-400 hover:text-white px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:bg-slate-800 transition-colors self-start sm:self-auto"
+                            title="Copy full instruction text"
+                          >
+                            {copiedKey === instrKey ? (
+                              <>
+                                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                <span className="text-emerald-400 font-semibold">Copied Instructions</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3.5 h-3.5" />
+                                <span>Copy Summary</span>
+                              </>
+                            )}
+                          </button>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => handleCopy(rec.value, idx)}
-                          className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 transition-colors"
-                        >
-                          {copiedIndex === idx ? (
-                            <>
-                              <Check className="w-3 h-3 text-emerald-400" />
-                              <span className="text-emerald-400">Copied</span>
-                            </>
+
+                        {/* Explicit Guidance Banner */}
+                        <div className="bg-slate-900/90 border border-slate-800 px-3 py-2 rounded-lg text-xs text-slate-300">
+                          <span className="font-semibold text-blue-400">Step Action: </span>
+                          <span>Select Type <strong className="text-white bg-slate-800 px-1.5 py-0.5 rounded font-mono">{rec.type}</strong>, set Host / Name to <strong className="text-white bg-slate-800 px-1.5 py-0.5 rounded font-mono">{rec.host}</strong>, {rec.priority ? <>set Priority to <strong className="text-white bg-slate-800 px-1.5 py-0.5 rounded font-mono">{rec.priority}</strong>, </> : ''}and set Value / Points To to <strong className="text-white bg-slate-800 px-1.5 py-0.5 rounded font-mono truncate">{rec.value}</strong>.</span>
+                        </div>
+
+                        {/* Structured Field Tiles */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+                          {/* 1. TYPE */}
+                          <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                            <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                              1. Select Type
+                            </span>
+                            <span className="text-xs font-bold text-blue-400 font-mono px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 inline-block">
+                              {rec.type}
+                            </span>
+                          </div>
+
+                          {/* 2. HOST / NAME */}
+                          <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80 flex flex-col justify-between">
+                            <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                              2. Host / Name
+                            </span>
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="text-xs font-mono font-bold text-white truncate">{rec.host}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleCopy(rec.host, hostKey)}
+                                className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                                title="Copy Host"
+                              >
+                                {copiedKey === hostKey ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* 3. PRIORITY (or TTL if none) */}
+                          {rec.priority !== null && rec.priority !== undefined ? (
+                            <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80 flex flex-col justify-between">
+                              <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                                3. Priority
+                              </span>
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="text-xs font-mono font-bold text-amber-300">{rec.priority}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopy(String(rec.priority), prioKey)}
+                                  className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                                  title="Copy Priority"
+                                >
+                                  {copiedKey === prioKey ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                                </button>
+                              </div>
+                            </div>
                           ) : (
-                            <>
-                              <Copy className="w-3 h-3" />
-                              <span>Copy</span>
-                            </>
+                            <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                              <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                                3. TTL
+                              </span>
+                              <span className="text-xs font-mono text-slate-300">Auto / 3600</span>
+                            </div>
                           )}
-                        </button>
+
+                          {/* 4. TTL */}
+                          {rec.priority !== null && rec.priority !== undefined && (
+                            <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                              <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                                4. TTL
+                              </span>
+                              <span className="text-xs font-mono text-slate-300">Auto / 3600</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* 5. VALUE / POINTS TO (Full width) */}
+                        <div className="p-3 rounded-lg bg-slate-900 border border-slate-800">
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                              {rec.type === 'MX' ? 'Mail Server / Points To:' : 'Points To / Value / Content:'}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy(rec.value, valKey)}
+                              className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 transition-colors"
+                            >
+                              {copiedKey === valKey ? (
+                                <>
+                                  <Check className="w-3 h-3 text-emerald-400" />
+                                  <span className="text-emerald-400 font-semibold">Copied Value</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="w-3 h-3" />
+                                  <span>Copy Value</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                          <div className="font-mono text-xs text-slate-100 select-all overflow-x-auto break-all bg-slate-950 p-2 rounded border border-slate-800/70">
+                            {rec.value}
+                          </div>
+                        </div>
+
+                        {/* Helper tip */}
+                        <div className="text-[11px] text-slate-400 flex items-start gap-1.5">
+                          <span className="text-blue-400 shrink-0">ℹ️</span>
+                          <span>{rec.description} {rec.host === '@' && `(If your DNS provider doesn't accept "@", leave the Host field empty or enter "${selectedDomainForDns}")`}</span>
+                        </div>
                       </div>
-                      <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 font-mono text-[11px] text-slate-200 select-all overflow-x-auto">
-                        {rec.value}
-                      </div>
-                      <p className="text-[10px] text-slate-500">{rec.description}</p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
