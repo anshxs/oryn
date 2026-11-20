@@ -51,6 +51,7 @@ export default function DomainSettingsModal({
   const [relayUser, setRelayUser] = useState('');
   const [relayPass, setRelayPass] = useState('');
   const [isSavingOutbound, setIsSavingOutbound] = useState(false);
+  const [isTestingRelay, setIsTestingRelay] = useState(false);
 
   // DNS records & verification
   const [dnsRecords, setDnsRecords] = useState([]);
@@ -750,90 +751,194 @@ export default function DomainSettingsModal({
               <div>
                 <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-1">Outbound Delivery Mode</h4>
                 <p className="text-xs text-slate-400">
-                  Select how external outgoing emails are routed to recipient mail servers.
+                  Select how external outgoing emails (e.g. to Gmail, Yahoo, Outlook) are routed from this server.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div
-                  onClick={() => setOutboundMode('direct')}
-                  className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                    outboundMode === 'direct'
-                      ? 'bg-blue-600/15 border-blue-500/60'
-                      : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <Server className="w-4 h-4 text-blue-400" />
-                    <span className="font-semibold text-xs text-white">Direct MX Delivery</span>
-                  </div>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Directly looks up the recipient's domain MX record via DNS and opens a socket on port 25.
-                  </p>
+              {/* ISP Port 25 Notice Banner */}
+              <div className="p-3.5 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-xs space-y-1">
+                <div className="flex items-center gap-2 font-semibold text-amber-300">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400" />
+                  <span>Important Note on Sending to Gmail / External Inboxes:</span>
                 </div>
+                <p className="text-[11px] text-amber-200/90 leading-relaxed">
+                  Almost all residential ISPs (Airtel, Jio, Comcast, etc.) block outbound <strong>TCP Port 25</strong> to prevent spam. Direct MX delivery gives <em>"Greeting never received"</em> from a home connection.
+                </p>
+                <p className="text-[11px] text-amber-300 font-medium">
+                  👉 To send emails from your computer to real Gmail addresses, select <strong>SMTP Relay</strong> below and use a free service like Brevo (Sendinblue) or your Gmail App Password!
+                </p>
+              </div>
 
+              {/* Mode Selection */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div
                   onClick={() => setOutboundMode('relay')}
                   className={`p-4 rounded-xl border cursor-pointer transition-all ${
                     outboundMode === 'relay'
-                      ? 'bg-indigo-600/15 border-indigo-500/60'
+                      ? 'bg-blue-600/15 border-blue-500/60 ring-1 ring-blue-500/40'
                       : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
                   }`}
                 >
-                  <div className="flex items-center gap-2 mb-1">
-                    <ShieldCheck className="w-4 h-4 text-indigo-400" />
-                    <span className="font-semibold text-xs text-white">SMTP Relay (SendGrid, Mailgun, Brevo)</span>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-blue-400" />
+                      <span className="font-semibold text-xs text-white">SMTP Relay (Recommended)</span>
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-semibold font-mono">Port 587</span>
                   </div>
                   <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Routes through an external relay host to guarantee delivery if your ISP blocks port 25.
+                    Uses authenticated port 587 via Gmail, Brevo, or SendGrid. Works 100% reliably on any home or office WiFi connection without port 25 blocks.
+                  </p>
+                </div>
+
+                <div
+                  onClick={() => setOutboundMode('direct')}
+                  className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                    outboundMode === 'direct'
+                      ? 'bg-blue-600/15 border-blue-500/60 ring-1 ring-blue-500/40'
+                      : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <Server className="w-4 h-4 text-slate-400" />
+                      <span className="font-semibold text-xs text-white">Direct MX (Cloud VPS)</span>
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">Port 25</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Connects directly to recipient's MX server. Requires a VPS (AWS, DigitalOcean, Hetzner) with outbound port 25 unblocked by provider.
                   </p>
                 </div>
               </div>
 
               {outboundMode === 'relay' && (
-                <div className="space-y-3 p-4 rounded-xl bg-slate-950/70 border border-slate-800">
-                  <h5 className="text-xs font-semibold text-slate-200">Relay Credentials</h5>
-                  <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-4 p-4 rounded-xl bg-slate-950/80 border border-slate-800">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <h5 className="text-xs font-bold text-white uppercase tracking-wider">Quick Provider Presets</h5>
+                    <div className="flex flex-wrap gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setRelayHost('smtp.gmail.com');
+                          setRelayPort(587);
+                        }}
+                        className="px-2.5 py-1 text-xs rounded-lg bg-slate-900 border border-slate-700 hover:border-blue-500 text-slate-300 hover:text-white transition-colors"
+                      >
+                        Gmail
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setRelayHost('smtp-relay.brevo.com');
+                          setRelayPort(587);
+                        }}
+                        className="px-2.5 py-1 text-xs rounded-lg bg-slate-900 border border-slate-700 hover:border-blue-500 text-slate-300 hover:text-white transition-colors"
+                      >
+                        Brevo (Sendinblue)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setRelayHost('smtp.sendgrid.net');
+                          setRelayPort(587);
+                          setRelayUser('apikey');
+                        }}
+                        className="px-2.5 py-1 text-xs rounded-lg bg-slate-900 border border-slate-700 hover:border-blue-500 text-slate-300 hover:text-white transition-colors"
+                      >
+                        SendGrid
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Relay Host</label>
+                      <label className="block text-[11px] text-slate-400 mb-1 font-semibold">Relay Host</label>
                       <input
                         type="text"
                         value={relayHost}
                         onChange={(e) => setRelayHost(e.target.value)}
-                        placeholder="smtp.sendgrid.net"
-                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none"
+                        placeholder="e.g. smtp.gmail.com or smtp-relay.brevo.com"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none font-mono"
+                        required
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Port</label>
+                      <label className="block text-[11px] text-slate-400 mb-1 font-semibold">Port</label>
                       <input
                         type="number"
                         value={relayPort}
                         onChange={(e) => setRelayPort(e.target.value)}
                         placeholder="587"
-                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none font-mono"
+                        required
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">User / API Key</label>
+                      <label className="block text-[11px] text-slate-400 mb-1 font-semibold">Username / Email</label>
                       <input
                         type="text"
                         value={relayUser}
                         onChange={(e) => setRelayUser(e.target.value)}
-                        placeholder="apikey"
-                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none"
+                        placeholder="yourname@gmail.com or Brevo login"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Password</label>
+                      <label className="block text-[11px] text-slate-400 mb-1 font-semibold">Password / App Password / API Key</label>
                       <input
                         type="password"
                         value={relayPass}
                         onChange={(e) => setRelayPass(e.target.value)}
-                        placeholder="••••••••••••"
-                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none"
+                        placeholder="Google App Password (16 chars) or API key"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
                       />
                     </div>
+                  </div>
+
+                  {relayHost.includes('gmail.com') && (
+                    <div className="p-2.5 rounded-lg bg-blue-950/40 border border-blue-500/30 text-[11px] text-blue-200">
+                      💡 <strong>Gmail Setup:</strong> Don't enter your standard password. Go to <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noreferrer" className="underline font-semibold text-blue-300">myaccount.google.com/apppasswords</a>, generate a 16-character App Password, and paste it above.
+                    </div>
+                  )}
+
+                  {relayHost.includes('brevo.com') && (
+                    <div className="p-2.5 rounded-lg bg-indigo-950/40 border border-indigo-500/30 text-[11px] text-indigo-200">
+                      💡 <strong>Brevo Setup:</strong> Free 300 emails/day. Create a free account on <a href="https://app.brevo.com" target="_blank" rel="noreferrer" className="underline font-semibold text-indigo-300">app.brevo.com</a>, go to SMTP & API to get your login and key.
+                    </div>
+                  )}
+
+                  {/* Test Connection Button */}
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (!relayHost) {
+                          onNotify('Please enter relay host first', 'error');
+                          return;
+                        }
+                        try {
+                          setIsTestingRelay(true);
+                          await api.testRelay({
+                            host: relayHost,
+                            port: parseInt(relayPort, 10),
+                            user: relayUser,
+                            pass: relayPass
+                          });
+                          onNotify('Relay credentials verified and connected successfully!', 'success');
+                        } catch (err) {
+                          onNotify('Relay test failed: ' + err.message, 'error');
+                        } finally {
+                          setIsTestingRelay(false);
+                        }
+                      }}
+                      disabled={isTestingRelay || !relayHost}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 transition-colors disabled:opacity-50"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${isTestingRelay ? 'animate-spin' : ''}`} />
+                      <span>{isTestingRelay ? 'Testing Socket...' : 'Test Relay Connection'}</span>
+                    </button>
+                    <span className="text-[11px] text-slate-400">Verifies authentication on port {relayPort || 587}</span>
                   </div>
                 </div>
               )}

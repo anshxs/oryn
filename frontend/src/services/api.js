@@ -40,6 +40,17 @@ export const api = {
     return res.json();
   },
 
+  async testRelay(payload) {
+    const res = await fetch(`${API_BASE}/relay/test`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.error || 'Relay connection failed');
+    return data;
+  },
+
   // Mailboxes
   async getMailboxes(domain = '') {
     const params = new URLSearchParams();
