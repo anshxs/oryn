@@ -1,8 +1,71 @@
 const API_BASE = '/api';
 
 export const api = {
-  async getEmails(folder = 'inbox', search = '') {
+  // Domains
+  async getDomains() {
+    const res = await fetch(`${API_BASE}/domains`);
+    if (!res.ok) throw new Error('Failed to fetch domains');
+    return res.json();
+  },
+
+  async addDomain(payload) {
+    const res = await fetch(`${API_BASE}/domains`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.error || 'Failed to add domain');
+    return data;
+  },
+
+  async deleteDomain(name) {
+    const res = await fetch(`${API_BASE}/domains/${encodeURIComponent(name)}`, {
+      method: 'DELETE'
+    });
+    return res.json();
+  },
+
+  // Mailboxes
+  async getMailboxes(domain = '') {
     const params = new URLSearchParams();
+    if (domain) params.append('domain', domain);
+    const res = await fetch(`${API_BASE}/mailboxes?${params.toString()}`);
+    if (!res.ok) throw new Error('Failed to fetch mailboxes');
+    return res.json();
+  },
+
+  async createMailbox(payload) {
+    const res = await fetch(`${API_BASE}/mailboxes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.error || 'Failed to create email account');
+    return data;
+  },
+
+  async deleteMailbox(email) {
+    const res = await fetch(`${API_BASE}/mailboxes/${encodeURIComponent(email)}`, {
+      method: 'DELETE'
+    });
+    return res.json();
+  },
+
+  async verifyMailbox(email, password) {
+    const res = await fetch(`${API_BASE}/mailboxes/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    return res.json();
+  },
+
+  // Emails
+  async getEmails(mailbox = '', folder = 'inbox', search = '') {
+    const params = new URLSearchParams();
+    if (mailbox) params.append('mailbox', mailbox);
     if (folder) params.append('folder', folder);
     if (search) params.append('search', search);
 
@@ -55,6 +118,7 @@ export const api = {
     return res.json();
   },
 
+  // DNS & Settings
   async getSettings() {
     const res = await fetch(`${API_BASE}/settings`);
     return res.json();
@@ -88,8 +152,10 @@ export const api = {
     return res.json();
   },
 
-  async getStats() {
-    const res = await fetch(`${API_BASE}/stats`);
+  async getStats(mailbox = '') {
+    const params = new URLSearchParams();
+    if (mailbox) params.append('mailbox', mailbox);
+    const res = await fetch(`${API_BASE}/stats?${params.toString()}`);
     return res.json();
   }
 };
@@ -119,7 +185,6 @@ export function setupWebSocket(onEvent) {
       };
 
       ws.onclose = () => {
-        console.warn('[WS] Stream closed, retrying in 3s...');
         reconnectTimeout = setTimeout(connect, 3000);
       };
 
