@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Force class-based dark mode so theme toggle button controls dark mode (not OS media query) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -7,7 +10,7 @@
     color-scheme: light dark;
   }
 
-  body {
+  html, body {
     font-family: var(--font-sans);
     letter-spacing: -0.015em;
     background-color: #f6f8fb;
@@ -18,7 +21,7 @@
   }
 
   /* shadcn/ui exact dark theme background and foreground */
-  .dark body {
+  html.dark, html.dark body {
     background-color: #09090b;
     color: #fafafa;
   }
