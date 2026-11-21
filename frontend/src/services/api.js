@@ -185,7 +185,7 @@ export const api = {
   }
 };
 
-export function setupWebSocket(onEvent) {
+export function setupWebSocket(onEvent, onStatusChange) {
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const wsUrl = `${protocol}//${window.location.host}/ws`;
 
@@ -194,9 +194,11 @@ export function setupWebSocket(onEvent) {
 
   function connect() {
     try {
+      if (typeof onStatusChange === 'function') onStatusChange('connecting');
       ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
+        if (typeof onStatusChange === 'function') onStatusChange('connected');
         console.log('[WS] Connected to mail server stream');
       };
 
@@ -210,15 +212,18 @@ export function setupWebSocket(onEvent) {
       };
 
       ws.onclose = () => {
+        if (typeof onStatusChange === 'function') onStatusChange('disconnected');
         reconnectTimeout = setTimeout(connect, 3000);
       };
 
       ws.onerror = (err) => {
         console.error('[WS] Error:', err);
+        if (typeof onStatusChange === 'function') onStatusChange('error');
         ws.close();
       };
     } catch (e) {
       console.error('[WS] Connect error:', e);
+      if (typeof onStatusChange === 'function') onStatusChange('error');
       reconnectTimeout = setTimeout(connect, 3000);
     }
   }

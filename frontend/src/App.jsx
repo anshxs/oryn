@@ -4,6 +4,7 @@ import EmailList from './components/EmailList';
 import EmailDetail from './components/EmailDetail';
 import ComposeModal from './components/ComposeModal';
 import DomainSettingsModal from './components/DomainSettingsModal';
+import ShortcutsModal from './components/ShortcutsModal';
 import Toast from './components/Toast';
 import { api, setupWebSocket } from './services/api';
 
@@ -40,12 +41,14 @@ export default function App() {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
+  const [wsStatus, setWsStatus] = useState('connecting');
 
   // Modals & Notifications
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [composeData, setComposeData] = useState({});
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [settingsTab, setSettingsTab] = useState('domains');
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [toast, setToast] = useState({ message: '', type: 'info' });
 
   const showToast = useCallback((message, type = 'info') => {
@@ -101,29 +104,39 @@ export default function App() {
     }
   }, [activeMailbox]);
 
-  // Initial mount
+  // Initial mount & WebSocket listener
   useEffect(() => {
     fetchAccountsData();
 
-    const cleanupWs = setupWebSocket((event) => {
-      if (event.type === 'new_email') {
-        showToast(`New email received: "${event.payload.subject}" from ${event.payload.from}`, 'info');
-        setEmails(prev => [event.payload, ...prev]);
-        fetchStats();
-      } else if (event.type === 'email_sent') {
-        showToast('Email delivered successfully!', 'success');
-        fetchStats();
-      } else if (event.type === 'email_updated') {
-        setEmails(prev => prev.map(e => e.id === event.payload.id ? event.payload : e));
-        fetchStats();
-      } else if (event.type === 'email_deleted') {
-        setEmails(prev => prev.filter(e => e.id !== event.payload.id));
-        setSelectedEmailId(prevId => prevId === event.payload.id ? null : prevId);
-        fetchStats();
-      } else if (event.type === 'mailbox_created' || event.type === 'mailbox_deleted' || event.type === 'domain_added' || event.type === 'domain_deleted') {
-        fetchAccountsData();
+    const cleanupWs = setupWebSocket(
+      (event) => {
+        if (event.type === 'new_email') {
+          showToast(`Inbound message received from ${event.payload.from}`, 'info');
+          setEmails(prev => [event.payload, ...prev]);
+          fetchStats();
+        } else if (event.type === 'email_sent') {
+          showToast('Message dispatched successfully', 'success');
+          fetchStats();
+        } else if (event.type === 'email_updated') {
+          setEmails(prev => prev.map(e => e.id === event.payload.id ? event.payload : e));
+          fetchStats();
+        } else if (event.type === 'email_deleted') {
+          setEmails(prev => prev.filter(e => e.id !== event.payload.id));
+          setSelectedEmailId(prevId => prevId === event.payload.id ? null : prevId);
+          fetchStats();
+        } else if (
+          event.type === 'mailbox_created' || 
+          event.type === 'mailbox_deleted' || 
+          event.type === 'domain_added' || 
+          event.type === 'domain_deleted'
+        ) {
+          fetchAccountsData();
+        }
+      },
+      (status) => {
+        setWsStatus(status);
       }
-    });
+    );
 
     return () => cleanupWs();
   }, [fetchAccountsData, fetchStats, showToast]);
@@ -168,7 +181,7 @@ export default function App() {
         const remaining = emails.filter(e => e.id !== id);
         setSelectedEmailId(remaining.length > 0 ? remaining[0].id : null);
       }
-      showToast(isTrash ? 'Permanently deleted email' : 'Moved email to trash', 'info');
+      showToast(isTrash ? 'Permanently deleted message' : 'Moved to trash', 'info');
       fetchStats(activeMailbox);
     } catch (err) {
       showToast('Failed to delete email', 'error');
@@ -182,10 +195,10 @@ export default function App() {
         mailbox: activeMailbox,
         to: activeMailbox,
         subject: `Welcome to ${activeMailbox}!`,
-        text: `Hello! This is a test incoming email sent directly to your configured mailbox ${activeMailbox}.`
+        text: `Hello! This is an RFC 5321 test incoming email sent directly to your configured mailbox ${activeMailbox}.`
       });
       if (res.success) {
-        showToast(`Simulated incoming mail to ${activeMailbox}`, 'success');
+        showToast(`Simulated inbound message to ${activeMailbox}`, 'success');
         fetchEmails(activeMailbox, 'inbox');
         setCurrentFolder('inbox');
       }
@@ -201,7 +214,7 @@ export default function App() {
       ...payload,
       from: payload.from || activeMailbox
     });
-    showToast('Email delivered successfully!', 'success');
+    showToast('Message sent successfully', 'success');
     if (currentFolder === 'sent') {
       fetchEmails(activeMailbox, 'sent');
     }
@@ -227,17 +240,94 @@ export default function App() {
     setIsComposeOpen(true);
   };
 
+  // Keyboard navigation suite (Superhuman & Linear style)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ignore if user is currently typing inside an input or textarea
+      const targetTag = e.target.tagName?.toLowerCase();
+      if (targetTag === 'input' || targetTag === 'textarea' || targetTag === 'select' || e.target.isContentEditable) {
+        return;
+      }
+
+      // Check if any modal is active
+      if (isComposeOpen || isSettingsOpen || isShortcutsOpen) {
+        return;
+      }
+
+      if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        setComposeData({ from: activeMailbox });
+        setIsComposeOpen(true);
+      } else if (e.key === '/') {
+        e.preventDefault();
+        const searchInput = document.querySelector('input[placeholder*="Search"]');
+        if (searchInput) searchInput.focus();
+      } else if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+        e.preventDefault();
+        setIsShortcutsOpen(prev => !prev);
+      } else if (e.key === 'j' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (emails.length > 0) {
+          const currentIndex = emails.findIndex(em => em.id === selectedEmailId);
+          const nextIndex = currentIndex < emails.length - 1 ? currentIndex + 1 : 0;
+          handleSelectEmail(emails[nextIndex].id);
+        }
+      } else if (e.key === 'k' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (emails.length > 0) {
+          const currentIndex = emails.findIndex(em => em.id === selectedEmailId);
+          const prevIndex = currentIndex > 0 ? currentIndex - 1 : emails.length - 1;
+          handleSelectEmail(emails[prevIndex].id);
+        }
+      } else if (e.key === 's' || e.key === 'S') {
+        if (selectedEmailId) {
+          const current = emails.find(em => em.id === selectedEmailId);
+          if (current) handleToggleStar(selectedEmailId, !current.starred);
+        }
+      } else if (e.key === 'e' || e.key === 'E' || e.key === 'Backspace' || e.key === 'Delete') {
+        if (selectedEmailId) {
+          e.preventDefault();
+          handleDeleteEmail(selectedEmailId);
+        }
+      } else if (e.key === 'r' || e.key === 'R') {
+        if (selectedEmailId) {
+          e.preventDefault();
+          const current = emails.find(em => em.id === selectedEmailId);
+          if (current) handleReply(current);
+        }
+      } else if (e.key === 'f' || e.key === 'F') {
+        if (selectedEmailId) {
+          e.preventDefault();
+          const current = emails.find(em => em.id === selectedEmailId);
+          if (current) handleForward(current);
+        }
+      } else if (e.key === 'Escape') {
+        setSelectedEmailId(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [
+    emails, 
+    selectedEmailId, 
+    isComposeOpen, 
+    isSettingsOpen, 
+    isShortcutsOpen, 
+    activeMailbox
+  ]);
+
   const selectedEmail = emails.find(e => e.id === selectedEmailId);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans antialiased">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#fafafa] dark:bg-[#090a0c] text-zinc-900 dark:text-zinc-100 font-sans antialiased">
       <Toast
         message={toast.message}
         type={toast.type}
         onClose={() => setToast({ message: '', type: 'info' })}
       />
 
-      {/* Left Sidebar */}
+      {/* Left Navigation Sidebar */}
       <Sidebar
         currentFolder={currentFolder}
         onSelectFolder={(folder) => {
@@ -253,6 +343,7 @@ export default function App() {
           setIsSettingsOpen(true);
         }}
         onSimulateInbound={handleSimulateInbound}
+        onOpenShortcuts={() => setIsShortcutsOpen(true)}
         stats={stats}
         settings={settings}
         domains={domains}
@@ -265,9 +356,10 @@ export default function App() {
         isSimulating={isSimulating}
         theme={theme}
         onToggleTheme={toggleTheme}
+        wsStatus={wsStatus}
       />
 
-      {/* Middle Email List */}
+      {/* Middle Email Feed Column */}
       <EmailList
         emails={emails}
         selectedEmailId={selectedEmailId}
@@ -281,7 +373,7 @@ export default function App() {
         onDeleteEmail={handleDeleteEmail}
       />
 
-      {/* Right Email Detail Pane */}
+      {/* Right Reading & Operating Pane */}
       <EmailDetail
         email={selectedEmail}
         onReply={handleReply}
@@ -289,9 +381,10 @@ export default function App() {
         onDelete={handleDeleteEmail}
         onToggleStar={handleToggleStar}
         onMarkUnread={(id) => api.updateEmail(id, { read: false })}
+        onQuickSend={handleSendEmail}
       />
 
-      {/* Compose Email Modal */}
+      {/* Dockable Floating Compose Window */}
       <ComposeModal
         isOpen={isComposeOpen}
         onClose={() => setIsComposeOpen(false)}
@@ -302,7 +395,7 @@ export default function App() {
         activeMailbox={activeMailbox}
       />
 
-      {/* Domain & Email Accounts Control Center */}
+      {/* Control Center & DNS Wizard */}
       <DomainSettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
@@ -314,6 +407,12 @@ export default function App() {
         onSelectMailbox={(mb) => setActiveMailbox(mb)}
         onRefreshData={fetchAccountsData}
         onNotify={showToast}
+      />
+
+      {/* Keyboard Shortcuts Helper */}
+      <ShortcutsModal
+        isOpen={isShortcutsOpen}
+        onClose={() => setIsShortcutsOpen(false)}
       />
     </div>
   );
