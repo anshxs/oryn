@@ -74,26 +74,14 @@ export default function Sidebar({
     error: 'bg-rose-500'
   }[wsStatus] || 'bg-emerald-500';
 
-  // Apply liquidGL Liquid Glass WebGPU/WebGL shader lenses
-  useLiquidGL('#sidebar-compose-lens', {
-    refraction: 0.016,
-    aberration: 0.18,
-    bevelDepth: 0.06,
-    bevelWidth: 0.12,
-    frost: 1.5,
-    shadow: true,
-    specular: true,
-    tilt: true,
-    tiltFactor: 3.5,
-    interaction: 'fluid'
-  }, [theme]);
-
+  // Apply liquidGL Liquid Glass WebGPU/WebGL shader to static status card
   useLiquidGL('#sidebar-status-lens', {
-    refraction: 0.012,
-    bevelDepth: 0.04,
-    bevelWidth: 0.09,
-    frost: 2,
-    shadow: true,
+    refraction: 0.008,
+    aberration: 0.1,
+    bevelDepth: 0.03,
+    bevelWidth: 0.08,
+    frost: 1.5,
+    shadow: false,
     specular: true
   }, [theme]);
 
@@ -195,12 +183,11 @@ export default function Sidebar({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Primary Compose Action with liquidGL glass lens */}
+          {/* Primary Compose Action */}
           <div className="mt-2.5">
             <Button
-              id="sidebar-compose-lens"
               onClick={onOpenCompose}
-              className="glass-pill w-full h-9 justify-between px-3 text-xs bg-zinc-950/90 text-white dark:bg-zinc-100/90 dark:text-zinc-950 hover:bg-zinc-900 dark:hover:bg-white shadow-xs rounded-xl font-semibold transition-all duration-150 hover:shadow-sm"
+              className="w-full h-9 justify-between px-3 text-xs bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-white shadow-xs rounded-xl font-semibold transition-all duration-150 hover:shadow-sm cursor-pointer"
             >
               <span className="flex items-center gap-2">
                 <Plus className="w-3.5 h-3.5 stroke-[2.5]" />

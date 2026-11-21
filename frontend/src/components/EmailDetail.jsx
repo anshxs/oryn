@@ -27,7 +27,6 @@ import { Separator } from './ui/separator';
 import { Card } from './ui/card';
 import { Textarea } from './ui/textarea';
 import { cn } from '../lib/utils';
-import { useLiquidGL } from '../hooks/useLiquidGL';
 
 export default function EmailDetail({
   email,
@@ -43,20 +42,6 @@ export default function EmailDetail({
   const [quickReplyText, setQuickReplyText] = useState('');
   const [isSendingQuick, setIsSendingQuick] = useState(false);
   const [showSecurityDetails, setShowSecurityDetails] = useState(false);
-
-  // Apply liquidGL WebGPU/WebGL optical glass refraction to top action dock
-  useLiquidGL('#reading-dock-lens', {
-    refraction: 0.018,
-    aberration: 0.22,
-    bevelDepth: 0.05,
-    bevelWidth: 0.12,
-    frost: 1.5,
-    shadow: true,
-    specular: true,
-    tilt: true,
-    tiltFactor: 3.5,
-    interaction: 'fluid'
-  }, [email?.id]);
 
   if (!email) {
     return (
@@ -119,8 +104,8 @@ export default function EmailDetail({
 
   return (
     <div key={email.id} className="flex-1 bg-white/70 dark:bg-[#0c0d10]/75 backdrop-blur-md flex flex-col h-full overflow-hidden select-text animate-content-fade-in transition-colors z-10">
-      {/* Floating Action Toolbar with liquidGL Glass Lens */}
-      <div id="reading-dock-lens" className="glass-lens px-4 py-2 border-b border-zinc-200/80 dark:border-zinc-800/80 flex items-center justify-between select-none shrink-0 sticky top-0 z-20">
+      {/* Action Toolbar with Glass Sheen */}
+      <div className="glass-lens px-4 py-2 border-b border-zinc-200/80 dark:border-zinc-800/80 flex items-center justify-between select-none shrink-0 sticky top-0 z-20">
         <div className="flex items-center gap-1.5">
           <Button
             variant="outline"

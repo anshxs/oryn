@@ -13,7 +13,6 @@ import { format } from 'date-fns';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
-import { useLiquidGL } from '../hooks/useLiquidGL';
 
 export default function EmailList({
   emails,
@@ -51,21 +50,10 @@ export default function EmailList({
     return clean || fromStr.split('@')[0] || 'Unknown';
   };
 
-  // Apple liquidGL glass lens for top search and header
-  useLiquidGL('#feed-header-lens', {
-    refraction: 0.015,
-    aberration: 0.16,
-    bevelDepth: 0.04,
-    bevelWidth: 0.09,
-    frost: 2.2,
-    shadow: true,
-    specular: true
-  }, [currentFolder]);
-
   return (
     <div className="w-80 md:w-96 border-r border-zinc-200/80 dark:border-zinc-800/80 bg-white/75 dark:bg-[#08090b]/80 backdrop-blur-md flex flex-col h-full shrink-0 select-none z-10">
-      {/* Search & Header Bar with liquidGL glass lens */}
-      <div id="feed-header-lens" className="glass-lens p-3 border-b border-zinc-200/80 dark:border-zinc-800/80 space-y-2.5 bg-white/70 dark:bg-[#08090b]/70 backdrop-blur-lg sticky top-0 z-20">
+      {/* Search & Header Bar with Clean Glass Sheen */}
+      <div className="glass-lens p-3 border-b border-zinc-200/80 dark:border-zinc-800/80 space-y-2.5 sticky top-0 z-20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h2 className="text-xs font-bold tracking-tight text-zinc-950 dark:text-zinc-50 capitalize">

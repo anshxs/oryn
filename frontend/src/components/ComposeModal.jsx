@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
-import { useLiquidGL } from '../hooks/useLiquidGL';
 
 export default function ComposeModal({
   isOpen,
@@ -39,17 +38,6 @@ export default function ComposeModal({
   const [isDragOver, setIsDragOver] = useState(false);
 
   const fileInputRef = useRef(null);
-
-  // Apply liquidGL glass lens for floating macOS compose window
-  useLiquidGL('#compose-modal-lens', {
-    refraction: 0.016,
-    aberration: 0.2,
-    bevelDepth: 0.05,
-    bevelWidth: 0.1,
-    frost: 2,
-    shadow: true,
-    specular: true
-  }, [isOpen, isMaximized]);
 
   useEffect(() => {
     if (isOpen) {
@@ -176,7 +164,6 @@ export default function ComposeModal({
 
   return (
     <div
-      id="compose-modal-lens"
       className={cn(
         "fixed z-50 glass-lens shadow-[0_24px_56px_rgba(0,0,0,0.28)] flex flex-col overflow-hidden transition-all duration-200 animate-in fade-in-0 zoom-in-95",
         isMaximized

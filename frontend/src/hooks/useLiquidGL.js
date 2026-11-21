@@ -1,13 +1,13 @@
 import { useEffect, useRef } from 'react';
-import liquidGL from 'liquid-gl';
 
 /**
- * useLiquidGL - React hook to apply Apple-style Liquid Glass (WebGPU/WebGL) shaders
- * to any DOM element or selector.
+ * useLiquidGL - Ultra-smooth, non-blocking Liquid Glass manager.
+ * Safely integrates liquidGL WebGPU/WebGL optical shaders without blocking
+ * pointer events, causing frame drops, or interfering with DOM stacking contexts.
  *
- * @param {string|React.RefObject} target - CSS selector or React Ref for the target element.
+ * @param {string|React.RefObject} target - CSS selector or Ref for the target element.
  * @param {Object} options - Configuration overrides for liquidGL.
- * @param {Array} deps - Dependency list to re-capture or update tints (e.g. [theme]).
+ * @param {Array} deps - Dependency list for updates.
  */
 export function useLiquidGL(target, options = {}, deps = []) {
   const instanceRef = useRef(null);
@@ -15,8 +15,16 @@ export function useLiquidGL(target, options = {}, deps = []) {
   useEffect(() => {
     let isCancelled = false;
 
-    // Small delay to ensure DOM layout and theme styles are painted
-    const timer = setTimeout(() => {
+    // Use requestIdleCallback or a gentle timer so UI is fully interactive immediately
+    const scheduleInit = typeof window !== 'undefined' && 'requestIdleCallback' in window
+      ? (fn) => window.requestIdleCallback(fn, { timeout: 300 })
+      : (fn) => setTimeout(fn, 100);
+
+    const cancelInit = typeof window !== 'undefined' && 'cancelIdleCallback' in window
+      ? (id) => window.cancelIdleCallback(id)
+      : (id) => clearTimeout(id);
+
+    const handle = scheduleInit(async () => {
       if (isCancelled) return;
 
       try {
@@ -26,39 +34,38 @@ export function useLiquidGL(target, options = {}, deps = []) {
 
         if (!selector) return;
 
-        // If target was passed as an element ref, generate or use its selector/id
-        let targetQuery = selector;
-        if (typeof selector !== 'string' && selector instanceof HTMLElement) {
-          if (!selector.id) {
-            selector.id = `liquid-lens-${Math.random().toString(36).substring(2, 9)}`;
-          }
-          targetQuery = `#${selector.id}`;
-        }
+        let targetEl = typeof selector === 'string' ? document.querySelector(selector) : selector;
+        if (!targetEl) return;
+
+        // Ensure target and children have proper pointer-events and z-index isolation
+        targetEl.style.position = targetEl.style.position || 'relative';
+
+        // Dynamically load liquid-gl without delaying initial page paint
+        const liquidGLModule = await import('liquid-gl');
+        const liquidGL = liquidGLModule.default || liquidGLModule;
+
+        if (!liquidGL || isCancelled) return;
 
         const isDark = document.documentElement.classList.contains('dark');
         const defaultTint = isDark
-          ? 'rgba(12, 14, 20, 0.42)'
-          : 'rgba(255, 255, 255, 0.22)';
+          ? 'rgba(12, 14, 20, 0.35)'
+          : 'rgba(255, 255, 255, 0.20)';
 
         const config = {
-          target: targetQuery,
+          target: typeof selector === 'string' ? selector : targetEl,
           snapshot: 'body',
           engine: 'auto',
-          resolution: 2.0,
-          refraction: 0.014,
-          aberration: 0.12,
-          bevelDepth: 0.05,
-          bevelWidth: 0.1,
-          frost: 1.5,
-          shadow: true,
+          resolution: 1.5, // 1.5 is crisp and prevents GPU fill-rate stutter
+          refraction: 0.012,
+          aberration: 0.1,
+          bevelDepth: 0.04,
+          bevelWidth: 0.08,
+          frost: 1.0,
+          shadow: false, // Avoid duplicate drop shadows on complex components
           specular: true,
-          tilt: false,
-          tiltFactor: 3.5,
+          tilt: false, // Disabled on interactive controls to prevent transform stacking context bugs
           reveal: 'none',
-          interaction: 'fluid',
-          interactionStrength: 0.4,
-          interactionRadius: 0.3,
-          interactionViscosity: 0.5,
+          interaction: 'none', // Prevents mouse event hijacking on text and buttons
           tint: options.tint || defaultTint,
           content: false,
           ...options
@@ -67,18 +74,21 @@ export function useLiquidGL(target, options = {}, deps = []) {
         const instance = liquidGL(config);
         instanceRef.current = instance;
 
-        // Request background snapshot recapture to account for theme changes
-        if (window.__liquidGLRenderer__?.captureSnapshot) {
-          window.__liquidGLRenderer__.captureSnapshot();
+        // Ensure any canvas created by liquidGL has pointer-events: none
+        if (targetEl) {
+          const canvases = targetEl.querySelectorAll('canvas');
+          canvases.forEach(c => {
+            c.style.pointerEvents = 'none';
+          });
         }
       } catch (err) {
-        console.warn('[liquidGL] Notice: Glass shader fallback to CSS backdrop filter:', err.message);
+        // Graceful silent fallback to CSS glassmorphism
       }
-    }, 60);
+    });
 
     return () => {
       isCancelled = true;
-      clearTimeout(timer);
+      cancelInit(handle);
       if (instanceRef.current) {
         try {
           if (typeof instanceRef.current.destroy === 'function') {
