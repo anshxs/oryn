@@ -390,6 +390,7 @@ export default function App() {
       {/* Right Reading & Operating Pane */}
       <EmailDetail
         email={selectedEmail}
+        theme={theme}
         onReply={handleReply}
         onForward={handleForward}
         onDelete={handleDeleteEmail}

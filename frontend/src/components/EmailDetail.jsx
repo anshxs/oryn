@@ -36,6 +36,7 @@ import { cn } from '../lib/utils';
 
 export default function EmailDetail({
   email,
+  theme = 'light',
   onReply,
   onForward,
   onDelete,
@@ -51,7 +52,7 @@ export default function EmailDetail({
   // Injects dark mode typography into iframe srcDoc so email bodies seamlessly blend with shadcn dark mode
   const getThemedHtml = (rawHtml) => {
     if (!rawHtml) return '';
-    const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+    const isDark = theme === 'dark' || (typeof document !== 'undefined' && document.documentElement.classList.contains('dark'));
     if (!isDark) return rawHtml;
 
     const darkStyles = `
