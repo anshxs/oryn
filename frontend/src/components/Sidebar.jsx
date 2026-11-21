@@ -26,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { cn } from '../lib/utils';
+import { useLiquidGL } from '../hooks/useLiquidGL';
 
 export default function Sidebar({
   currentFolder,
@@ -73,11 +74,34 @@ export default function Sidebar({
     error: 'bg-rose-500'
   }[wsStatus] || 'bg-emerald-500';
 
+  // Apply liquidGL Liquid Glass WebGPU/WebGL shader lenses
+  useLiquidGL('#sidebar-compose-lens', {
+    refraction: 0.016,
+    aberration: 0.18,
+    bevelDepth: 0.06,
+    bevelWidth: 0.12,
+    frost: 1.5,
+    shadow: true,
+    specular: true,
+    tilt: true,
+    tiltFactor: 3.5,
+    interaction: 'fluid'
+  }, [theme]);
+
+  useLiquidGL('#sidebar-status-lens', {
+    refraction: 0.012,
+    bevelDepth: 0.04,
+    bevelWidth: 0.09,
+    frost: 2,
+    shadow: true,
+    specular: true
+  }, [theme]);
+
   return (
-    <aside className="w-64 bg-[#fbfbfc] dark:bg-[#0c0d10] border-r border-zinc-200/90 dark:border-zinc-800 flex flex-col justify-between select-none shrink-0 transition-colors duration-200">
+    <aside className="w-64 bg-[#fbfbfc]/80 dark:bg-[#0b0c0f]/85 backdrop-blur-md border-r border-zinc-200/80 dark:border-zinc-800/80 flex flex-col justify-between select-none shrink-0 transition-colors duration-200 z-10">
       <div className="flex flex-col h-full">
         {/* Brand Header */}
-        <div className="p-3.5 border-b border-zinc-200/90 dark:border-zinc-800 flex items-center justify-between bg-white dark:bg-[#0c0d10]">
+        <div className="p-3.5 border-b border-zinc-200/80 dark:border-zinc-800/80 flex items-center justify-between bg-white/70 dark:bg-[#0c0d10]/70 backdrop-blur-sm">
           <div className="flex items-center gap-2.5">
             <div className="h-7.5 w-7.5 rounded-lg bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 flex items-center justify-center shadow-xs transition-transform duration-150 hover:scale-105">
               <Mail className="w-4 h-4 stroke-[2]" />
@@ -115,10 +139,10 @@ export default function Sidebar({
         </div>
 
         {/* Account Selector Card */}
-        <div className="p-3 border-b border-zinc-200/90 dark:border-zinc-800">
+        <div className="p-3 border-b border-zinc-200/80 dark:border-zinc-800/80">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="w-full flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#131418] border border-zinc-200/90 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-xs transition-all duration-150 text-left group">
+              <button className="glass-pill w-full flex items-center justify-between p-2 rounded-xl text-left group cursor-pointer">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <Avatar className="h-7 w-7 rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-2xs">
                     <AvatarFallback className="text-[11px] bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-950 font-bold">
@@ -171,11 +195,12 @@ export default function Sidebar({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Primary Compose Action with Micro-hover */}
+          {/* Primary Compose Action with liquidGL glass lens */}
           <div className="mt-2.5">
             <Button
+              id="sidebar-compose-lens"
               onClick={onOpenCompose}
-              className="w-full h-8.5 justify-between px-3 text-xs bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-white shadow-xs rounded-xl font-semibold transition-all duration-150 hover:shadow-sm"
+              className="glass-pill w-full h-9 justify-between px-3 text-xs bg-zinc-950/90 text-white dark:bg-zinc-100/90 dark:text-zinc-950 hover:bg-zinc-900 dark:hover:bg-white shadow-xs rounded-xl font-semibold transition-all duration-150 hover:shadow-sm"
             >
               <span className="flex items-center gap-2">
                 <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -203,8 +228,8 @@ export default function Sidebar({
                 className={cn(
                   "w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition-all duration-150 group cursor-pointer",
                   isActive
-                    ? "bg-zinc-200 text-zinc-950 dark:bg-zinc-800 dark:text-white font-bold shadow-2xs"
-                    : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white font-medium"
+                    ? "bg-zinc-200/90 text-zinc-950 dark:bg-zinc-800/90 dark:text-white font-bold shadow-2xs"
+                    : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/60 hover:text-zinc-950 dark:hover:text-white font-medium"
                 )}
               >
                 <div className="flex items-center gap-2.5">
@@ -236,7 +261,7 @@ export default function Sidebar({
           <button
             onClick={onSimulateInbound}
             disabled={isSimulating}
-            className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white transition-all duration-150 group cursor-pointer"
+            className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/60 hover:text-zinc-950 dark:hover:text-white transition-all duration-150 group cursor-pointer"
           >
             <div className="flex items-center gap-2.5">
               <Zap className={cn("w-4 h-4 text-amber-500 transition-transform duration-150 group-hover:scale-110", isSimulating && "animate-spin")} />
@@ -249,7 +274,7 @@ export default function Sidebar({
 
           <button
             onClick={() => onOpenSettings('domains')}
-            className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white transition-all duration-150 group cursor-pointer"
+            className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/60 hover:text-zinc-950 dark:hover:text-white transition-all duration-150 group cursor-pointer"
           >
             <div className="flex items-center gap-2.5">
               <Server className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 transition-transform duration-150 group-hover:scale-110" />
@@ -261,8 +286,8 @@ export default function Sidebar({
           </button>
         </div>
 
-        {/* Server Status Footer */}
-        <div className="p-3 border-t border-zinc-200/90 dark:border-zinc-800 bg-white/70 dark:bg-[#0c0d10] space-y-2">
+        {/* Server Status Footer with liquidGL glass lens */}
+        <div id="sidebar-status-lens" className="glass-lens m-2.5 p-3 rounded-2xl space-y-2">
           {/* Real-time Connection Status */}
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-2">
@@ -279,7 +304,7 @@ export default function Sidebar({
           {/* Quick Settings Action */}
           <button
             onClick={() => onOpenSettings('domains')}
-            className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition-colors cursor-pointer"
+            className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white hover:bg-white/50 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer"
           >
             <span className="flex items-center gap-1.5">
               <Settings className="w-3.5 h-3.5" />

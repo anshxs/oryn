@@ -13,6 +13,7 @@ import { format } from 'date-fns';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
+import { useLiquidGL } from '../hooks/useLiquidGL';
 
 export default function EmailList({
   emails,
@@ -50,10 +51,21 @@ export default function EmailList({
     return clean || fromStr.split('@')[0] || 'Unknown';
   };
 
+  // Apple liquidGL glass lens for top search and header
+  useLiquidGL('#feed-header-lens', {
+    refraction: 0.015,
+    aberration: 0.16,
+    bevelDepth: 0.04,
+    bevelWidth: 0.09,
+    frost: 2.2,
+    shadow: true,
+    specular: true
+  }, [currentFolder]);
+
   return (
-    <div className="w-80 md:w-96 border-r border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-[#08090b] flex flex-col h-full shrink-0 select-none">
-      {/* Search & Header Bar */}
-      <div className="p-3 border-b border-zinc-200/90 dark:border-zinc-800 space-y-2 bg-white dark:bg-[#08090b]">
+    <div className="w-80 md:w-96 border-r border-zinc-200/80 dark:border-zinc-800/80 bg-white/75 dark:bg-[#08090b]/80 backdrop-blur-md flex flex-col h-full shrink-0 select-none z-10">
+      {/* Search & Header Bar with liquidGL glass lens */}
+      <div id="feed-header-lens" className="glass-lens p-3 border-b border-zinc-200/80 dark:border-zinc-800/80 space-y-2.5 bg-white/70 dark:bg-[#08090b]/70 backdrop-blur-lg sticky top-0 z-20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h2 className="text-xs font-bold tracking-tight text-zinc-950 dark:text-zinc-50 capitalize">
@@ -70,7 +82,7 @@ export default function EmailList({
               size="iconSm"
               onClick={onRefresh}
               disabled={loading}
-              className="text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50"
+              className="text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800"
               title="Refresh inbox"
             >
               <RotateCw className={cn("w-3.5 h-3.5 transition-transform duration-300", loading && "animate-spin")} />
@@ -87,7 +99,7 @@ export default function EmailList({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search messages (press / to focus)..."
-            className="pl-8 pr-12 h-8 text-xs bg-zinc-50 dark:bg-[#121316] border-zinc-200 dark:border-zinc-700 rounded-lg placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus-visible:ring-zinc-400 transition-all duration-150"
+            className="pl-8 pr-12 h-8 text-xs bg-zinc-100/70 dark:bg-[#121316]/80 border-zinc-200/90 dark:border-zinc-700/80 rounded-lg placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus-visible:ring-zinc-400 transition-all duration-150"
           />
           {searchQuery ? (
             <button
@@ -105,7 +117,7 @@ export default function EmailList({
       </div>
 
       {/* Email Feed */}
-      <div className="flex-1 overflow-y-auto divide-y divide-zinc-200/80 dark:divide-zinc-800/80">
+      <div className="flex-1 overflow-y-auto divide-y divide-zinc-200/70 dark:divide-zinc-800/70">
         {emails.length === 0 ? (
           <div className="h-64 flex flex-col items-center justify-center text-center p-6 text-zinc-400 animate-content-fade-in">
             <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 flex items-center justify-center mb-2.5 shadow-2xs">

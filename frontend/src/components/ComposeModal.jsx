@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
+import { useLiquidGL } from '../hooks/useLiquidGL';
 
 export default function ComposeModal({
   isOpen,
@@ -38,6 +39,17 @@ export default function ComposeModal({
   const [isDragOver, setIsDragOver] = useState(false);
 
   const fileInputRef = useRef(null);
+
+  // Apply liquidGL glass lens for floating macOS compose window
+  useLiquidGL('#compose-modal-lens', {
+    refraction: 0.016,
+    aberration: 0.2,
+    bevelDepth: 0.05,
+    bevelWidth: 0.1,
+    frost: 2,
+    shadow: true,
+    specular: true
+  }, [isOpen, isMaximized]);
 
   useEffect(() => {
     if (isOpen) {
@@ -164,8 +176,9 @@ export default function ComposeModal({
 
   return (
     <div
+      id="compose-modal-lens"
       className={cn(
-        "fixed z-50 bg-white dark:bg-[#0f1013] border border-zinc-200/90 dark:border-zinc-700 shadow-[0_24px_56px_rgba(0,0,0,0.22)] flex flex-col overflow-hidden transition-all duration-200 animate-in fade-in-0 zoom-in-95",
+        "fixed z-50 glass-lens shadow-[0_24px_56px_rgba(0,0,0,0.28)] flex flex-col overflow-hidden transition-all duration-200 animate-in fade-in-0 zoom-in-95",
         isMaximized
           ? "inset-4 rounded-2xl"
           : "bottom-5 right-6 w-full max-w-xl h-[560px] rounded-2xl"
@@ -176,7 +189,7 @@ export default function ComposeModal({
       onDrop={handleDrop}
     >
       {/* Compose Window Header */}
-      <div className="px-4 py-2.5 border-b border-zinc-200/90 dark:border-zinc-800 bg-[#fafbfc] dark:bg-[#131418] flex items-center justify-between select-none shrink-0">
+      <div className="px-4 py-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-[#131418]/60 backdrop-blur-md flex items-center justify-between select-none shrink-0">
         <span className="text-xs font-bold text-zinc-950 dark:text-white tracking-tight">
           New Message
         </span>

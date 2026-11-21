@@ -26,6 +26,13 @@ export default function App() {
       document.documentElement.classList.remove('dark');
     }
     localStorage.setItem('oryn_theme', theme);
+
+    // Refresh liquidGL WebGPU/WebGL background refraction snapshot
+    setTimeout(() => {
+      if (window.__liquidGLRenderer__?.captureSnapshot) {
+        window.__liquidGLRenderer__.captureSnapshot();
+      }
+    }, 120);
   }, [theme]);
 
   const toggleTheme = () => {
@@ -320,7 +327,14 @@ export default function App() {
   const selectedEmail = emails.find(e => e.id === selectedEmailId);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#fafafa] dark:bg-[#090a0c] text-zinc-900 dark:text-zinc-100 font-sans antialiased">
+    <div className="relative flex h-screen w-screen overflow-hidden bg-[#fafafa]/90 dark:bg-[#07080a]/95 text-zinc-900 dark:text-zinc-100 font-sans antialiased">
+      {/* Ambient Stage Mesh Backdrop for Real WebGPU / WebGL liquidGL Refraction */}
+      <div className="liquid-ambient-backdrop" aria-hidden="true">
+        <div className="liquid-orb liquid-orb-1" />
+        <div className="liquid-orb liquid-orb-2" />
+        <div className="liquid-orb liquid-orb-3" />
+      </div>
+
       <Toast
         message={toast.message}
         type={toast.type}
