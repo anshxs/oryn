@@ -1,194 +1,131 @@
-# Oryn — Autonomous Mail Infrastructure & MTA
-## Project Defense & Technical Presentation Guide
+# Oryn — Full-Stack MVC & REST API Project
+## Simplified Academic Defense & Presentation Guide
 
-> **Interactive Presentation**: Open [`presentation.html`](./presentation.html) in any modern web browser or run `open presentation.html` from the terminal.  
-> **Controls**: `Arrow Keys` or `Space` to navigate, `F` for Fullscreen, `O` for Slide Overview Grid, `T` for Theme Toggle (Dark/Light), `P` to Print / Export to PDF.
-
----
-
-## Executive Summary & Academic Scope
-
-**Oryn** is a production-grade, self-hosted Mail Transfer Agent (MTA) and email client built from scratch. It solves the vendor lock-in, data privacy risks, and pricing escalation associated with centralized email platforms (Google Workspace, Microsoft 365, Resend, SendGrid) by implementing direct RFC 5321 socket networking, automated DNS verification, intelligent outbound delivery with ISP port 25 block fallbacks, and a modern SaaS interface.
-
-### Academic Grading Highlights (Software Architecture & Networking)
-1. **Strict MVC Architecture**:
-   - **Routes (`src/routes/`)**: Pure route declarations and HTTP method binding.
-   - **Controllers (`src/controllers/`)**: Request validation, status code orchestration, response serialization.
-   - **Models (`src/models/`)**: Data schemas and persistence layers (Mailbox, Email, Domain, Settings, Analytics).
-   - **Helpers (`src/helpers/`)**: Dedicated modular abstraction for infrastructure, networking, and security logic outside the standard MVC CRUD scope (RFC 5321 daemon, DNS resolver, SMTP relay client, header analyzers).
-2. **Low-Level Network Protocols**:
-   - Direct TCP socket server implementing RFC 5321 inbound mail handling (`HELO/EHLO`, `MAIL FROM`, `RCPT TO`, `DATA`, `QUIT`).
-   - DNS MX record lookup and prioritization via `dns.promises`.
-   - Dynamic port 25 ISP egress block detection and automated fallback to authenticated SMTP relays.
-3. **Enterprise UI/UX**:
-   - Built on Vite, React 19, Tailwind CSS, Lucide icons, and Radix UI primitives with full light/dark mode support.
+> **Interactive Presentation**: Open [`presentation.html`](./presentation.html) in your browser (`open presentation.html`).  
+> **Controls**: `Arrow Keys` or `Space` to move between slides, `T` for Theme, `O` for Slide Overview, `F` for Fullscreen.
 
 ---
 
-## Slide-by-Slide Defense Script & Speaker Notes
+## What This Project Demonstrates (Assignment Rubric)
 
-### Slide 1: Cover & Project Identity
-* **Headline**: Oryn — Autonomous Mail Infrastructure & MTA
-* **Subtitle**: High-Performance RFC 5321 Mail Engine, MVC Architecture & Modern SaaS Web Client
+This project was built to clearly demonstrate mastery of:
+1. **Express Routing**: Clean endpoint paths (`/api/emails`, `/api/mailboxes`, etc.) using HTTP verbs (`GET`, `POST`, `PATCH`, `DELETE`).
+2. **MVC Architecture**:
+   - **Routes (`src/routes/`)**: Pure route mapping (URL $\to$ Controller method).
+   - **Controllers (`src/controllers/`)**: Request validation, status code assignment (`200`, `201`, `400`, `500`), and response serialization.
+   - **Models (`src/models/`)**: Data structure definitions and database/storage queries.
+3. **Dedicated Helpers (`src/helpers/`)**:
+   - Anything outside standard MVC CRUD (like SMTP background listening, DNS queries, or file operations) is placed into `helpers/` so the teacher can see a clean, uncluttered MVC structure.
+4. **Frontend API Calling**:
+   - A React 19 single-page application using asynchronous `fetch()` and `async/await` to consume backend REST endpoints and dynamically update the DOM.
+
+---
+
+## 6-Slide Defense Script & Speaker Notes
+
+### Slide 1: Title & Project Scope
+* **Slide Title**: Oryn Web Mail System
+* **Subtitle**: Full-Stack MVC & REST API Project
 * **Speaker Script**:  
-  > "Good morning, professors and evaluators. Today we are presenting **Oryn**, an autonomous, self-hosted Mail Transfer Agent (MTA) and comprehensive mail management platform. Our goal was to demystify and implement the fundamental protocols of the Internet's mail system—RFC 5321 SMTP, DNS MX routing, and raw socket stream parsing—while wrapping it in an enterprise-grade Model-View-Controller backend and a modern SaaS web interface."
+  > "Good morning, teacher. Today we are presenting **Oryn**, a full-stack web mail application built with Node.js, Express, and React. The core objective of our project is to demonstrate **MVC Architecture**, clean **RESTful API routing**, and dynamic **frontend-to-backend API communication**."
 
 ---
 
-### Slide 2: The Problem Space & Architecture Need
-* **Headline**: The Problem: The Centralized Email Monopoly
-* **Key Points**:
-  - **Closed Ecosystems**: Providers charge steep per-seat fees ($7-$20/user/month) and retain total control over message data.
-  - **Blackbox Deliverability**: Egress IP reputation and port 25 residential/cloud blocks silently drop mail.
-  - **Architectural Bloat**: Legacy MTAs (Postfix, Exim, Sendmail) rely on obtuse configuration files (`main.cf`) without modern REST APIs or reactive web interfaces.
+### Slide 2: Strict MVC Pattern & Helpers Separation
+* **Slide Title**: Strict MVC Pattern & Helpers Separation
+* **Key Concept**:
+  - **Routes (`src/routes/`)**: Map incoming HTTP requests to controller methods.
+  - **Controllers (`src/controllers/`)**: Extract request data (`req.body`, `req.params`), validate inputs, call models, and send `res.status().json()`.
+  - **Models (`src/models/`)**: Handle the data layer (reading and saving emails, mailboxes, and domains).
+  - **Helpers (`src/helpers/`)**: Specialized utility code (SMTP background daemon, DNS lookup, file storage) is isolated in `helpers/` so that controllers remain lightweight and strictly adhere to MVC.
 * **Speaker Script**:  
-  > "Most organizations rely entirely on Google Workspace, Microsoft 365, or expensive API relays like SendGrid. If you want to run your own mail server, you're usually forced to configure 30-year-old C software like Postfix or Exim via esoteric configuration files with zero modern API access. Oryn provides an autonomous, transparent alternative: an end-to-end MTA with a clean REST API, real-time analytics, and a consumer-grade user experience."
+  > "For our backend architecture, we implemented the Model-View-Controller design pattern. The React UI acts as the View, which communicates through Express Routes. Routes pass control to Controllers for validation and business logic, which then query the Model layer. Notice that we created a separate `helpers/` directory for background services like SMTP and DNS—this ensures our controllers only handle HTTP requests and stay textbook clean."
 
 ---
 
-### Slide 3: High-Level System Topology
-* **Headline**: End-to-End System Architecture
-* **Visual Topology**:
-  - **Inbound Pipeline**: World Mail Server $\to$ Port 25/2525 TCP $\to$ `helpers/smtpServer.js` $\to$ Stream Parser & Security Audit $\to$ MongoDB $\to$ Web Client.
-  - **Outbound Pipeline**: React Web Client $\to$ `controllers/mailController.js` $\to$ `helpers/mailer.js` $\to$ Direct MX Delivery (Port 25) OR Authenticated Relay (Port 587/465).
+### Slide 3: RESTful Routes & HTTP Methods
+* **Slide Title**: RESTful Routes & HTTP Methods
+* **Core Endpoints**:
+  - `GET /api/emails` $\to$ Fetch emails list
+  - `POST /api/emails/send` $\to$ Validate and compose new email
+  - `PATCH /api/emails/:id` $\to$ Update status (mark read, star, archive)
+  - `DELETE /api/emails/:id` $\to$ Delete an email
+  - `GET /api/mailboxes` $\to$ Fetch all mailboxes
+  - `POST /api/mailboxes` $\to$ Create new mailbox
 * **Speaker Script**:  
-  > "Here is our complete system topology. Notice the clear separation of concerns. On the inbound side, remote MTAs deliver mail directly to our custom RFC 5321 socket daemon on port 2525. The raw email stream is parsed, analyzed for SPF/DKIM security headers, and indexed into MongoDB. On the outbound side, users compose emails through our modern web UI, calling REST endpoints that route through our Mail Controller, which dynamically chooses between direct DNS MX socket delivery or an authenticated relay fallback."
+  > "Our Express routing is completely RESTful. In `email.routes.js`, we use standard HTTP methods: `GET` for retrieving emails, `POST` for creating and sending emails, `PATCH` for partial updates like marking an email as read, and `DELETE` for removing an email. Each route delegates directly to its controller method without mixing inline business logic in the route file."
 
 ---
 
-### Slide 4: Strict MVC Architecture Breakdown
-* **Headline**: Clean Separation of Concerns (Academic Grading Alignment)
-* **Directory Structure**:
-  - `src/routes/`: Route definitions (`mailRoutes.js`, `authRoutes.js`, `domainRoutes.js`, `settingsRoutes.js`, `analyticsRoutes.js`).
-  - `src/controllers/`: HTTP business orchestration (`mailController.js`, `authController.js`, `domainController.js`, etc.).
-  - `src/models/`: Database schemas (`Mailbox.js`, `Email.js`, `Domain.js`, `Settings.js`).
-  - `src/helpers/`: Infrastructure & Network Daemons (`smtpServer.js`, `mailer.js`, `dnsHelper.js`, `securityAnalyzer.js`, `publicIp.js`).
+### Slide 4: Controller & Model Deep Dive
+* **Slide Title**: Handling Requests & Managing Data
+* **Code Walkthrough**:
+  - Show `EmailController.sendEmail`:
+    1. Reads `req.body` (`from`, `to`, `subject`, `text`).
+    2. Validates missing fields and returns `400 Bad Request` if invalid.
+    3. Calls `EmailModel.create(...)` to save the record.
+    4. Returns `201 Created` with the JSON payload.
+  - Show `EmailModel`:
+    - Encapsulates database read and insert methods (`findAll`, `create`, `update`).
 * **Speaker Script**:  
-  > "A core requirement of our software engineering coursework was strict architectural discipline. We implemented canonical Model-View-Controller:  
-  > 1. Our Routes only declare URL endpoints and pass requests to controllers.  
-  > 2. Our Controllers parse HTTP bodies, enforce authorization, and return JSON status codes.  
-  > 3. Our Models define Mongoose schemas with indexed fields and validation.  
-  > 4. To prevent controller pollution, all low-level networking, socket parsing, DNS lookup, and cryptographic helpers are strictly isolated in a dedicated `helpers/` package."
+  > "Here you can see the controller and model interaction. In `email.controller.js`, the `sendEmail` method first checks if required fields are present. If anything is missing, it immediately stops and sends a 400 Bad Request error. Once validated, it calls `EmailModel.create()` to persist the email and returns a 201 Created status. This keeps the controller predictable and testable."
 
 ---
 
-### Slide 5: Inbound SMTP Daemon (RFC 5321)
-* **Headline**: Custom Socket Server & Stream Processing
-* **Key Specifications**:
-  - Standard RFC 5321 handshake sequence: `220 Service Ready` $\to$ `EHLO/HELO` $\to$ `MAIL FROM` $\to$ `RCPT TO` $\to$ `DATA` $\to$ `354 Start Mail Input` $\to$ `.` (CRLF.CRLF) $\to$ `250 OK Message accepted`.
-  - Chunked stream buffering with memory boundaries (25MB limit).
-  - Mailparser integration for MIME multipart decoding, HTML stripping, and attachment serialization.
+### Slide 5: Frontend API Calling (React 19)
+* **Slide Title**: Frontend API Calling (React 19)
+* **How React Connects to Backend**:
+  - Uses native `fetch()` with `async/await` inside `useEffect` or button click handlers.
+  - Asynchronous data fetching updates React state (`useState`).
+  - Seamless re-renders: when an email is sent or deleted, state updates instantly without reloading the browser page.
 * **Speaker Script**:  
-  > "Rather than using off-the-shelf mail server packages, our `smtpServer.js` helper runs a Node.js `smtp-server` socket engine. It implements the standard RFC 5321 state machine, validates recipient domains against our MongoDB domain registry, streams MIME chunks safely into memory, and parses multipart text, HTML, and binary attachments in real-time."
+  > "On the client side, our React frontend communicates with our Express server via asynchronous API calls. Using `useEffect` and `fetch()`, the component requests data from `GET /api/emails`, receives the JSON array, and updates the local state. When sending an email, a `POST` request is dispatched with the JSON body, and upon a successful 201 response, the UI instantly refreshes the inbox list."
 
 ---
 
-### Slide 6: Outbound Mail Dispatch & ISP Port 25 Fallback
-* **Headline**: Intelligent Dual-Mode Outbound Routing
-* **The Challenge**: Almost all residential ISPs (Comcast, Jio, Airtel) and cloud hyperscalers (AWS EC2, DigitalOcean, Azure) drop outbound traffic on TCP port 25 to prevent botnet spam.
-* **The Oryn Solution**:
-  - **Mode 1 (Direct MX)**: Resolve target domain MX records $\to$ connect directly to recipient's primary mail exchange on port 25 $\to$ transmit message.
-  - **Mode 2 (Smart Relay Fallback)**: If connection times out or fails (e.g. `ETIMEDOUT` / port 25 blocked), Oryn automatically fails over to an authenticated SMTP relay (Port 587/465 with STARTTLS/TLS).
-* **Speaker Script**:  
-  > "Outbound mail delivery faces a major real-world hurdle: port 25 egress blocks. In our `mailer.js` helper, we built an intelligent dual-mode engine. By default, it queries DNS for the recipient's MX records and attempts direct delivery. If the network interface detects an egress block or connection timeout, Oryn transparently pivots to an authenticated SMTP smart relay over port 587 or 465, guaranteeing 100% deliverability without dropping the message."
-
----
-
-### Slide 7: Email Security & Header Audit
-* **Headline**: Deep Inspection & Authentication Engine
-* **Features**:
-  - **SPF (Sender Policy Framework)**: Analyzes `Received-SPF` headers to verify if the sending server IP was authorized by the domain's TXT record.
-  - **DKIM (DomainKeys Identified Mail)**: Inspects digital cryptographic signatures (`DKIM-Signature`) to guarantee message integrity in transit.
-  - **DMARC**: Checks domain alignment and compliance policy (`reject`, `quarantine`, `none`).
-  - **Spam Score Algorithm**: Inspects keyword density, missing `Message-ID`, uppercase subject ratios, and suspicious relay hops.
-* **Speaker Script**:  
-  > "Modern email security is paramount. When an email enters Oryn's inbound daemon, our `securityAnalyzer.js` inspects the raw RFC 822 headers. It evaluates SPF passes or soft-fails, validates DKIM signature presence, and computes a comprehensive risk score. This data is displayed visually in our frontend security badge drawer, giving users immediate insight into whether an email is authentic or spoofed."
-
----
-
-### Slide 8: Automated DNS & Public IP Resolver
-* **Headline**: Self-Healing Network Configuration
-* **Features**:
-  - Real-time DNS lookups using Node.js `dns.promises`.
-  - Automatic MX, TXT (SPF), and DMARC verification for custom domains.
-  - Multi-provider public IP auto-detection (`icanhazip`, `ifconfig.me`, `ipify`) with fallback caching to generate exact DNS records for server administrators.
-* **Speaker Script**:  
-  > "Configuring email servers is notoriously difficult due to DNS records. In `dnsHelper.js` and `publicIp.js`, Oryn automatically queries multiple public IP providers to find its external WAN address. It then generates the exact DNS records—MX, SPF TXT, and DMARC—needed for any added domain, and provides a real-time 'Verify DNS' button in the dashboard that inspects authoritative nameservers."
-
----
-
-### Slide 9: Modern SaaS Web Client
-* **Headline**: Clean, Neutral Zinc SaaS Experience
-* **Tech Stack**:
-  - React 19 + Vite (Fast HMR, optimized production bundle < 250KB).
-  - Tailwind CSS with neutral zinc color tokens (`#fafafa` / `#ffffff` / `#18181b`).
-  - Radix UI primitives for accessible Dialogs, Dropdowns, and Tooltips.
-  - Full keyboard shortcuts (`J`/`K` navigation, `E` archive, `R` reply, `C` compose).
-  - Dark / Light theme toggle with zero hydration flicker.
-* **Speaker Script**:  
-  > "We completely moved away from stark monochrome and bloated stylesheets. The frontend is built with React 19 and Tailwind CSS, utilizing high-contrast zinc surfaces modeled after world-class developer tools like Vercel and Linear. It includes a rich markdown/HTML composer, domain health monitors, an analytics dashboard, and full light/dark theme toggle support."
-
----
-
-### Slide 10: Multi-Tenancy & Mailbox Authentication
-* **Headline**: Secure Identity & Token Architecture
-* **Security Layer**:
-  - Passwords hashed with `bcryptjs` (salt rounds: 10).
-  - Stateless JSON Web Tokens (JWT) signed with HMAC-SHA256.
-  - Per-mailbox domain sandboxing (users can only access messages destined for their verified organization domains).
-  - Granular API tokens for programmatic email sending via REST.
-* **Speaker Script**:  
-  > "Security is built into every layer. Users authenticate via JWT tokens stored in secure browser storage. Passwords are salted and hashed with bcrypt. Each user owns mailboxes tied to verified domains, ensuring multi-tenant isolation where one department or organization cannot read another's inbound mail stream."
-
----
-
-### Slide 11: Team Contributions & Git Ownership
-* **Team Members & Responsibilities**:
-  - **Arpit Rajput (`@arpitrajput`)**: RFC 5321 Inbound Daemon (`smtpServer.js`), Outbound Mail Dispatcher (`mailer.js`), ISP Port 25 Fallback Logic, and Git Infrastructure.
-  - **Ansh Sharma (`@anshsharma`)**: Full-Stack Architecture, REST Controllers, MVC Route Setup, Database Schema Design, and Security Auditing.
-  - **Mayank Chauhan (`@mayankchauhan`)**: Frontend UI/UX, Component Systems, Radix Dialogs, Theme Architecture, and Domain Verification Panels.
-  - **Swaraj Agarwal (`@swarajagarwal`)**: DNS Resolution Engine (`dnsHelper.js`), Public IP Autodiscovery, Analytics Aggregation, and Deliverability Testing.
-
----
-
-### Slide 12: Live Demonstration & Defense Script
+### Slide 6: Live Demonstration & Academic Summary
+* **Slide Title**: Live Demonstration & Academic Rubric
 * **Live Demo Steps**:
-  1. **Inbound Mail**: Send an email from an external client (e.g. Gmail / Outlook / telnet) to `test@glennesports.app` on port 2525. Observe the live socket log and instant mailbox UI update.
-  2. **Security Inspection**: Open the email drawer to inspect SPF, DKIM, and spam score evaluation.
-  3. **Outbound Dispatch**: Compose an email from the SaaS client to a real email address. Show the controller log validating delivery via relay or direct MX.
-  4. **Domain Health**: Open the Domain Modal to demonstrate dynamic DNS verification across MX, SPF, and DMARC records.
+  1. **Fetch & Display**: Open the web application. Show the Network Tab in DevTools making a `GET` request to `/api/emails` and rendering the list.
+  2. **Create Resource**: Click 'Compose', fill in an email, and hit Send. Observe the `POST /api/emails/send` call returning status `201`.
+  3. **Route & Controller Log**: Look at the terminal console showing the Express route receiving the request and the controller executing.
+  4. **State Update**: Watch the new email appear in the 'Sent' folder immediately.
+* **Speaker Script**:  
+  > "To conclude, our live demo demonstrates the full request-response lifecycle: the user triggers an action in the React View, an async HTTP request is sent across our REST Routes, the Controller processes and validates the data, the Model saves it, and the View dynamically re-renders. This satisfies all course requirements for full-stack MVC and REST API development."
 
 ---
 
-## Anticipated Professor Questions & Bulletproof Answers
+## Quick Q&A Cheat-Sheet for Professor Questions
 
-#### Q1: "Why did you implement a custom SMTP daemon instead of using Postfix or Sendmail?"
-> **Answer**: "Postfix and Sendmail are legacy C-based daemons configured via static text files like `/etc/postfix/main.cf`. They cannot natively stream incoming messages directly into a reactive JavaScript event loop or modern database without complex external pipe scripts (`pipe` or `maildrop`). By implementing an RFC 5321 socket daemon in Node.js, we gain complete programmatic control over the SMTP handshake, real-time security inspection, and immediate persistence into MongoDB."
+#### Q1: "Why did you separate Routes and Controllers instead of putting everything in `server.js`?"
+> **Answer**: "Putting routes and logic in a single file makes code hard to maintain and violates separation of concerns. By putting URL patterns in `src/routes/` and request logic in `src/controllers/`, each file has one clear job. If our route URLs change, our controllers don't need to be rewritten."
 
-#### Q2: "How does your architecture adhere to the MVC design pattern when dealing with raw socket servers?"
-> **Answer**: "The socket daemon is an infrastructure background process, not an HTTP endpoint. To preserve strict MVC purity, we placed all network socket management, SMTP protocol state machines, and DNS lookup utilities inside a dedicated `src/helpers/` directory. The HTTP API endpoints in `src/routes/` strictly invoke `src/controllers/`, which read and write to `src/models/`. The socket helper merely acts as an ingest worker that populates the Model layer."
+#### Q2: "What is the purpose of the `src/helpers/` folder?"
+> **Answer**: "In a standard MVC application, controllers should only handle HTTP requests and responses. Extra functionality like low-level SMTP networking, DNS record lookups, or file storage helpers don't belong in a controller. Putting them in `helpers/` keeps our MVC structure clean and prevents bloated controllers."
 
-#### Q3: "What prevents residential ISPs from blocking your outbound mail, and how do you handle port 25 restrictions?"
-> **Answer**: "Most consumer ISPs and cloud providers block outbound TCP port 25. Our `mailer.js` helper solves this using an intelligent fallback architecture: it first attempts direct MX delivery, but if the socket detects an `ETIMEDOUT` or `ECONNREFUSED` error on port 25, it automatically retries through an authenticated SMTP relay using port 587 (STARTTLS) or port 465 (TLS). This ensures zero dropped messages."
+#### Q3: "How does your frontend handle backend API errors?"
+> **Answer**: "We wrap our frontend `fetch` calls in `try...catch` blocks and inspect `res.ok` and status codes (like 400 or 500). If the backend returns an error message in JSON, our React UI displays an alert toast to the user instead of crashing the page."
 
-#### Q4: "How do you protect the system against spam, open relays, and spoofing?"
-> **Answer**: "First, our SMTP daemon enforces `RCPT TO` domain authorization: it verifies that the recipient domain exists in our database, preventing open-relay abuse. Second, our `securityAnalyzer.js` inspects RFC 822 headers for SPF authorization (`Received-SPF`), DKIM signatures (`DKIM-Signature`), and DMARC alignment, calculating a real-time risk score for every incoming email."
+#### Q4: "Which HTTP status codes do you use in your API?"
+> **Answer**: 
+> - `200 OK`: Successful data retrieval (`GET`) or updates (`PATCH`).
+> - `201 Created`: Successful creation of resources like an email or mailbox (`POST`).
+> - `400 Bad Request`: Validation failure (missing required fields).
+> - `404 Not Found`: Requesting an ID that does not exist.
+> - `500 Internal Server Error`: Unexpected server or filesystem errors.
 
 ---
 
-## How to Present
+## How to Run & Present
 
 ```bash
-# 1. Open the interactive presentation deck
-open presentation.html
-
-# 2. Start the backend server (Terminal 1)
-cd /path/to/oryn
+# Terminal 1: Backend
 npm run dev
 
-# 3. Start the frontend client (Terminal 2)
+# Terminal 2: Frontend
 cd frontend
 npm run dev
-```
 
-*Presentation deck created and maintained for Oryn MTA Project Defense.*
+# Open the Presentation
+open presentation.html
+```

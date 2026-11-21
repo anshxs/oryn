@@ -3,37 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Oryn Mail — Autonomous Mail Infrastructure Presentation</title>
+  <title>Oryn — Full-Stack MVC & REST API Project</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #09090b;
-      --card-bg: rgba(24, 24, 27, 0.7);
+      --card-bg: #18181b;
       --card-border: #27272a;
-      --text-main: #f4f4f5;
+      --text: #fafafa;
       --text-muted: #a1a1aa;
-      --accent: #6366f1;
-      --accent-glow: rgba(99, 102, 241, 0.2);
-      --emerald: #10b981;
-      --amber: #f59e0b;
-      --rose: #f43f5e;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59, 130, 246, 0.15);
+      --success: #10b981;
+      --purple: #8b5cf6;
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
 
     [data-theme="light"] {
-      --bg: #f8fafc;
-      --card-bg: rgba(255, 255, 255, 0.9);
-      --card-border: #e2e8f0;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --accent: #4f46e5;
-      --accent-glow: rgba(79, 70, 229, 0.15);
-      --emerald: #059669;
-      --amber: #d97706;
-      --rose: #e11d48;
+      --bg: #f4f4f5;
+      --card-bg: #ffffff;
+      --card-border: #e4e4e7;
+      --text: #09090b;
+      --text-muted: #71717a;
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.1);
+      --success: #059669;
+      --purple: #7c3aed;
     }
 
     * {
@@ -43,1087 +41,818 @@
     }
 
     body {
-      font-family: var(--font-sans);
       background-color: var(--bg);
-      color: var(--text-main);
+      color: var(--text);
+      font-family: var(--font-sans);
       overflow: hidden;
       height: 100vh;
       width: 100vw;
       user-select: none;
-      transition: background-color 0.3s ease, color 0.3s ease;
+      transition: background 0.2s, color 0.2s;
     }
 
-    /* Top Progress Bar */
-    .progress-bar-container {
+    /* Top Nav Bar */
+    header {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 4px;
-      background: rgba(128, 128, 128, 0.2);
+      right: 0;
+      height: 54px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      background: var(--card-bg);
       z-index: 100;
     }
 
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent), #a855f7);
-      transition: width 0.3s ease;
-    }
-
-    /* Header Nav */
-    header {
-      position: fixed;
-      top: 12px;
-      left: 24px;
-      right: 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 50;
-      pointer-events: none;
-    }
-
-    .header-left, .header-right {
-      pointer-events: auto;
+    .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.02em;
     }
 
-    .badge-pill {
+    .brand-badge {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent);
       font-size: 11px;
       font-weight: 600;
-      padding: 4px 10px;
+      padding: 2px 8px;
       border-radius: 9999px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-      backdrop-filter: blur(8px);
     }
 
-    .btn-icon {
-      background: var(--card-bg);
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-nav {
+      background: transparent;
       border: 1px solid var(--card-border);
-      color: var(--text-main);
-      border-radius: 8px;
-      padding: 6px 10px;
-      cursor: pointer;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 6px;
       font-size: 12px;
       font-weight: 500;
+      cursor: pointer;
       display: flex;
       align-items: center;
       gap: 6px;
-      backdrop-filter: blur(8px);
-      transition: all 0.2s ease;
+      transition: all 0.15s;
     }
 
-    .btn-icon:hover {
-      border-color: var(--accent);
-      transform: translateY(-1px);
+    .btn-nav:hover {
+      color: var(--text);
+      border-color: var(--text-muted);
     }
 
-    /* Slides Deck Container */
-    .deck {
-      width: 100vw;
-      height: 100vh;
-      position: relative;
+    /* Deck Layout */
+    .deck-container {
+      position: absolute;
+      top: 54px;
+      bottom: 50px;
+      left: 0;
+      right: 0;
+      overflow: hidden;
     }
 
     .slide {
       position: absolute;
       inset: 0;
-      display: flex;
+      padding: 40px 60px;
+      display: none;
       flex-direction: column;
       justify-content: center;
-      align-items: center;
-      padding: 60px 80px;
       opacity: 0;
-      visibility: hidden;
-      transform: scale(0.96) translateY(20px);
-      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-                  transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-                  visibility 0.4s;
+      transform: translateY(10px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .slide.active {
-      opacity: 1;
-      visibility: visible;
-      transform: scale(1) translateY(0);
-    }
-
-    .slide-content {
-      width: 100%;
-      max-width: 1200px;
       display: flex;
-      flex-direction: column;
-      gap: 24px;
+      opacity: 1;
+      transform: translateY(0);
     }
 
     /* Typography */
-    .slide-tag {
-      font-family: var(--font-mono);
-      font-size: 13px;
+    .slide-badge {
+      font-size: 12px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       color: var(--accent);
-      display: flex;
+      margin-bottom: 8px;
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
-    .slide-tag::before {
-      content: '';
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-    }
-
-    h1.title-main {
-      font-size: 54px;
+    h1.slide-title {
+      font-size: 34px;
       font-weight: 800;
       letter-spacing: -0.03em;
-      line-height: 1.1;
-      background: linear-gradient(135deg, var(--text-main) 60%, var(--text-muted));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    h2.slide-heading {
-      font-size: 38px;
-      font-weight: 700;
-      letter-spacing: -0.025em;
       line-height: 1.2;
+      margin-bottom: 8px;
     }
 
     p.slide-sub {
-      font-size: 18px;
+      font-size: 16px;
       color: var(--text-muted);
-      line-height: 1.6;
-      max-width: 850px;
+      margin-bottom: 28px;
+      line-height: 1.5;
     }
 
-    /* Cards & Grids */
+    /* Layout Cards & Grids */
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
-      width: 100%;
     }
 
     .grid-3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      width: 100%;
+      gap: 16px;
     }
 
     .grid-4 {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 16px;
-      width: 100%;
     }
 
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 24px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-      transition: border-color 0.2s, transform 0.2s;
+      border-radius: 10px;
+      padding: 20px;
+      transition: border-color 0.2s;
     }
 
     .card:hover {
-      border-color: rgba(99, 102, 241, 0.4);
-      transform: translateY(-2px);
+      border-color: var(--accent);
     }
 
-    .card h3 {
-      font-size: 17px;
-      font-weight: 600;
-      margin-bottom: 8px;
+    .card-header {
       display: flex;
       align-items: center;
       gap: 10px;
+      margin-bottom: 12px;
     }
 
-    .card p {
-      font-size: 13.5px;
+    .card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .card-desc {
+      font-size: 13px;
       color: var(--text-muted);
-      line-height: 1.55;
-    }
-
-    /* Code & Terminal Snippets */
-    .code-block {
-      background: #000;
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 16px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: #38bdf8;
-      overflow-x: auto;
       line-height: 1.6;
     }
 
-    .code-tag {
-      background: rgba(99, 102, 241, 0.15);
+    /* Code Block */
+    pre.code-box {
+      background: #000000;
+      color: #e4e4e7;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.5;
+      overflow-x: auto;
+    }
+
+    .code-comment { color: #71717a; }
+    .code-fn { color: #60a5fa; }
+    .code-str { color: #34d399; }
+    .code-kw { color: #f472b6; }
+
+    /* Flowchart representation */
+    .flowchart {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .flow-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      flex: 1;
+    }
+
+    .flow-box {
+      background: var(--bg);
+      border: 2px solid var(--accent);
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 6px;
+      width: 140px;
+    }
+
+    .flow-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .flow-arrow {
       color: var(--accent);
+      font-size: 20px;
+      font-weight: 800;
+      padding: 0 10px;
+    }
+
+    /* Table */
+    table.api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    table.api-table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--card-border);
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    table.api-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    table.api-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge-method {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge-get { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .badge-post { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+    .badge-patch { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .badge-delete { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+    /* Bottom Footer Bar */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--card-border);
+      background: var(--card-bg);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .key-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .key-badge {
+      background: var(--bg);
+      border: 1px solid var(--card-border);
       padding: 2px 6px;
       border-radius: 4px;
       font-family: var(--font-mono);
       font-size: 11px;
     }
 
-    /* Team Members Card */
-    .member-card {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: 18px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-    }
-
-    .member-name {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .member-role {
-      font-size: 12px;
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .member-email {
-      font-size: 11px;
-      font-family: var(--font-mono);
-      color: var(--text-muted);
-    }
-
-    /* Architecture Flow Box */
-    .flow-diagram {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 24px;
-    }
-
-    .flow-node {
-      flex: 1;
-      padding: 16px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--card-border);
-      text-align: center;
-    }
-
-    .flow-node h4 {
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .flow-node p {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-    }
-
-    .flow-arrow {
-      color: var(--text-muted);
-      font-weight: bold;
-      font-size: 18px;
-    }
-
-    /* Bottom Control Bar */
-    .controls-bar {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 8px 18px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 9999px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      z-index: 50;
-    }
-
-    .nav-btn {
-      background: none;
-      border: none;
-      color: var(--text-main);
-      cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      transition: background 0.2s;
-    }
-
-    .nav-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .slide-indicator {
-      font-size: 12px;
-      font-family: var(--font-mono);
-      color: var(--text-muted);
-      min-width: 65px;
-      text-align: center;
-    }
-
-    /* Overview Modal Grid */
-    .overview-modal {
+    /* Overview modal */
+    .overview-overlay {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(16px);
       z-index: 200;
       display: none;
-      padding: 60px;
+      padding: 60px 40px;
       overflow-y: auto;
     }
 
-    .overview-modal.open {
+    .overview-overlay.active {
       display: block;
     }
 
     .overview-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 20px;
-      max-width: 1300px;
+      max-width: 1000px;
       margin: 0 auto;
     }
 
-    .overview-thumb {
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
+    .overview-card {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 10px;
       padding: 16px;
-      background: #111;
       cursor: pointer;
       transition: all 0.2s;
     }
 
-    .overview-thumb:hover, .overview-thumb.current {
+    .overview-card:hover {
       border-color: var(--accent);
-      transform: scale(1.03);
-    }
-
-    .overview-thumb h5 {
-      font-size: 12px;
-      color: var(--text-main);
-      margin-top: 8px;
-    }
-
-    .overview-thumb span {
-      font-size: 10px;
-      font-family: var(--font-mono);
-      color: var(--accent);
-    }
-
-    /* Print / PDF Export Styling */
-    @media print {
-      body {
-        overflow: visible;
-        height: auto;
-        background: #fff !important;
-        color: #000 !important;
-      }
-      .progress-bar-container, header, .controls-bar, .overview-modal {
-        display: none !important;
-      }
-      .slide {
-        position: relative !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        transform: none !important;
-        page-break-after: always;
-        height: 100vh;
-        width: 100vw;
-        padding: 40px !important;
-      }
-      .card, .flow-diagram {
-        border-color: #ccc !important;
-        background: #f9f9f9 !important;
-        box-shadow: none !important;
-      }
-      .code-block {
-        background: #eee !important;
-        color: #111 !important;
-        border-color: #ddd !important;
-      }
+      transform: translateY(-2px);
     }
   </style>
 </head>
-<body data-theme="dark">
+<body>
 
-  <!-- Progress Bar -->
-  <div class="progress-bar-container">
-    <div class="progress-bar" id="progressBar"></div>
-  </div>
-
-  <!-- Top Bar Navigation -->
+  <!-- Top Navigation -->
   <header>
-    <div class="header-left">
-      <span class="badge-pill">ORYN MAIL • CS GROUP PROJECT</span>
-      <span class="badge-pill" style="color: var(--emerald);">RFC 5321 READY</span>
+    <div class="brand">
+      <span>✉️ Oryn Web Mail</span>
+      <span class="brand-badge">MVC & REST API Project</span>
     </div>
-    <div class="header-right">
-      <button class="btn-icon" onclick="toggleOverview()" title="View all slides (Press 'O')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
-        Overview
-      </button>
-      <button class="btn-icon" onclick="toggleTheme()" title="Toggle Light/Dark Theme">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-      </button>
-      <button class="btn-icon" onclick="window.print()" title="Print / Export PDF">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
-        PDF
-      </button>
+    <div class="nav-actions">
+      <button class="btn-nav" onclick="toggleTheme()" title="Toggle Theme (T)">☀️/🌙 Theme</button>
+      <button class="btn-nav" onclick="toggleOverview()" title="Slide Grid (O)">⊞ All Slides</button>
+      <button class="btn-nav" onclick="prevSlide()">← Prev</button>
+      <button class="btn-nav" onclick="nextSlide()" style="background:var(--accent); color:#fff; border-color:var(--accent);">Next →</button>
     </div>
   </header>
 
-  <!-- Slide Deck -->
-  <main class="deck" id="deck">
+  <!-- Slide Deck Container -->
+  <div class="deck-container">
 
-    <!-- SLIDE 1: Title -->
-    <section class="slide active">
-      <div class="slide-content" style="text-align: center; align-items: center; gap: 20px;">
-        <span class="slide-tag">Systems & Computer Networking Project</span>
-        <h1 class="title-main">Oryn Mail Infrastructure</h1>
-        <p class="slide-sub" style="text-align: center;">
-          Autonomous Custom Mail Transfer Agent (MTA), RFC 5321 SMTP Daemon, MVC Architecture, and Modern SaaS Email Suite.
-        </p>
+    <!-- SLIDE 1: TITLE -->
+    <div class="slide active" id="slide-1">
+      <div class="slide-badge">Academic Project Presentation</div>
+      <h1 class="slide-title" style="font-size: 46px; margin-bottom: 14px;">Oryn Web Mail System</h1>
+      <p class="slide-sub" style="font-size: 19px; max-width: 760px;">
+        A full-stack web application built to demonstrate <strong>MVC Architecture</strong>, <strong>RESTful Express Routing</strong>, and dynamic <strong>Frontend API Integration</strong>.
+      </p>
 
-        <div class="grid-4" style="margin-top: 30px; text-align: left;">
-          <div class="member-card">
-            <span class="member-name">Arpit Rajput</span>
-            <span class="member-role">Security & Engine Decoupling</span>
-            <span class="member-email">imironman7599@gmail.com</span>
+      <div class="grid-4" style="margin-top: 10px;">
+        <div class="card">
+          <div class="card-icon">🛣️</div>
+          <div class="card-title">Routes</div>
+          <div class="card-desc">Clean Express endpoint mapping with proper HTTP verbs (GET, POST, PATCH, DELETE).</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚙️</div>
+          <div class="card-title">Controllers</div>
+          <div class="card-desc">Request processing, parameter validation, and JSON status code responses.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📦</div>
+          <div class="card-title">Models</div>
+          <div class="card-desc">Data schema definitions and persistence operations for emails, mailboxes & domains.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌐</div>
+          <div class="card-title">API Calling</div>
+          <div class="card-desc">React 19 frontend utilizing async/await fetch calls to render real-time state.</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; font-size: 13px; color: var(--text-muted); display: flex; gap: 24px;">
+        <span><strong>Team:</strong> Arpit Rajput, Ansh Sharma, Mayank Chauhan, Swaraj Agarwal</span>
+        <span>•</span>
+        <span><strong>Stack:</strong> Node.js, Express, React, Vite, Tailwind CSS</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: THE MVC PATTERN -->
+    <div class="slide" id="slide-2">
+      <div class="slide-badge">Core Architecture</div>
+      <h1 class="slide-title">Strict MVC Pattern & Helpers Separation</h1>
+      <p class="slide-sub">
+        Separating business concerns so every component has a single, well-defined responsibility.
+      </p>
+
+      <!-- Visual Flowchart -->
+      <div class="flowchart">
+        <div class="flow-step">
+          <div class="flow-box">React UI</div>
+          <div class="flow-sub">View Layer (Fetch)</div>
+        </div>
+        <div class="flow-arrow">⇄</div>
+        <div class="flow-step">
+          <div class="flow-box">Routes</div>
+          <div class="flow-sub">URL & Method Match</div>
+        </div>
+        <div class="flow-arrow">⇄</div>
+        <div class="flow-step">
+          <div class="flow-box">Controller</div>
+          <div class="flow-sub">Logic & Status Codes</div>
+        </div>
+        <div class="flow-arrow">⇄</div>
+        <div class="flow-step">
+          <div class="flow-box">Model</div>
+          <div class="flow-sub">Data & Storage</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">📁</span>
+            <span class="card-title">Standard MVC Folders</span>
           </div>
-          <div class="member-card">
-            <span class="member-name">Ansh Sharma</span>
-            <span class="member-role">Core Architecture & SMTP</span>
-            <span class="member-email">anshsxa@gmail.com</span>
+          <div class="card-desc">
+            <p>• <code>src/routes/</code>: Defines URL paths and connects them to controller functions.</p>
+            <p style="margin-top:6px;">• <code>src/controllers/</code>: Reads <code>req.body</code> & <code>req.params</code>, handles errors, sends <code>res.json()</code>.</p>
+            <p style="margin-top:6px;">• <code>src/models/</code>: Performs CRUD queries and encapsulates data records.</p>
           </div>
-          <div class="member-card">
-            <span class="member-name">Mayank Chauhan</span>
-            <span class="member-role">Models & Data Persistence</span>
-            <span class="member-email">mchauhantha@gmail.com</span>
+        </div>
+        <div class="card" style="border-color: var(--accent);">
+          <div class="card-header">
+            <span class="card-icon" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6;">🧰</span>
+            <span class="card-title">Dedicated Helpers Folder (<code>src/helpers/</code>)</span>
           </div>
-          <div class="member-card">
-            <span class="member-name">Swaraj Agarwal</span>
-            <span class="member-role">Controllers & Outbound Relay</span>
-            <span class="member-email">agarwalswaraj123@gmail.com</span>
+          <div class="card-desc">
+            <p>• Specialized utilities (SMTP networking, DNS lookup, file storage) are kept out of controllers.</p>
+            <p style="margin-top:6px;">• <strong>Why?</strong> Prevents controller bloating and keeps the core assignment MVC code 100% textbook clean.</p>
           </div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- SLIDE 2: Problem & Motivation -->
-    <section class="slide">
-      <div class="slide-content">
-        <span class="slide-tag">Problem Statement & Objectives</span>
-        <h2 class="slide-heading">Why Engineer an Autonomous Mail Server?</h2>
-        <p class="slide-sub">
-          Modern email is dominated by black-box proprietary providers (Google Workspace, Microsoft 365). Building an in-house MTA unpacks core computer networking fundamentals:
-        </p>
-        <div class="grid-3">
-          <div class="card">
-            <h3>📡 Low-Level Protocols</h3>
-            <p>Direct implementation of RFC 5321 (Simple Mail Transfer Protocol) and RFC 822/2045 MIME multi-part stream handling without third-party wrappers.</p>
-          </div>
-          <div class="card">
-            <h3>🛡️ Email Authentication</h3>
-            <p>Demystifying sender verification via cryptographic headers: SPF (Sender Policy Framework), DKIM digital signatures, and DMARC enforcement policies.</p>
-          </div>
-          <div class="card">
-            <h3>🌐 Network Deliverability</h3>
-            <p>Overcoming real-world ISP port 25 residential blocking through dual-mode intelligent routing: Direct MX resolution with authenticated SMTP Relay failover.</p>
-          </div>
+    <!-- SLIDE 3: ROUTES & ENDPOINTS -->
+    <div class="slide" id="slide-3">
+      <div class="slide-badge">Backend Implementation</div>
+      <h1 class="slide-title">RESTful Routes & HTTP Methods</h1>
+      <p class="slide-sub">
+        Standardized API endpoints matching REST conventions for resources.
+      </p>
+
+      <div class="grid-2">
+        <div>
+          <table class="api-table">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Action & Controller Handler</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="badge-method badge-get">GET</span></td>
+                <td><code>/api/emails</code></td>
+                <td><code>EmailController.getEmails</code></td>
+              </tr>
+              <tr>
+                <td><span class="badge-method badge-post">POST</span></td>
+                <td><code>/api/emails/send</code></td>
+                <td><code>EmailController.sendEmail</code></td>
+              </tr>
+              <tr>
+                <td><span class="badge-method badge-patch">PATCH</span></td>
+                <td><code>/api/emails/:id</code></td>
+                <td><code>EmailController.updateEmail</code></td>
+              </tr>
+              <tr>
+                <td><span class="badge-method badge-delete">DELETE</span></td>
+                <td><code>/api/emails/:id</code></td>
+                <td><code>EmailController.deleteEmail</code></td>
+              </tr>
+              <tr>
+                <td><span class="badge-method badge-get">GET</span></td>
+                <td><code>/api/mailboxes</code></td>
+                <td><code>MailboxController.getMailboxes</code></td>
+              </tr>
+              <tr>
+                <td><span class="badge-method badge-post">POST</span></td>
+                <td><code>/api/mailboxes</code></td>
+                <td><code>MailboxController.createMailbox</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <pre class="code-box"><span class="code-comment">// backend/src/routes/email.routes.js</span>
+<span class="code-kw">import</span> { Router } <span class="code-kw">from</span> <span class="code-str">'express'</span>;
+<span class="code-kw">import</span> { EmailController } <span class="code-kw">from</span> <span class="code-str">'../controllers/email.controller.js'</span>;
+
+<span class="code-kw">const</span> router = Router();
+
+<span class="code-comment">// 1. Route definitions map HTTP verbs to controller methods</span>
+router.<span class="code-fn">get</span>(<span class="code-str">'/'</span>, EmailController.getEmails);
+router.<span class="code-fn">get</span>(<span class="code-str">'/:id'</span>, EmailController.getEmailById);
+router.<span class="code-fn">post</span>(<span class="code-str">'/send'</span>, EmailController.sendEmail);
+router.<span class="code-fn">patch</span>(<span class="code-str">'/:id'</span>, EmailController.updateEmail);
+router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>, EmailController.deleteEmail);
+
+<span class="code-kw">export default</span> router;</pre>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- SLIDE 3: System Architecture -->
-    <section class="slide">
-      <div class="slide-content">
-        <span class="slide-tag">Architectural Blueprint</span>
-        <h2 class="slide-heading">End-to-End System Topology</h2>
-        <p class="slide-sub">A decoupled distributed stack separating internet-facing mail daemons, REST controllers, and real-time frontend clients.</p>
-        
-        <div class="flow-diagram">
-          <div class="flow-node">
-            <h4>🌐 Internet Senders</h4>
-            <p>Gmail / Outlook / Fastmail</p>
-          </div>
-          <div class="flow-arrow">➔</div>
-          <div class="flow-node" style="border-color: var(--accent);">
-            <h4>📬 Inbound SMTP</h4>
-            <p>Port 2525 • MIME Parser</p>
-          </div>
-          <div class="flow-arrow">➔</div>
-          <div class="flow-node">
-            <h4>🗄️ Model Layer</h4>
-            <p>Atomic JSON Storage</p>
-          </div>
-          <div class="flow-arrow">➔</div>
-          <div class="flow-node" style="border-color: var(--emerald);">
-            <h4>⚡ WebSockets</h4>
-            <p>Real-Time Broadcast</p>
-          </div>
-          <div class="flow-arrow">➔</div>
-          <div class="flow-node">
-            <h4>💻 SaaS Web Client</h4>
-            <p>React 19 + shadcn/ui</p>
-          </div>
-        </div>
+    <!-- SLIDE 4: CONTROLLERS & MODELS -->
+    <div class="slide" id="slide-4">
+      <div class="slide-badge">Controller & Model Deep Dive</div>
+      <h1 class="slide-title">Handling Requests & Managing Data</h1>
+      <p class="slide-sub">
+        The controller orchestrates validation and response, while the model manages persistence.
+      </p>
 
-        <div class="grid-2">
-          <div class="card">
-            <h3>📥 Inbound Pipeline</h3>
-            <p>Incoming TCP socket stream on port 2525 -> RFC 5321 handshake -> `mailparser` stream extraction -> SPF/DKIM verification -> Atomic JSON persistence -> Instant WS push notification.</p>
+      <div class="grid-2">
+        <div>
+          <div style="font-size: 13px; font-weight:600; margin-bottom: 8px; color: var(--accent);">
+            Controller Logic (<code>email.controller.js</code>)
           </div>
-          <div class="card">
-            <h3>📤 Outbound Pipeline</h3>
-            <p>User compose API dispatch -> Recipient domain DNS MX resolution -> Direct Port 25 delivery attempt -> Auto-detection of ISP block -> Fallback to Authenticated Relay (Port 587 TLS).</p>
-          </div>
-        </div>
-      </div>
-    </section>
+          <pre class="code-box"><span class="code-kw">static async</span> <span class="code-fn">sendEmail</span>(req, res) {
+  <span class="code-kw">try</span> {
+    <span class="code-kw">const</span> { from, to, subject, text, html } = req.body;
 
-    <!-- SLIDE 4: MVC Backend Structure -->
-    <section class="slide">
-      <div class="slide-content">
-        <span class="slide-tag">Code Organization</span>
-        <h2 class="slide-heading">Standard MVC Architecture in Express</h2>
-        <p class="slide-sub">Engineered specifically to satisfy academic evaluation criteria: strict separation of Routes, Controllers, Models, and Engine Helpers.</p>
+    <span class="code-comment">// 1. Input Validation</span>
+    <span class="code-kw">if</span> (!from || !to || !subject) {
+      <span class="code-kw">return</span> res.status(400).json({ error: <span class="code-str">'Missing required fields'</span> });
+    }
 
-        <div class="grid-4">
-          <div class="card">
-            <h3>🚏 routes/</h3>
-            <p>Clean declarative endpoint mappings:</p>
-            <p class="code-tag">email.routes.js</p><br/>
-            <p class="code-tag">domain.routes.js</p><br/>
-            <p class="code-tag">mailbox.routes.js</p><br/>
-            <p class="code-tag">dns.routes.js</p>
-          </div>
-          <div class="card">
-            <h3>🎮 controllers/</h3>
-            <p>Request parsing, HTTP validation & responses:</p>
-            <p class="code-tag">email.controller.js</p><br/>
-            <p class="code-tag">domain.controller.js</p><br/>
-            <p class="code-tag">mailbox.controller.js</p><br/>
-            <p class="code-tag">stats.controller.js</p>
-          </div>
-          <div class="card">
-            <h3>📦 models/</h3>
-            <p>Business schemas and atomic queries:</p>
-            <p class="code-tag">email.model.js</p><br/>
-            <p class="code-tag">domain.model.js</p><br/>
-            <p class="code-tag">mailbox.model.js</p><br/>
-            <p class="code-tag">settings.model.js</p>
-          </div>
-          <div class="card" style="border-color: var(--accent);">
-            <h3>⚙️ helpers/</h3>
-            <p>Decoupled protocol engines & utilities:</p>
-            <p class="code-tag">smtpEngine.js</p><br/>
-            <p class="code-tag">mailerEngine.js</p><br/>
-            <p class="code-tag">securityEngine.js</p><br/>
-            <p class="code-tag">dnsEngine.js</p>
-          </div>
-        </div>
-      </div>
-    </section>
+    <span class="code-comment">// 2. Call Model to create record</span>
+    <span class="code-kw">const</span> newEmail = <span class="code-kw">await</span> EmailModel.create({
+      from, to, subject, text, folder: <span class="code-str">'sent'</span>
+    });
 
-    <!-- SLIDE 5: Inbound SMTP Daemon -->
-    <section class="slide">
-      <div class="slide-content">
-        <span class="slide-tag">Networking Core</span>
-        <h2 class="slide-heading">RFC 5321 Inbound SMTP Server</h2>
-        <p class="slide-sub">A low-level server listening on port 2525, implementing the standard ESMTP handshake commands (HELO, EHLO, MAIL FROM, RCPT TO, DATA).</p>
-        
-        <div class="grid-2">
-          <div class="code-block">
-// helpers/smtpEngine.js
-const server = new SMTPServer({
-  name: settings.serverHost,
-  banner: 'Oryn Mail Server ESMTP Ready',
-  size: 25 * 1024 * 1024, // 25 MB max
-
-  onRcptTo(address, session, callback) {
-    const domain = address.address.split('@')[1];
-    const isAllowed = DomainModel.isDomainAllowed(domain);
-    console.log(`[SMTP] Mail to: ${address.address} (Allowed: ${isAllowed})`);
-    return callback();
-  },
-
-  async onData(stream, session, callback) {
-    const parsed = await simpleParser(stream);
-    const security = analyzeSecurityHeaders(parsed.headers);
-    const saved = EmailModel.create({ ...parsed, security });
-    onNewEmail(saved); // Real-time WebSocket push
-    return callback();
+    <span class="code-comment">// 3. Return HTTP 201 Created</span>
+    res.status(201).json({ success: <span class="code-kw">true</span>, email: newEmail });
+  } <span class="code-kw">catch</span> (err) {
+    res.status(500).json({ error: err.message });
   }
-});
-          </div>
-          <div class="card" style="display: flex; flex-direction: column; justify-content: space-around;">
-            <div>
-              <h3>📨 ESMTP Session Negotiation</h3>
-              <p>Supports live socket negotiation with remote mail agents, recipient domain whitelisting, and rate-limiting safeguards.</p>
-            </div>
-            <div>
-              <h3>📎 Streaming MIME Extraction</h3>
-              <p>Streams multi-part boundaries, extracting HTML, plain-text alternatives, embedded media, and binary attachments asynchronously.</p>
-            </div>
-            <div>
-              <h3>⚡ Zero Polling Delivery</h3>
-              <p>Dispatches event triggers directly to WebSocket listeners on new arrivals, rendering incoming emails in under 50ms.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 6: Security & Authentication -->
-    <section class="slide">
-      <div class="slide-content">
-        <span class="slide-tag">Security & Cryptography</span>
-        <h2 class="slide-heading">Email Authentication & Spoofing Defense</h2>
-        <p class="slide-sub">Authored by Arpit Rajput: automated cryptographic analysis of incoming email headers to detect spoofing and phishing.</p>
-
-        <div class="grid-3">
-          <div class="card">
-            <h3>🛡️ SPF Analysis</h3>
-            <p>Inspects the <span class="code-tag">Received-SPF</span> header against authorized CIDR ranges. Identifies PASS, SOFTFAIL, and hard FAIL (spoofed envelope sender).</p>
-          </div>
-          <div class="card">
-            <h3>🔑 DKIM Signature</h3>
-            <p>Analyzes <span class="code-tag">DKIM-Signature</span> public key hashes from DNS TXT records to verify body content has not been tampered with in transit.</p>
-          </div>
-          <div class="card">
-            <h3>📜 DMARC Policy</h3>
-            <p>Evaluates header alignment between From and envelope return-paths, surfacing live verification badges in the frontend UI.</p>
-          </div>
+}</pre>
         </div>
 
-        <div class="code-block">
-// helpers/securityEngine.js
-export function analyzeSecurityHeaders(headers = {}) {
-  const result = { spf: 'none', dkim: 'none', dmarc: 'none', isSafe: true, warnings: [] };
-  const receivedSpf = headers['received-spf'] || '';
-  if (receivedSpf.includes('pass')) result.spf = 'pass';
-  else if (receivedSpf.includes('fail')) {
-    result.spf = 'fail';
-    result.isSafe = false;
-    result.warnings.push('SPF validation failed (possible sender address spoofing).');
+        <div>
+          <div style="font-size: 13px; font-weight:600; margin-bottom: 8px; color: var(--success);">
+            Model Layer (<code>email.model.js</code>)
+          </div>
+          <pre class="code-box"><span class="code-comment">// backend/src/models/email.model.js</span>
+<span class="code-kw">export class</span> EmailModel {
+  <span class="code-comment">// Encapsulates file-based JSON or DB storage</span>
+  <span class="code-kw">static async</span> <span class="code-fn">findAll</span>(filter = {}) {
+    <span class="code-kw">const</span> emails = <span class="code-kw">await</span> storage.readAll(<span class="code-str">'emails'</span>);
+    <span class="code-kw">return</span> emails.filter(e => (!filter.folder || e.folder === filter.folder));
   }
-  return result;
-}
+
+  <span class="code-kw">static async</span> <span class="code-fn">create</span>(data) {
+    <span class="code-kw">const</span> record = { id: generateId(), ...data, createdAt: <span class="code-kw">new</span> Date() };
+    <span class="code-kw">await</span> storage.insert(<span class="code-str">'emails'</span>, record);
+    <span class="code-kw">return</span> record;
+  }
+}</pre>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- SLIDE 7: Outbound Mailer & ISP Bypass -->
-    <section class="slide">
-      <div class="slide-content">
-        <span class="slide-tag">Outbound Deliverability</span>
-        <h2 class="slide-heading">Dual-Mode Dispatch & ISP Port 25 Bypass</h2>
-        <p class="slide-sub">Delivers emails directly to recipient MX servers, with automatic fallback to authenticated SMTP relay when residential ISPs filter port 25.</p>
+    <!-- SLIDE 5: FRONTEND API CALLING -->
+    <div class="slide" id="slide-5">
+      <div class="slide-badge">Client Integration</div>
+      <h1 class="slide-title">Frontend API Calling (React 19)</h1>
+      <p class="slide-sub">
+        How our UI consumes backend endpoints via asynchronous <code>fetch()</code> requests.
+      </p>
 
-        <div class="grid-2">
-          <div class="card">
-            <h3>Mode 1: Direct MX Resolution</h3>
-            <p>1. Extracts recipient domain (e.g. <span class="code-tag">gmail.com</span>).<br/>
-            2. Resolves DNS MX records via <span class="code-tag">dns.promises.resolveMx</span>.<br/>
-            3. Connects directly to highest-priority exchange on port 25.<br/>
-            4. Ideal for dedicated VPS or static server IPs.</p>
+      <div class="grid-2">
+        <div>
+          <div style="font-size: 13px; font-weight:600; margin-bottom: 8px; color: var(--accent);">
+            React Component Calling Backend API
           </div>
+          <pre class="code-box"><span class="code-comment">// frontend/src/components/MailList.jsx</span>
+<span class="code-kw">import</span> { useState, useEffect } <span class="code-kw">from</span> <span class="code-str">'react'</span>;
 
-          <div class="card">
-            <h3>Mode 2: Authenticated SMTP Relay</h3>
-            <p>1. Encrypted TLS tunnel over Port 587.<br/>
-            2. Verified credentials with Brevo, SendGrid, or Mailgun.<br/>
-            3. Automated fallback if direct port 25 handshake times out.<br/>
-            4. Built-in live connection test endpoint (<span class="code-tag">/api/relay/test</span>).</p>
-          </div>
+<span class="code-kw">export function</span> <span class="code-fn">MailList</span>({ currentFolder }) {
+  <span class="code-kw">const</span> [emails, setEmails] = useState([]);
+  <span class="code-kw">const</span> [loading, setLoading] = useState(<span class="code-kw">true</span>);
+
+  <span class="code-comment">// Call GET /api/emails on load</span>
+  useEffect(() => {
+    <span class="code-kw">async function</span> <span class="code-fn">fetchEmails</span>() {
+      <span class="code-kw">try</span> {
+        <span class="code-kw">const</span> res = <span class="code-kw">await</span> fetch(<span class="code-str">`/api/emails?folder=${currentFolder}`</span>);
+        <span class="code-kw">const</span> data = <span class="code-kw">await</span> res.json();
+        setEmails(data.emails || []);
+      } <span class="code-kw">finally</span> {
+        setLoading(<span class="code-kw">false</span>);
+      }
+    }
+    fetchEmails();
+  }, [currentFolder]);
+
+  <span class="code-kw">return</span> &lt;<span class="code-fn">div</span>&gt;{emails.map(e => &lt;<span class="code-fn">MailItem</span> key={e.id} email={e} /&gt;)}&lt;/<span class="code-fn">div</span>&gt;;
+}</pre>
         </div>
 
-        <div class="flow-diagram">
-          <div class="flow-node">
-            <h4>User Clicks Send</h4>
-            <p>POST /api/emails/send</p>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div class="card">
+            <div class="card-title">1. Asynchronous Fetch & Promises</div>
+            <div class="card-desc">The frontend calls the backend REST routes using native <code>fetch()</code> wrapped in <code>async/await</code> for clean asynchronous flow.</div>
           </div>
-          <div class="flow-arrow">➔</div>
-          <div class="flow-node">
-            <h4>Attempt Direct MX</h4>
-            <p>Target Exchange:25</p>
+          <div class="card">
+            <div class="card-title">2. State Synchronization</div>
+            <div class="card-desc">When an email is sent (<code>POST /api/emails/send</code>) or marked read (<code>PATCH /api/emails/:id</code>), React state immediately updates the DOM without full page reload.</div>
           </div>
-          <div class="flow-arrow">⚡ Timeout / Block</div>
-          <div class="flow-node" style="border-color: var(--amber);">
-            <h4>Auto Failover</h4>
-            <p>Relay: smtp-relay.brevo.com:587</p>
-          </div>
-          <div class="flow-arrow">➔</div>
-          <div class="flow-node" style="border-color: var(--emerald);">
-            <h4>100% Delivered</h4>
-            <p>Saved to Sent Folder</p>
+          <div class="card">
+            <div class="card-title">3. Error & Loading Boundaries</div>
+            <div class="card-desc">Handles loading spinners during network requests and renders user-friendly toast messages if the backend returns 4xx or 5xx errors.</div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- SLIDE 8: DNS & Public IP Engine -->
-    <section class="slide">
-      <div class="slide-content">
-        <span class="slide-tag">DNS Infrastructure</span>
-        <h2 class="slide-heading">DNS Configuration & Live Verification</h2>
-        <p class="slide-sub">Built-in engine providing step-by-step registrar records and dynamic public IP detection to avoid manual mistakes.</p>
+    <!-- SLIDE 6: DEMO & CONCLUSION -->
+    <div class="slide" id="slide-6">
+      <div class="slide-badge">Summary & Verification</div>
+      <h1 class="slide-title">Live Demonstration & Academic Rubric</h1>
+      <p class="slide-sub">
+        Clear verification of all project requirements in the live demo.
+      </p>
 
-        <div class="grid-4">
-          <div class="card">
-            <h3>Type A (Host)</h3>
-            <p><strong>Host:</strong> <span class="code-tag">mail</span><br/>
-            <strong>Value:</strong> <span class="code-tag">115.244.141.202</span><br/>
-            Maps mail subdomain to host server public IP.</p>
-          </div>
-          <div class="card">
-            <h3>Type MX (Routing)</h3>
-            <p><strong>Host:</strong> <span class="code-tag">@</span><br/>
-            <strong>Value:</strong> <span class="code-tag">mail.glennesports.app</span><br/>
-            <strong>Priority:</strong> 10<br/>
-            Routes domain mail to our MTA.</p>
-          </div>
-          <div class="card">
-            <h3>Type TXT (SPF)</h3>
-            <p><strong>Host:</strong> <span class="code-tag">@</span><br/>
-            <strong>Value:</strong> <span class="code-tag">v=spf1 mx a:mail... ~all</span><br/>
-            Authorizes mail server to send.</p>
-          </div>
-          <div class="card">
-            <h3>Type TXT (DMARC)</h3>
-            <p><strong>Host:</strong> <span class="code-tag">_dmarc</span><br/>
-            <strong>Value:</strong> <span class="code-tag">v=DMARC1; p=none...</span><br/>
-            Enforces policy & reporting.</p>
-          </div>
-        </div>
-
+      <div class="grid-3" style="margin-bottom: 20px;">
         <div class="card">
-          <h3>🔍 Live DNS Query Tool (<span class="code-tag">/api/dns/verify</span>)</h3>
-          <p>The system actively queries external DNS root resolvers in real-time, verifying whether the domain's MX records and SPF policy have propagated successfully across the internet.</p>
+          <div class="card-icon">1️⃣</div>
+          <div class="card-title">Routes Verification</div>
+          <div class="card-desc">Show Express router in terminal handling incoming HTTP requests with status codes 200, 201, and 400.</div>
         </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 9: Frontend Architecture -->
-    <section class="slide">
-      <div class="slide-content">
-        <span class="slide-tag">User Experience</span>
-        <h2 class="slide-heading">Production-Ready SaaS Frontend</h2>
-        <p class="slide-sub">Engineered with React 19, Tailwind CSS v4, and official shadcn/ui primitives for a clean, high-contrast dashboard.</p>
-
-        <div class="grid-3">
-          <div class="card">
-            <h3>🎨 Canonical Zinc Palette</h3>
-            <p>Clean off-white surfaces, high-contrast dark typography, subtle neutral borders, and vibrant status badges. Built-in 1-click Light/Dark theme switcher.</p>
-          </div>
-          <div class="card">
-            <h3>🧩 Radix UI Primitives</h3>
-            <p>Directly imported headless components: <span class="code-tag">Dialog</span>, <span class="code-tag">DropdownMenu</span>, <span class="code-tag">Tabs</span>, <span class="code-tag">Avatar</span>, and <span class="code-tag">Badge</span> with focus management and keyboard accessibility.</p>
-          </div>
-          <div class="card">
-            <h3>🔒 Sandboxed HTML Preview</h3>
-            <p>Email content is rendered inside an isolated <span class="code-tag">&lt;iframe sandbox&gt;</span> to prevent CSS contamination, script execution, or XSS attacks from inbound messages.</p>
-          </div>
-        </div>
-
         <div class="card">
-          <h3>⚡ Multi-View Email Inspector</h3>
-          <p>Users can instantly toggle between <strong>Preview Mode</strong> (safe HTML rendering), <strong>Plain Text Mode</strong> (monospace raw body), and <strong>MIME Headers Mode</strong> (full RFC 822 JSON inspector with 1-click copy).</p>
+          <div class="card-icon">2️⃣</div>
+          <div class="card-title">MVC Separation</div>
+          <div class="card-desc">Demonstrate how controllers validate input, call models, and keep utility code isolated in the <code>helpers/</code> folder.</div>
         </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 10: Multi-Tenancy & Mailboxes -->
-    <section class="slide">
-      <div class="slide-content">
-        <span class="slide-tag">Multi-Tenancy</span>
-        <h2 class="slide-heading">Multi-Domain & Multi-Mailbox Accounts</h2>
-        <p class="slide-sub">Supports provisioning multiple organizational domains and isolated employee mailboxes on a single MTA instance.</p>
-
-        <div class="grid-2">
-          <div class="card">
-            <h3>🏢 Multi-Domain Routing</h3>
-            <p>• Add unlimited corporate domains (e.g. <span class="code-tag">glennesports.app</span>, <span class="code-tag">clientcorp.com</span>).<br/>
-            • Distinct MX and SPF records per domain.<br/>
-            • Inbound SMTP server automatically validates recipient domain against registered domain lists.</p>
-          </div>
-
-          <div class="card">
-            <h3>👤 Salted SHA-256 Mailbox Authentication</h3>
-            <p>• Mailbox provisioning with usernames and encrypted passwords.<br/>
-            • Salted SHA-256 hash generation for secure local credential verification.<br/>
-            • 1-click account switching in frontend without re-logging in.</p>
-          </div>
-        </div>
-
         <div class="card">
-          <h3>🔄 Instant Inbound Simulation (<span class="code-tag">/api/emails/simulate</span>)</h3>
-          <p>Allows professors and examiners to test the full stack on localhost without requiring live internet DNS configuration by synthesizing an RFC-compliant inbound message delivered directly to the selected mailbox.</p>
+          <div class="card-icon">3️⃣</div>
+          <div class="card-title">Frontend API Integration</div>
+          <div class="card-desc">Send an email in the React UI, inspect the network tab payload, and watch the inbox list update dynamically.</div>
         </div>
       </div>
-    </section>
 
-    <!-- SLIDE 11: Team Contributions & Git Roster -->
-    <section class="slide">
-      <div class="slide-content">
-        <span class="slide-tag">Group Collaboration</span>
-        <h2 class="slide-heading">Team Contributions & Engineering Ownership</h2>
-        <p class="slide-sub">Demonstrated git collaboration across all 4 team members with modular task delegation:</p>
-
-        <div class="grid-2">
-          <div class="member-card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span class="member-name">Arpit Rajput</span>
-              <span class="badge-pill" style="color: var(--accent);">imironman7599@gmail.com</span>
-            </div>
-            <span class="member-role">Security, Engine Decoupling & SaaS Frontend</span>
-            <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;">
-              • Implemented SPF/DKIM/DMARC security header analyzer engine.<br/>
-              • Decoupled low-level engines into <span class="code-tag">helpers/</span> folder.<br/>
-              • Integrated shadcn/ui & Radix UI primitives on frontend.<br/>
-              • Resolved browser runtime variable errors and theme tokens.
-            </p>
-          </div>
-
-          <div class="member-card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span class="member-name">Ansh Sharma</span>
-              <span class="badge-pill" style="color: var(--accent);">anshsxa@gmail.com</span>
-            </div>
-            <span class="member-role">Core Architecture & Inbound SMTP</span>
-            <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;">
-              • Architected RFC 5321 Inbound SMTP daemon on Port 2525.<br/>
-              • Built WebSocket real-time broadcast integration.<br/>
-              • Designed modular Express API routes under <span class="code-tag">routes/</span>.<br/>
-              • Orchestrated GitHub repository and deployment scripts.
-            </p>
-          </div>
-
-          <div class="member-card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span class="member-name">Mayank Chauhan</span>
-              <span class="badge-pill" style="color: var(--accent);">mchauhantha@gmail.com</span>
-            </div>
-            <span class="member-role">Models & Data Persistence Layer</span>
-            <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;">
-              • Built file-backed MVC models: <span class="code-tag">email.model.js</span>, <span class="code-tag">domain.model.js</span>.<br/>
-              • Designed multi-mailbox provisioning and password hashing.<br/>
-              • Implemented disk attachment file storage and retrieval.<br/>
-              • Managed JSON state mutations and atomic write locks.
-            </p>
-          </div>
-
-          <div class="member-card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span class="member-name">Swaraj Agarwal</span>
-              <span class="badge-pill" style="color: var(--accent);">agarwalswaraj123@gmail.com</span>
-            </div>
-            <span class="member-role">Controllers & Outbound Relay Integration</span>
-            <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;">
-              • Built MVC controllers with HTTP status codes and error handling.<br/>
-              • Implemented Outbound SMTP Relay connection tester (<span class="code-tag">/api/relay/test</span>).<br/>
-              • Integrated external public IP detection service.<br/>
-              • Handled live DNS query verification endpoints.
-            </p>
-          </div>
+      <div class="card" style="background: rgba(59, 130, 246, 0.08); border-color: var(--accent);">
+        <div style="font-weight: 700; font-size: 15px; margin-bottom: 6px;">Key Academic Takeaway:</div>
+        <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+          "Oryn demonstrates how professional full-stack web applications organize code. By using a canonical Model-View-Controller backend with Express routers and asynchronous frontend API calling, the codebase remains modular, readable, and easy to maintain."
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- SLIDE 12: Summary & Q&A Defense -->
-    <section class="slide">
-      <div class="slide-content" style="text-align: center; align-items: center; gap: 24px;">
-        <span class="slide-tag">Project Defense & Conclusion</span>
-        <h2 class="slide-heading" style="font-size: 44px;">Ready for Evaluation & Live Demonstration</h2>
-        <p class="slide-sub" style="text-align: center;">
-          Oryn successfully demonstrates end-to-end autonomous email transmission, RFC compliance, security authentication, and modern full-stack web engineering.
-        </p>
-
-        <div class="grid-3" style="text-align: left; width: 100%; margin-top: 10px;">
-          <div class="card">
-            <h3>⚡ Live Demo Steps</h3>
-            <p>1. Open <span class="code-tag">http://localhost:3000</span><br/>
-            2. Trigger <strong>Simulate Inbound</strong><br/>
-            3. Verify SPF header badge<br/>
-            4. Send external email via Relay</p>
-          </div>
-          <div class="card">
-            <h3>📊 Technical Metrics</h3>
-            <p>• Inbound Latency: &lt; 50ms<br/>
-            • Max Attachment: 25 MB<br/>
-            • 100% MVC Separation<br/>
-            • 30+ Attributed Git Commits</p>
-          </div>
-          <div class="card">
-            <h3>🔗 Source Code</h3>
-            <p>Repository:<br/>
-            <strong style="color: var(--accent);">github.com/anshxs/oryn</strong><br/>
-            Branch: <span class="code-tag">main</span><br/>
-            Production Ready</p>
-          </div>
-        </div>
-
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 20px;">
-          Thank you! We welcome any technical questions on RFC 5321, DNS routing, or the MVC codebase.
-        </p>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Bottom Floating Navigation Bar -->
-  <div class="controls-bar">
-    <button class="nav-btn" onclick="prevSlide()" title="Previous Slide (← / PageUp)">← Prev</button>
-    <span class="slide-indicator" id="slideIndicator">1 / 12</span>
-    <button class="nav-btn" onclick="nextSlide()" title="Next Slide (→ / Space / PageDown)">Next →</button>
   </div>
 
-  <!-- Slide Overview Modal (Press 'O') -->
-  <div class="overview-modal" id="overviewModal" onclick="closeOverview(event)">
-    <div class="overview-grid" id="overviewGrid"></div>
+  <!-- Footer Navigation -->
+  <footer>
+    <div class="footer-left">
+      <span class="key-hint"><span class="key-badge">←</span> / <span class="key-badge">→</span> Navigate</span>
+      <span class="key-hint"><span class="key-badge">T</span> Theme</span>
+      <span class="key-hint"><span class="key-badge">O</span> Overview</span>
+      <span class="key-hint"><span class="key-badge">F</span> Fullscreen</span>
+    </div>
+    <div id="slide-indicator" style="font-weight: 600;">
+      Slide 1 of 6
+    </div>
+  </footer>
+
+  <!-- Slide Overview Grid Overlay -->
+  <div class="overview-overlay" id="overview-modal" onclick="toggleOverview()">
+    <div class="overview-grid" onclick="event.stopPropagation()">
+      <div class="overview-card" onclick="goToSlide(1)">
+        <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 1</div>
+        <div style="font-size:14px; font-weight:600;">Title & Project Overview</div>
+      </div>
+      <div class="overview-card" onclick="goToSlide(2)">
+        <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 2</div>
+        <div style="font-size:14px; font-weight:600;">MVC Pattern & Helpers</div>
+      </div>
+      <div class="overview-card" onclick="goToSlide(3)">
+        <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 3</div>
+        <div style="font-size:14px; font-weight:600;">Routes & REST Endpoints</div>
+      </div>
+      <div class="overview-card" onclick="goToSlide(4)">
+        <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 4</div>
+        <div style="font-size:14px; font-weight:600;">Controllers & Models</div>
+      </div>
+      <div class="overview-card" onclick="goToSlide(5)">
+        <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 5</div>
+        <div style="font-size:14px; font-weight:600;">Frontend API Calling</div>
+      </div>
+      <div class="overview-card" onclick="goToSlide(6)">
+        <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 6</div>
+        <div style="font-size:14px; font-weight:600;">Live Demo & Summary</div>
+      </div>
+    </div>
   </div>
 
   <script>
-    const slides = Array.from(document.querySelectorAll('.slide'));
-    const progressBar = document.getElementById('progressBar');
-    const slideIndicator = document.getElementById('slideIndicator');
-    const overviewModal = document.getElementById('overviewModal');
-    const overviewGrid = document.getElementById('overviewGrid');
+    let currentSlide = 1;
+    const totalSlides = 6;
 
-    let currentSlide = 0;
-
-    function updateSlide(index) {
-      if (index < 0) index = 0;
-      if (index >= slides.length) index = slides.length - 1;
-      
-      slides[currentSlide].classList.remove('active');
-      currentSlide = index;
-      slides[currentSlide].classList.add('active');
-
-      // Update progress bar
-      const progressPercent = ((currentSlide + 1) / slides.length) * 100;
-      progressBar.style.width = progressPercent + '%';
-
-      // Update indicator
-      slideIndicator.textContent = `${currentSlide + 1} / ${slides.length}`;
-
-      // Update active thumb
-      document.querySelectorAll('.overview-thumb').forEach((thumb, i) => {
-        if (i === currentSlide) thumb.classList.add('current');
-        else thumb.classList.remove('current');
-      });
+    function updateSlides() {
+      for (let i = 1; i <= totalSlides; i++) {
+        const slide = document.getElementById(`slide-${i}`);
+        if (slide) {
+          slide.classList.remove('active');
+          if (i === currentSlide) {
+            slide.classList.add('active');
+          }
+        }
+      }
+      document.getElementById('slide-indicator').textContent = `Slide ${currentSlide} of ${totalSlides}`;
     }
 
     function nextSlide() {
-      updateSlide(currentSlide + 1);
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateSlides();
+      }
     }
 
     function prevSlide() {
-      updateSlide(currentSlide - 1);
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateSlides();
+      }
+    }
+
+    function goToSlide(n) {
+      currentSlide = n;
+      updateSlides();
+      const modal = document.getElementById('overview-modal');
+      modal.classList.remove('active');
+    }
+
+    function toggleTheme() {
+      const isLight = document.body.getAttribute('data-theme') === 'light';
+      document.body.setAttribute('data-theme', isLight ? 'dark' : 'light');
+    }
+
+    function toggleOverview() {
+      const modal = document.getElementById('overview-modal');
+      modal.classList.toggle('active');
     }
 
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
-        e.preventDefault();
         nextSlide();
       } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        e.preventDefault();
         prevSlide();
-      } else if (e.key === 'Home') {
-        e.preventDefault();
-        updateSlide(0);
-      } else if (e.key === 'End') {
-        e.preventDefault();
-        updateSlide(slides.length - 1);
+      } else if (e.key === 't' || e.key === 'T') {
+        toggleTheme();
       } else if (e.key === 'o' || e.key === 'O') {
-        e.preventDefault();
         toggleOverview();
       } else if (e.key === 'f' || e.key === 'F') {
-        e.preventDefault();
-        toggleFullScreen();
-      } else if (e.key === 'Escape') {
-        overviewModal.classList.remove('open');
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
       }
     });
-
-    // Theme Toggle
-    function toggleTheme() {
-      const body = document.body;
-      const current = body.getAttribute('data-theme');
-      body.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
-    }
-
-    // Fullscreen Toggle
-    function toggleFullScreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else {
-        if (document.exitFullscreen) document.exitFullscreen();
-      }
-    }
-
-    // Overview Grid Builder
-    slides.forEach((slide, i) => {
-      const heading = slide.querySelector('h1, h2')?.textContent || `Slide ${i + 1}`;
-      const tag = slide.querySelector('.slide-tag')?.textContent || `SLIDE ${i + 1}`;
-      
-      const thumb = document.createElement('div');
-      thumb.className = `overview-thumb ${i === 0 ? 'current' : ''}`;
-      thumb.innerHTML = `
-        <span>${tag}</span>
-        <h5>${heading}</h5>
-      `;
-      thumb.onclick = () => {
-        updateSlide(i);
-        overviewModal.classList.remove('open');
-      };
-      overviewGrid.appendChild(thumb);
-    });
-
-    function toggleOverview() {
-      overviewModal.classList.toggle('open');
-    }
-
-    function closeOverview(e) {
-      if (e.target === overviewModal) {
-        overviewModal.classList.remove('open');
-      }
-    }
-
-    // Initialize
-    updateSlide(0);
   </script>
 </body>
 </html>
