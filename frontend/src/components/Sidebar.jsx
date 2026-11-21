@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { 
   Inbox, 
   Send, 
@@ -26,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { cn } from '../lib/utils';
+import { useLiquidGL } from '../hooks/useLiquidGL';
 
 export default function Sidebar({
   currentFolder,
@@ -45,6 +46,16 @@ export default function Sidebar({
   onToggleTheme,
   wsStatus = 'connected'
 }) {
+  const composeBtnRef = useRef(null);
+
+  // In LIGHT MODE, apply liquidGL optical refractive glass shader
+  // In DARK MODE, safely deactivates for pure shadcn-ui rendering
+  useLiquidGL(composeBtnRef, {
+    refraction: 0.02,
+    bevelDepth: 0.08,
+    tint: 'rgba(255, 255, 255, 0.35)'
+  }, [theme]);
+
   const folders = [
     { id: 'inbox', label: 'Inbox', icon: Inbox, count: stats?.unreadInbox },
     { id: 'sent', label: 'Sent', icon: Send, count: stats?.sentCount },
@@ -74,16 +85,16 @@ export default function Sidebar({
   }[wsStatus] || 'bg-emerald-500';
 
   return (
-    <aside className="w-64 bg-[#fbfbfc] dark:bg-[#0d0e12] border-r border-zinc-200 dark:border-zinc-800/80 flex flex-col justify-between select-none shrink-0 transition-colors duration-200 z-10">
+    <aside className="w-64 bg-white/80 dark:bg-[#09090b] backdrop-blur-xl border-r border-zinc-200/90 dark:border-zinc-800 flex flex-col justify-between select-none shrink-0 transition-colors duration-200 z-10">
       <div className="flex flex-col h-full">
         {/* Brand Header */}
-        <div className="p-3.5 border-b border-zinc-200 dark:border-zinc-800/80 flex items-center justify-between bg-white dark:bg-[#0d0e12]">
+        <div className="p-3.5 border-b border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between bg-white/70 dark:bg-[#09090b]">
           <div className="flex items-center gap-2.5">
             <div className="h-7.5 w-7.5 rounded-lg bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 flex items-center justify-center shadow-xs transition-transform duration-150 hover:scale-105">
               <Mail className="w-4 h-4 stroke-[2]" />
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-xs tracking-tight text-zinc-950 dark:text-white">
+              <span className="font-bold text-xs tracking-tight text-zinc-950 dark:text-zinc-50">
                 Oryn
               </span>
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold border border-zinc-200 dark:border-zinc-700">
@@ -95,15 +106,15 @@ export default function Sidebar({
           <div className="flex items-center gap-1">
             <button
               onClick={onOpenShortcuts}
-              className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
               title="Keyboard Shortcuts (?)"
             >
               <HelpCircle className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={onToggleTheme}
-              className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              title={theme === 'dark' ? 'Switch to Light Mode (liquidGL)' : 'Switch to Dark Mode (shadcn-ui)'}
             >
               {theme === 'dark' ? (
                 <Sun className="w-3.5 h-3.5 text-amber-400 transition-transform duration-200 hover:rotate-45" />
@@ -115,10 +126,10 @@ export default function Sidebar({
         </div>
 
         {/* Account Selector Card */}
-        <div className="p-3 border-b border-zinc-200 dark:border-zinc-800/80">
+        <div className="p-3 border-b border-zinc-200/80 dark:border-zinc-800">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="w-full flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-[#13151b] border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all text-left group cursor-pointer shadow-2xs">
+              <button className="w-full flex items-center justify-between p-2.5 rounded-xl bg-white/90 dark:bg-zinc-900/60 border border-zinc-200/90 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50/80 dark:hover:bg-zinc-900 transition-all text-left group cursor-pointer shadow-2xs">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <Avatar className="h-7 w-7 rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-2xs">
                     <AvatarFallback className="text-[11px] bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-950 font-bold">
@@ -138,7 +149,7 @@ export default function Sidebar({
               </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="start" className="w-64">
+            <DropdownMenuContent align="start" className="w-64 bg-white/95 dark:bg-zinc-950 dark:border-zinc-800 backdrop-blur-xl">
               <DropdownMenuLabel className="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">Select Email Account</DropdownMenuLabel>
               {mailboxes.map((mb) => {
                 const isSelected = mb.email.toLowerCase() === activeMailbox?.toLowerCase();
@@ -146,13 +157,13 @@ export default function Sidebar({
                   <DropdownMenuItem
                     key={mb.id || mb.email}
                     onClick={() => onSelectMailbox(mb.email)}
-                    className="flex items-center justify-between py-2 cursor-pointer"
+                    className="flex items-center justify-between py-2 cursor-pointer dark:hover:bg-zinc-900"
                   >
                     <div className="min-w-0 pr-2">
                       <p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate">
                         {mb.name || mb.username}
                       </p>
-                      <p className="text-[11px] text-zinc-600 dark:text-zinc-400 font-mono truncate">
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono truncate">
                         {mb.email}
                       </p>
                     </div>
@@ -160,10 +171,10 @@ export default function Sidebar({
                   </DropdownMenuItem>
                 );
               })}
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator className="dark:bg-zinc-800" />
               <DropdownMenuItem
                 onClick={() => onOpenSettings('mailboxes')}
-                className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 gap-2 cursor-pointer"
+                className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 gap-2 cursor-pointer dark:hover:bg-zinc-900"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Add New Mailbox
@@ -171,11 +182,12 @@ export default function Sidebar({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Primary Compose Action */}
+          {/* Primary Compose Action - Enhanced with liquidGL in Light Mode & authentic shadcn in Dark Mode */}
           <div className="mt-2.5">
-            <Button
+            <button
+              ref={composeBtnRef}
               onClick={onOpenCompose}
-              className="w-full h-9 justify-between px-3 text-xs bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-white shadow-xs rounded-xl font-semibold transition-all duration-150 hover:shadow-sm cursor-pointer"
+              className="w-full h-9 flex items-center justify-between px-3 text-xs rounded-xl font-semibold transition-all duration-150 cursor-pointer shadow-xs active:scale-[0.98] bg-zinc-950 text-white hover:bg-zinc-850 dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-zinc-200"
             >
               <span className="flex items-center gap-2">
                 <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -184,11 +196,11 @@ export default function Sidebar({
               <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-200 dark:bg-zinc-200 dark:text-zinc-800 font-mono text-[10px] font-bold">
                 C
               </kbd>
-            </Button>
+            </button>
           </div>
         </div>
 
-        {/* Folders List */}
+        {/* Folders Navigation */}
         <div className="flex-1 p-3 space-y-0.5 overflow-y-auto">
           <div className="px-2 py-1 text-[10px] font-bold tracking-wider uppercase text-zinc-500 dark:text-zinc-400 font-mono">
             Mailboxes
@@ -203,14 +215,14 @@ export default function Sidebar({
                 className={cn(
                   "w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition-all duration-150 group cursor-pointer",
                   isActive
-                    ? "bg-zinc-200/90 text-zinc-950 dark:bg-zinc-800/90 dark:text-white font-bold shadow-2xs"
-                    : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/60 hover:text-zinc-950 dark:hover:text-white font-medium"
+                    ? "bg-zinc-200/90 text-zinc-950 dark:bg-zinc-900 dark:text-zinc-50 dark:border dark:border-zinc-800 font-bold shadow-2xs"
+                    : "text-zinc-700 dark:text-zinc-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-900/60 hover:text-zinc-950 dark:hover:text-zinc-100 font-medium"
                 )}
               >
                 <div className="flex items-center gap-2.5">
                   <Icon className={cn(
                     "w-4 h-4 transition-transform duration-150 group-hover:scale-110 stroke-[1.8]",
-                    isActive ? "text-zinc-950 dark:text-white" : "text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200"
+                    isActive ? "text-zinc-950 dark:text-zinc-50" : "text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200"
                   )} />
                   <span className="tracking-tight">{folder.label}</span>
                 </div>
@@ -218,8 +230,8 @@ export default function Sidebar({
                   <span className={cn(
                     "text-[10px] font-mono px-1.5 py-0.2 rounded-full tabular-nums font-bold transition-colors",
                     isActive
-                      ? "bg-zinc-950 text-white dark:bg-white dark:text-zinc-950"
-                      : "bg-zinc-200 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-200"
+                      ? "bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950"
+                      : "bg-zinc-200 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200"
                   )}>
                     {folder.count}
                   </span>
@@ -228,7 +240,7 @@ export default function Sidebar({
             );
           })}
 
-          {/* Quick Tools */}
+          {/* Infrastructure Section */}
           <div className="pt-4 px-2 py-1 text-[10px] font-bold tracking-wider uppercase text-zinc-500 dark:text-zinc-400 font-mono">
             Infrastructure
           </div>
@@ -236,7 +248,7 @@ export default function Sidebar({
           <button
             onClick={onSimulateInbound}
             disabled={isSimulating}
-            className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/60 hover:text-zinc-950 dark:hover:text-white transition-all duration-150 group cursor-pointer"
+            className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium text-zinc-700 dark:text-zinc-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-900/60 hover:text-zinc-950 dark:hover:text-zinc-100 transition-all duration-150 group cursor-pointer"
           >
             <div className="flex items-center gap-2.5">
               <Zap className={cn("w-4 h-4 text-amber-500 transition-transform duration-150 group-hover:scale-110", isSimulating && "animate-spin")} />
@@ -249,7 +261,7 @@ export default function Sidebar({
 
           <button
             onClick={() => onOpenSettings('domains')}
-            className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/60 hover:text-zinc-950 dark:hover:text-white transition-all duration-150 group cursor-pointer"
+            className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium text-zinc-700 dark:text-zinc-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-900/60 hover:text-zinc-950 dark:hover:text-zinc-100 transition-all duration-150 group cursor-pointer"
           >
             <div className="flex items-center gap-2.5">
               <Server className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 transition-transform duration-150 group-hover:scale-110" />
@@ -262,7 +274,7 @@ export default function Sidebar({
         </div>
 
         {/* Server Status Footer */}
-        <div className="m-2.5 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-[#13151b] space-y-2 shadow-2xs">
+        <div className="m-2.5 p-3 rounded-2xl border border-zinc-200/90 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/40 space-y-2 shadow-2xs">
           {/* Real-time Connection Status */}
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-2">
@@ -279,7 +291,7 @@ export default function Sidebar({
           {/* Quick Settings Action */}
           <button
             onClick={() => onOpenSettings('domains')}
-            className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/70 transition-colors cursor-pointer"
+            className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           >
             <span className="flex items-center gap-1.5">
               <Settings className="w-3.5 h-3.5" />

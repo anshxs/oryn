@@ -327,8 +327,8 @@ export default function App() {
   const selectedEmail = emails.find(e => e.id === selectedEmailId);
 
   return (
-    <div className="relative flex h-screen w-screen overflow-hidden bg-[#fafafa]/90 dark:bg-[#07080a]/95 text-zinc-900 dark:text-zinc-100 font-sans antialiased">
-      {/* Ambient Stage Mesh Backdrop for Real WebGPU / WebGL liquidGL Refraction */}
+    <div className="relative flex h-screen w-screen overflow-hidden bg-[#f6f8fb] dark:bg-[#09090b] text-zinc-900 dark:text-zinc-50 font-sans antialiased">
+      {/* Ambient Stage Mesh Backdrop for Real WebGPU / WebGL liquidGL Refraction in LIGHT MODE */}
       <div className="liquid-ambient-backdrop" aria-hidden="true">
         <div className="liquid-orb liquid-orb-1" />
         <div className="liquid-orb liquid-orb-2" />

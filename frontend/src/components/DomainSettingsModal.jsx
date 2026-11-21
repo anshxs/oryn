@@ -283,15 +283,15 @@ export default function DomainSettingsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl max-h-[88vh] bg-white/95 dark:bg-[#111318]/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-50 p-0 overflow-hidden shadow-2xl flex flex-col">
+      <DialogContent className="max-w-4xl max-h-[88vh] bg-white/95 dark:bg-zinc-950 backdrop-blur-2xl border border-zinc-200/90 dark:border-zinc-800 text-zinc-950 dark:text-zinc-50 p-0 overflow-hidden shadow-2xl flex flex-col">
         {/* Modal Top Header */}
-        <DialogHeader className="p-4 border-b border-zinc-200 dark:border-zinc-800/80 flex flex-row items-center justify-between shrink-0 bg-zinc-50/70 dark:bg-[#15171f]/80">
+        <DialogHeader className="p-4 border-b border-zinc-200/80 dark:border-zinc-800 flex flex-row items-center justify-between shrink-0 bg-zinc-50/80 dark:bg-zinc-900/60">
           <div className="flex items-center gap-2.5">
-            <div className="h-7 w-7 rounded-lg bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center shadow-xs">
+            <div className="h-7 w-7 rounded-lg bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 flex items-center justify-center shadow-xs">
               <Globe className="w-4 h-4 stroke-[2]" />
             </div>
             <div>
-              <DialogTitle className="text-sm font-bold tracking-tight text-zinc-950 dark:text-white">
+              <DialogTitle className="text-sm font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
                 Mail Server Control Center
               </DialogTitle>
             </div>
@@ -300,8 +300,8 @@ export default function DomainSettingsModal({
 
         {/* Tab Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <div className="px-5 pt-3 border-b border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-[#0c0d10] shrink-0">
-            <TabsList className="p-0.5 bg-zinc-100 dark:bg-zinc-800/80">
+          <div className="px-5 pt-3 border-b border-zinc-200/80 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950 shrink-0">
+            <TabsList className="p-0.5 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
               <TabsTrigger value="domains" className="text-xs font-semibold">
                 Domains & DNS
               </TabsTrigger>
@@ -317,7 +317,7 @@ export default function DomainSettingsModal({
             </TabsList>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-5 bg-[#fafbfc] dark:bg-[#08090b]">
+          <div className="flex-1 overflow-y-auto p-5 bg-[#fafbfc] dark:bg-zinc-950">
             {/* TAB 1: DOMAINS & DNS */}
             <TabsContent value="domains" className="space-y-5 mt-0 animate-content-fade-in">
               <div className="flex flex-col md:flex-row gap-5">
@@ -336,8 +336,8 @@ export default function DomainSettingsModal({
                           className={cn(
                             "flex items-center justify-between p-2.5 rounded-xl border text-xs cursor-pointer transition-all duration-150",
                             isSelected
-                              ? "bg-white border-zinc-950 dark:border-white text-zinc-950 dark:bg-[#16181f] dark:text-white font-bold shadow-xs"
-                              : "bg-white border-zinc-200/90 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-50 dark:bg-[#101114] dark:border-zinc-800 dark:text-zinc-300 dark:hover:text-white dark:hover:bg-[#15161b]"
+                              ? "bg-white border-zinc-950 dark:border-white text-zinc-950 dark:bg-zinc-800 dark:text-zinc-50 font-bold shadow-xs"
+                              : "bg-white border-zinc-200/90 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-50 dark:bg-zinc-900/40 dark:border-zinc-800 dark:text-zinc-300 dark:hover:text-white dark:hover:bg-zinc-900"
                           )}
                         >
                           <div className="truncate pr-2">
@@ -450,7 +450,7 @@ export default function DomainSettingsModal({
                       {dnsRecords.map((rec) => (
                         <div
                           key={rec.step}
-                          className="p-3.5 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-[#111216] space-y-2 shadow-2xs hover:border-zinc-400 dark:hover:border-zinc-700 transition-colors"
+                          className="p-3.5 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 space-y-2 shadow-2xs hover:border-zinc-400 dark:hover:border-zinc-700 transition-colors"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
@@ -471,7 +471,7 @@ export default function DomainSettingsModal({
                           </p>
 
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                            <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-50 dark:bg-[#08090b] border border-zinc-200/80 dark:border-zinc-700 text-xs font-mono">
+                            <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 text-xs font-mono">
                               <div className="truncate pr-1">
                                 <span className="text-[9px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-bold block">Host / Name</span>
                                 <span className="text-zinc-950 dark:text-white font-semibold">{rec.host}</span>
@@ -489,7 +489,7 @@ export default function DomainSettingsModal({
                               </button>
                             </div>
 
-                            <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-50 dark:bg-[#08090b] border border-zinc-200/80 dark:border-zinc-700 text-xs font-mono">
+                            <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 text-xs font-mono">
                               <div className="truncate pr-1">
                                 <span className="text-[9px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-bold block">Value / Target</span>
                                 <span className="text-zinc-950 dark:text-white font-semibold truncate">{rec.value}</span>
@@ -532,8 +532,8 @@ export default function DomainSettingsModal({
                           className={cn(
                             "p-3 rounded-xl border flex items-center justify-between transition-all duration-150",
                             isCurrent
-                              ? "bg-white border-zinc-950 dark:border-white text-zinc-950 dark:bg-[#15161a] dark:text-white font-bold shadow-xs"
-                              : "bg-white border-zinc-200/90 text-zinc-800 dark:bg-[#111216] dark:border-zinc-800 dark:text-zinc-200"
+                              ? "bg-white border-zinc-950 dark:border-white text-zinc-950 dark:bg-zinc-800 dark:text-zinc-50 font-bold shadow-xs"
+                              : "bg-white border-zinc-200/90 text-zinc-800 dark:bg-zinc-900/40 dark:border-zinc-800 dark:text-zinc-200"
                           )}
                         >
                           <div className="truncate pr-2">
@@ -607,7 +607,7 @@ export default function DomainSettingsModal({
                           <select
                             value={mbDomain}
                             onChange={(e) => setMbDomain(e.target.value)}
-                            className="w-full h-8 px-2 rounded-lg bg-white dark:bg-[#08090b] border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-900 dark:text-white font-medium focus:outline-none"
+                            className="w-full h-8 px-2 rounded-lg bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-900 dark:text-zinc-100 font-medium focus:outline-none"
                           >
                             {domains.map(d => (
                               <option key={d.name} value={d.name}>@{d.name}</option>
@@ -659,8 +659,8 @@ export default function DomainSettingsModal({
                       className={cn(
                         "p-3.5 rounded-xl border cursor-pointer transition-all duration-150",
                         outboundMode === 'direct'
-                          ? "bg-white border-zinc-950 dark:border-white text-zinc-950 dark:bg-[#15161a] dark:text-white font-bold shadow-xs"
-                          : "bg-white border-zinc-200/90 text-zinc-700 dark:bg-[#111216] dark:border-zinc-800 dark:text-zinc-300 hover:border-zinc-400"
+                          ? "bg-white border-zinc-950 dark:border-white text-zinc-950 dark:bg-zinc-800 dark:text-zinc-50 font-bold shadow-xs"
+                          : "bg-white border-zinc-200/90 text-zinc-700 dark:bg-zinc-900/40 dark:border-zinc-800 dark:text-zinc-300 hover:border-zinc-400"
                       )}
                     >
                       <h4 className="text-xs font-bold mb-1">Direct Delivery (Port 25 MX)</h4>
@@ -674,8 +674,8 @@ export default function DomainSettingsModal({
                       className={cn(
                         "p-3.5 rounded-xl border cursor-pointer transition-all duration-150",
                         outboundMode === 'relay'
-                          ? "bg-white border-zinc-950 dark:border-white text-zinc-950 dark:bg-[#15161a] dark:text-white font-bold shadow-xs"
-                          : "bg-white border-zinc-200/90 text-zinc-700 dark:bg-[#111216] dark:border-zinc-800 dark:text-zinc-300 hover:border-zinc-400"
+                          ? "bg-white border-zinc-950 dark:border-white text-zinc-950 dark:bg-zinc-800 dark:text-zinc-50 font-bold shadow-xs"
+                          : "bg-white border-zinc-200/90 text-zinc-700 dark:bg-zinc-900/40 dark:border-zinc-800 dark:text-zinc-300 hover:border-zinc-400"
                       )}
                     >
                       <h4 className="text-xs font-bold mb-1">Authenticated SMTP Relay (Port 587)</h4>
@@ -818,19 +818,19 @@ export default function DomainSettingsModal({
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-2 text-xs font-mono">
-                    <div className="flex justify-between p-2.5 rounded-lg bg-zinc-50 dark:bg-[#121316] border border-zinc-200/80 dark:border-zinc-700">
+                    <div className="flex justify-between p-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800">
                       <span className="text-zinc-500 dark:text-zinc-400 font-medium">Inbound SMTP Port</span>
                       <span className="text-zinc-950 dark:text-white font-bold">{settings?.smtpPort || 2525} (RFC 5321)</span>
                     </div>
-                    <div className="flex justify-between p-2.5 rounded-lg bg-zinc-50 dark:bg-[#121316] border border-zinc-200/80 dark:border-zinc-700">
+                    <div className="flex justify-between p-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800">
                       <span className="text-zinc-500 dark:text-zinc-400 font-medium">API & WebSockets</span>
                       <span className="text-zinc-950 dark:text-white font-bold">{settings?.httpPort || 4000}</span>
                     </div>
-                    <div className="flex justify-between p-2.5 rounded-lg bg-zinc-50 dark:bg-[#121316] border border-zinc-200/80 dark:border-zinc-700">
+                    <div className="flex justify-between p-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800">
                       <span className="text-zinc-500 dark:text-zinc-400 font-medium">Public Server IP</span>
                       <span className="text-zinc-950 dark:text-white font-bold">{serverIpInput}</span>
                     </div>
-                    <div className="flex justify-between p-2.5 rounded-lg bg-zinc-50 dark:bg-[#121316] border border-zinc-200/80 dark:border-zinc-700">
+                    <div className="flex justify-between p-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800">
                       <span className="text-zinc-500 dark:text-zinc-400 font-medium">Outbound Mode</span>
                       <span className="text-zinc-950 dark:text-white font-bold uppercase">{settings?.outboundMode || 'Direct'}</span>
                     </div>
@@ -856,7 +856,7 @@ export default function DomainSettingsModal({
                     ].map((member) => (
                       <div
                         key={member.email}
-                        className="p-2.5 rounded-xl bg-zinc-50 dark:bg-[#121316] border border-zinc-200/80 dark:border-zinc-700 flex items-center justify-between text-xs"
+                        className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between text-xs"
                       >
                         <div>
                           <p className="font-bold text-zinc-950 dark:text-white">{member.name}</p>

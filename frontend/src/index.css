@@ -10,16 +10,17 @@
   body {
     font-family: var(--font-sans);
     letter-spacing: -0.015em;
-    background-color: #fcfdfd;
+    background-color: #f6f8fb;
     color: #090a0d;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* shadcn/ui exact dark theme background and foreground */
   .dark body {
-    background-color: #08090b;
-    color: #f9fafb;
+    background-color: #09090b;
+    color: #fafafa;
   }
 
   code, pre, .font-mono {
@@ -50,7 +51,7 @@
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -58,7 +59,7 @@
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* Smooth micro-interactions & subtle animations */
@@ -127,19 +128,34 @@
 }
 
 /* ==========================================================================
-   liquidGL – Apple Liquid Glass Optics & Modern Glassmorphism
+   LIGHT MODE: liquidGL Optical Engine & Refractive Liquid Glass
    ========================================================================== */
 
-/* Ambient Stage Mesh Backdrop for Real WebGPU / WebGL Refraction */
+/* Ambient Stage Mesh Backdrop - ONLY active in light mode */
 .liquid-ambient-backdrop {
   position: fixed;
   inset: 0;
   pointer-events: none !important;
   z-index: 0;
   overflow: hidden;
-  opacity: 0.8;
+  opacity: 0.95;
   transform: translate3d(0, 0, 0);
   transition: opacity 0.3s ease;
+  display: block;
+}
+
+/* In Dark Mode (shadcn-ui), immediately disable liquid ambient orbs & canvases */
+.dark .liquid-ambient-backdrop {
+  display: none !important;
+}
+
+.dark canvas {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+canvas {
+  pointer-events: none !important;
 }
 
 .liquid-orb {
@@ -150,76 +166,104 @@
   will-change: transform;
 }
 
-/* Light Mode Orbs - Optimized GPU Radial Gradients */
+/* Light Mode liquidGL Refraction Orbs */
 .liquid-orb-1 {
-  top: -10%;
-  left: 15%;
-  width: 50vw;
-  height: 45vh;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, rgba(168, 85, 247, 0.03) 40%, transparent 70%);
+  top: -8%;
+  left: 12%;
+  width: 55vw;
+  height: 50vh;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.10) 0%, rgba(168, 85, 247, 0.05) 45%, transparent 70%);
 }
 
 .liquid-orb-2 {
-  bottom: 0%;
-  right: 10%;
-  width: 45vw;
-  height: 48vh;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, rgba(59, 130, 246, 0.03) 45%, transparent 70%);
+  bottom: -5%;
+  right: 8%;
+  width: 50vw;
+  height: 52vh;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 75%);
 }
 
 .liquid-orb-3 {
-  top: 35%;
-  left: 45%;
-  width: 35vw;
-  height: 35vh;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.04) 0%, rgba(245, 158, 11, 0.02) 40%, transparent 65%);
+  top: 30%;
+  left: 40%;
+  width: 40vw;
+  height: 40vh;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.06) 0%, rgba(245, 158, 11, 0.03) 45%, transparent 70%);
 }
 
-/* Dark Mode Orbs - Luminous Nebula */
-.dark .liquid-orb-1 {
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.09) 0%, rgba(139, 92, 246, 0.04) 40%, transparent 70%);
+/* Light Mode Liquid Glass Panel */
+.liquid-glass-panel {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.02),
+    0 8px 32px -4px rgba(0, 0, 0, 0.04),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9);
 }
 
-.dark .liquid-orb-2 {
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.07) 0%, rgba(6, 182, 212, 0.03) 45%, transparent 70%);
-}
-
-.dark .liquid-orb-3 {
-  background: radial-gradient(circle, rgba(217, 70, 239, 0.06) 0%, rgba(99, 102, 241, 0.02) 40%, transparent 65%);
-}
-
-/* Core Glass Lens - High-performance, non-flickering, zero GPU stalling */
-.glass-lens {
-  position: relative;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+/* Light Mode Liquid Glass Pill */
+.liquid-glass-pill {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(228, 231, 236, 0.8);
   box-shadow: 
-    0 1px 3px rgba(0, 0, 0, 0.02),
-    0 6px 18px -3px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transition: all 0.15s ease;
 }
 
-.dark .glass-lens {
-  background: rgba(17, 19, 24, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.liquid-glass-pill:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(203, 213, 225, 0.9);
   box-shadow: 
-    0 1px 3px rgba(0, 0, 0, 0.3),
-    0 8px 24px -4px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 2px 6px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
-/* Protect all lens children from being covered or blocked by canvas layers */
-.glass-lens > *,
-.glass-dock > * {
+/* ==========================================================================
+   DARK MODE: Pure shadcn/ui Design Language
+   ========================================================================== */
+
+/* shadcn-ui dark surface standards */
+.dark .shadcn-card {
+  background-color: #09090b;
+  border-color: #27272a;
+}
+
+.dark .shadcn-surface {
+  background-color: #18181b;
+  border-color: #27272a;
+}
+
+.dark .shadcn-input {
+  background-color: #09090b;
+  border-color: #27272a;
+  color: #fafafa;
+}
+
+.dark .shadcn-button-primary {
+  background-color: #fafafa;
+  color: #09090b;
+}
+
+.dark .shadcn-button-outline {
+  background-color: #09090b;
+  border-color: #27272a;
+  color: #f4f4f5;
+}
+
+.dark .shadcn-button-outline:hover {
+  background-color: #18181b;
+  color: #ffffff;
+}
+
+/* Ensure all interactive controls sit above any decorative pseudo-layers */
+.liquid-glass-panel > *,
+.liquid-glass-pill > * {
   position: relative;
   z-index: 2;
   pointer-events: auto !important;
-}
-
-/* WebGL and liquidGL Canvas strict non-interference */
-canvas {
-  pointer-events: none !important;
 }

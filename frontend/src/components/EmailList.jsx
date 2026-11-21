@@ -51,9 +51,9 @@ export default function EmailList({
   };
 
   return (
-    <div className="w-80 md:w-96 border-r border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-[#101217] flex flex-col h-full shrink-0 select-none z-10">
+    <div className="w-80 md:w-96 border-r border-zinc-200/90 dark:border-zinc-800 bg-white/70 dark:bg-[#09090b] backdrop-blur-xl flex flex-col h-full shrink-0 select-none z-10 transition-colors duration-200">
       {/* Search & Header Bar */}
-      <div className="p-3 border-b border-zinc-200 dark:border-zinc-800/80 space-y-2.5 bg-white dark:bg-[#101217] sticky top-0 z-20">
+      <div className="p-3 border-b border-zinc-200/80 dark:border-zinc-800 space-y-2.5 bg-white/70 dark:bg-[#09090b] sticky top-0 z-20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h2 className="text-xs font-bold tracking-tight text-zinc-950 dark:text-zinc-50 capitalize">
@@ -65,16 +65,14 @@ export default function EmailList({
           </div>
 
           <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="iconSm"
+            <button
               onClick={onRefresh}
               disabled={loading}
-              className="text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
+              className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer disabled:opacity-50"
               title="Refresh inbox"
             >
               <RotateCw className={cn("w-3.5 h-3.5 transition-transform duration-300", loading && "animate-spin")} />
-            </Button>
+            </button>
           </div>
         </div>
 
@@ -87,12 +85,12 @@ export default function EmailList({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search messages (press / to focus)..."
-            className="pl-8 pr-12 h-8 text-xs bg-zinc-100 dark:bg-[#161820] border-zinc-200 dark:border-zinc-700/80 text-zinc-900 dark:text-zinc-100 rounded-lg placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus-visible:ring-zinc-400 transition-all"
+            className="pl-8 pr-12 h-8 text-xs bg-white/80 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-lg placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus-visible:ring-1 focus-visible:ring-zinc-400 transition-all"
           />
           {searchQuery ? (
             <button
               onClick={() => onSearchChange('')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 p-0.5 rounded transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 p-0.5 rounded transition-colors cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -105,7 +103,7 @@ export default function EmailList({
       </div>
 
       {/* Email Feed */}
-      <div className="flex-1 overflow-y-auto divide-y divide-zinc-200/70 dark:divide-zinc-800/70">
+      <div className="flex-1 overflow-y-auto divide-y divide-zinc-200/60 dark:divide-zinc-800/60">
         {emails.length === 0 ? (
           <div className="h-64 flex flex-col items-center justify-center text-center p-6 text-zinc-400 animate-content-fade-in">
             <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 flex items-center justify-center mb-2.5 shadow-2xs">
@@ -134,10 +132,10 @@ export default function EmailList({
                 className={cn(
                   "relative p-3 cursor-pointer transition-row text-left group select-none",
                   isSelected
-                    ? "bg-zinc-100 dark:bg-[#1c1f28] border-l-[3px] border-l-zinc-950 dark:border-l-blue-500 shadow-xs"
+                    ? "bg-white/95 dark:bg-zinc-900/90 border-l-[3px] border-l-zinc-950 dark:border-l-zinc-100 shadow-xs"
                     : isUnread
-                    ? "bg-white dark:bg-[#12141a] hover:bg-zinc-50 dark:hover:bg-[#171a22] border-l-[3px] border-l-transparent"
-                    : "bg-white/80 dark:bg-[#0e1015] hover:bg-zinc-50 dark:hover:bg-[#171a22] border-l-[3px] border-l-transparent"
+                    ? "bg-white/90 dark:bg-zinc-950/80 hover:bg-zinc-50/90 dark:hover:bg-zinc-900/50 border-l-[3px] border-l-transparent"
+                    : "bg-white/60 dark:bg-[#09090b] hover:bg-zinc-50/80 dark:hover:bg-zinc-900/40 border-l-[3px] border-l-transparent"
                 )}
               >
                 {/* Header line: Sender & Timestamp */}
@@ -150,28 +148,28 @@ export default function EmailList({
                     <span className={cn(
                       "text-xs truncate tracking-tight transition-colors",
                       isUnread
-                        ? "font-bold text-zinc-950 dark:text-white"
+                        ? "font-bold text-zinc-950 dark:text-zinc-50"
                         : "font-semibold text-zinc-800 dark:text-zinc-200"
                     )}>
                       {cleanSenderName(email.from)}
                     </span>
                   </div>
 
-                  {/* Timestamp & Hover Action Dock - high contrast and always readable */}
+                  {/* Timestamp & Hover Action Dock */}
                   <div className="shrink-0 flex items-center relative min-w-[56px] justify-end">
                     <span className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 tabular-nums font-medium group-hover:opacity-0 transition-opacity duration-150">
                       {getDisplayDate(email.date)}
                     </span>
 
-                    {/* High-contrast floating action pill on hover */}
-                    <div className="absolute right-0 flex items-center gap-0.5 opacity-0 pointer-events-none group-hover:pointer-events-auto group-hover:opacity-100 transition-opacity duration-150 bg-white dark:bg-[#1f2129] border border-zinc-200 dark:border-zinc-700 px-1 py-0.5 rounded-md shadow-xs">
+                    {/* Floating action pill on hover */}
+                    <div className="absolute right-0 flex items-center gap-0.5 opacity-0 pointer-events-none group-hover:pointer-events-auto group-hover:opacity-100 transition-opacity duration-150 bg-white/95 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-1 py-0.5 rounded-md shadow-xs">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           onToggleStar(email.id, !email.starred);
                         }}
                         className={cn(
-                          "p-0.5 rounded text-zinc-500 hover:text-amber-500 dark:text-zinc-400 dark:hover:text-amber-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors",
+                          "p-0.5 rounded text-zinc-500 hover:text-amber-500 dark:text-zinc-400 dark:hover:text-amber-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer",
                           email.starred && "text-amber-500 dark:text-amber-400"
                         )}
                         title={email.starred ? "Unstar (S)" : "Star (S)"}
@@ -183,7 +181,7 @@ export default function EmailList({
                           e.stopPropagation();
                           onDeleteEmail(email.id);
                         }}
-                        className="p-0.5 rounded text-zinc-500 hover:text-rose-600 dark:text-zinc-400 dark:hover:text-rose-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+                        className="p-0.5 rounded text-zinc-500 hover:text-rose-600 dark:text-zinc-400 dark:hover:text-rose-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                         title="Delete (E / ⌫)"
                       >
                         <Trash2 className="w-3.5 h-3.5 hover:scale-110 transition-transform" />
