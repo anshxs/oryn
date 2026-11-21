@@ -51,7 +51,6 @@
       transition: background 0.2s, color 0.2s;
     }
 
-    /* Top Nav Bar */
     header {
       position: fixed;
       top: 0;
@@ -112,7 +111,6 @@
       border-color: var(--text-muted);
     }
 
-    /* Deck Layout */
     .deck-container {
       position: absolute;
       top: 54px;
@@ -142,7 +140,6 @@
       transform: translateY(0);
     }
 
-    /* Typography */
     .slide-badge {
       font-size: 12px;
       font-weight: 600;
@@ -166,11 +163,10 @@
     p.slide-sub {
       font-size: 16px;
       color: var(--text-muted);
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       line-height: 1.5;
     }
 
-    /* Layout Cards & Grids */
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -231,7 +227,6 @@
       line-height: 1.6;
     }
 
-    /* Code Block */
     pre.code-box {
       background: #000000;
       color: #e4e4e7;
@@ -249,7 +244,6 @@
     .code-str { color: #34d399; }
     .code-kw { color: #f472b6; }
 
-    /* Flowchart representation */
     .flowchart {
       display: flex;
       align-items: center;
@@ -257,8 +251,8 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 24px;
+      padding: 20px;
+      margin-bottom: 20px;
     }
 
     .flow-step {
@@ -272,28 +266,27 @@
     .flow-box {
       background: var(--bg);
       border: 2px solid var(--accent);
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 6px;
-      width: 140px;
+      font-size: 13px;
+      margin-bottom: 4px;
+      width: 135px;
     }
 
     .flow-sub {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
       font-family: var(--font-mono);
     }
 
     .flow-arrow {
       color: var(--accent);
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 800;
-      padding: 0 10px;
+      padding: 0 8px;
     }
 
-    /* Table */
     table.api-table {
       width: 100%;
       border-collapse: collapse;
@@ -306,7 +299,7 @@
 
     table.api-table th {
       text-align: left;
-      padding: 10px 14px;
+      padding: 9px 12px;
       background: rgba(255, 255, 255, 0.03);
       border-bottom: 1px solid var(--card-border);
       font-weight: 600;
@@ -314,7 +307,7 @@
     }
 
     table.api-table td {
-      padding: 10px 14px;
+      padding: 9px 12px;
       border-bottom: 1px solid var(--card-border);
     }
 
@@ -335,7 +328,6 @@
     .badge-patch { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
     .badge-delete { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
 
-    /* Bottom Footer Bar */
     footer {
       position: fixed;
       bottom: 0;
@@ -373,7 +365,6 @@
       font-size: 11px;
     }
 
-    /* Overview modal */
     .overview-overlay {
       position: fixed;
       inset: 0;
@@ -391,7 +382,7 @@
     .overview-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      gap: 16px;
       max-width: 1000px;
       margin: 0 auto;
     }
@@ -442,35 +433,81 @@
         <div class="card">
           <div class="card-icon">🛣️</div>
           <div class="card-title">Routes</div>
-          <div class="card-desc">Clean Express endpoint mapping with proper HTTP verbs (GET, POST, PATCH, DELETE).</div>
+          <div class="card-desc">Express endpoint mapping using HTTP verbs (GET, POST, PATCH, DELETE).</div>
         </div>
         <div class="card">
           <div class="card-icon">⚙️</div>
           <div class="card-title">Controllers</div>
-          <div class="card-desc">Request processing, parameter validation, and JSON status code responses.</div>
+          <div class="card-desc">Request validation, parameter handling, and JSON status code responses.</div>
         </div>
         <div class="card">
           <div class="card-icon">📦</div>
           <div class="card-title">Models</div>
-          <div class="card-desc">Data schema definitions and persistence operations for emails, mailboxes & domains.</div>
+          <div class="card-desc">Data schema encapsulation and CRUD queries for emails, mailboxes & domains.</div>
         </div>
         <div class="card">
           <div class="card-icon">🌐</div>
           <div class="card-title">API Calling</div>
-          <div class="card-desc">React 19 frontend utilizing async/await fetch calls to render real-time state.</div>
+          <div class="card-desc">React 19 single-page UI consuming backend REST endpoints with async/await.</div>
         </div>
       </div>
 
       <div style="margin-top: 30px; font-size: 13px; color: var(--text-muted); display: flex; gap: 24px;">
         <span><strong>Team:</strong> Arpit Rajput, Ansh Sharma, Mayank Chauhan, Swaraj Agarwal</span>
         <span>•</span>
-        <span><strong>Stack:</strong> Node.js, Express, React, Vite, Tailwind CSS</span>
+        <span><strong>Tech Stack:</strong> Node.js, Express, React, Vite, Tailwind CSS</span>
       </div>
     </div>
 
-    <!-- SLIDE 2: THE MVC PATTERN -->
+    <!-- SLIDE 2: PROJECT OVERVIEW (NEW) -->
     <div class="slide" id="slide-2">
-      <div class="slide-badge">Core Architecture</div>
+      <div class="slide-badge">Project Information</div>
+      <h1 class="slide-title">What is Oryn?</h1>
+      <p class="slide-sub">
+        A lightweight, self-hosted web mail management platform designed to give organizations full ownership of their email.
+      </p>
+
+      <div class="grid-2">
+        <div class="card" style="border-left: 4px solid var(--accent);">
+          <div class="card-header">
+            <span class="card-icon">🎯</span>
+            <span class="card-title">Project Purpose & Motivation</span>
+          </div>
+          <div class="card-desc" style="font-size: 14px; line-height: 1.7;">
+            <p>• Centralized email providers (Google, Microsoft) are expensive and act as closed black boxes.</p>
+            <p style="margin-top: 8px;">• <strong>Oryn provides an independent alternative:</strong> users can connect custom domains, create personalized mailboxes, compose emails, and manage inboxes from one intuitive dashboard.</p>
+            <p style="margin-top: 8px;">• <strong>Academic Goal:</strong> Build a real, working web service while strictly following software engineering principles like <strong>MVC separation</strong> and <strong>standard REST conventions</strong>.</p>
+          </div>
+        </div>
+
+        <div class="grid-2" style="gap: 12px;">
+          <div class="card">
+            <div style="font-size: 20px; margin-bottom: 6px;">📥</div>
+            <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">Mail Management</div>
+            <div class="card-desc">Inbox, Sent, Drafts, Starred, and Trash with real-time reading and compose modal.</div>
+          </div>
+          <div class="card">
+            <div style="font-size: 20px; margin-bottom: 6px;">📫</div>
+            <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">Custom Mailboxes</div>
+            <div class="card-desc">Create and switch between multiple user accounts (e.g. <code>team@domain.com</code>).</div>
+          </div>
+          <div class="card">
+            <div style="font-size: 20px; margin-bottom: 6px;">🌐</div>
+            <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">Domain Management</div>
+            <div class="card-desc">Attach custom domains and inspect DNS health (MX, SPF, DMARC records).</div>
+          </div>
+          <div class="card">
+            <div style="font-size: 20px; margin-bottom: 6px;">📊</div>
+            <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">Live Analytics</div>
+            <div class="card-desc">Instant storage usage counters, incoming email volume, and server status.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: THE MVC PATTERN -->
+    <div class="slide" id="slide-3">
+      <div class="slide-badge">Architecture & Design</div>
       <h1 class="slide-title">Strict MVC Pattern & Helpers Separation</h1>
       <p class="slide-sub">
         Separating business concerns so every component has a single, well-defined responsibility.
@@ -524,12 +561,12 @@
       </div>
     </div>
 
-    <!-- SLIDE 3: ROUTES & ENDPOINTS -->
-    <div class="slide" id="slide-3">
+    <!-- SLIDE 4: ROUTES & ENDPOINTS -->
+    <div class="slide" id="slide-4">
       <div class="slide-badge">Backend Implementation</div>
       <h1 class="slide-title">RESTful Routes & HTTP Methods</h1>
       <p class="slide-sub">
-        Standardized API endpoints matching REST conventions for resources.
+        Standardized API endpoints matching REST conventions for all mail resources.
       </p>
 
       <div class="grid-2">
@@ -584,7 +621,7 @@
 
 <span class="code-kw">const</span> router = Router();
 
-<span class="code-comment">// 1. Route definitions map HTTP verbs to controller methods</span>
+<span class="code-comment">// Route definitions map HTTP verbs to controller methods</span>
 router.<span class="code-fn">get</span>(<span class="code-str">'/'</span>, EmailController.getEmails);
 router.<span class="code-fn">get</span>(<span class="code-str">'/:id'</span>, EmailController.getEmailById);
 router.<span class="code-fn">post</span>(<span class="code-str">'/send'</span>, EmailController.sendEmail);
@@ -596,8 +633,8 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
       </div>
     </div>
 
-    <!-- SLIDE 4: CONTROLLERS & MODELS -->
-    <div class="slide" id="slide-4">
+    <!-- SLIDE 5: CONTROLLERS & MODELS -->
+    <div class="slide" id="slide-5">
       <div class="slide-badge">Controller & Model Deep Dive</div>
       <h1 class="slide-title">Handling Requests & Managing Data</h1>
       <p class="slide-sub">
@@ -611,7 +648,7 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
           </div>
           <pre class="code-box"><span class="code-kw">static async</span> <span class="code-fn">sendEmail</span>(req, res) {
   <span class="code-kw">try</span> {
-    <span class="code-kw">const</span> { from, to, subject, text, html } = req.body;
+    <span class="code-kw">const</span> { from, to, subject, text } = req.body;
 
     <span class="code-comment">// 1. Input Validation</span>
     <span class="code-kw">if</span> (!from || !to || !subject) {
@@ -653,8 +690,8 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
       </div>
     </div>
 
-    <!-- SLIDE 5: FRONTEND API CALLING -->
-    <div class="slide" id="slide-5">
+    <!-- SLIDE 6: FRONTEND API CALLING -->
+    <div class="slide" id="slide-6">
       <div class="slide-badge">Client Integration</div>
       <h1 class="slide-title">Frontend API Calling (React 19)</h1>
       <p class="slide-sub">
@@ -708,8 +745,8 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
       </div>
     </div>
 
-    <!-- SLIDE 6: DEMO & CONCLUSION -->
-    <div class="slide" id="slide-6">
+    <!-- SLIDE 7: DEMO & CONCLUSION -->
+    <div class="slide" id="slide-7">
       <div class="slide-badge">Summary & Verification</div>
       <h1 class="slide-title">Live Demonstration & Academic Rubric</h1>
       <p class="slide-sub">
@@ -737,7 +774,7 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
       <div class="card" style="background: rgba(59, 130, 246, 0.08); border-color: var(--accent);">
         <div style="font-weight: 700; font-size: 15px; margin-bottom: 6px;">Key Academic Takeaway:</div>
         <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
-          "Oryn demonstrates how professional full-stack web applications organize code. By using a canonical Model-View-Controller backend with Express routers and asynchronous frontend API calling, the codebase remains modular, readable, and easy to maintain."
+          "Oryn demonstrates how modern full-stack web applications organize code. By using a canonical Model-View-Controller backend with Express routers and asynchronous frontend API calling, the codebase remains modular, readable, and easy to maintain."
         </div>
       </div>
     </div>
@@ -753,7 +790,7 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
       <span class="key-hint"><span class="key-badge">F</span> Fullscreen</span>
     </div>
     <div id="slide-indicator" style="font-weight: 600;">
-      Slide 1 of 6
+      Slide 1 of 7
     </div>
   </footer>
 
@@ -762,26 +799,30 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
     <div class="overview-grid" onclick="event.stopPropagation()">
       <div class="overview-card" onclick="goToSlide(1)">
         <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 1</div>
-        <div style="font-size:14px; font-weight:600;">Title & Project Overview</div>
+        <div style="font-size:14px; font-weight:600;">Title & Project Scope</div>
       </div>
       <div class="overview-card" onclick="goToSlide(2)">
         <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 2</div>
-        <div style="font-size:14px; font-weight:600;">MVC Pattern & Helpers</div>
+        <div style="font-size:14px; font-weight:600;">Project Info & Features</div>
       </div>
       <div class="overview-card" onclick="goToSlide(3)">
         <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 3</div>
-        <div style="font-size:14px; font-weight:600;">Routes & REST Endpoints</div>
+        <div style="font-size:14px; font-weight:600;">MVC Pattern & Helpers</div>
       </div>
       <div class="overview-card" onclick="goToSlide(4)">
         <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 4</div>
-        <div style="font-size:14px; font-weight:600;">Controllers & Models</div>
+        <div style="font-size:14px; font-weight:600;">Routes & REST Endpoints</div>
       </div>
       <div class="overview-card" onclick="goToSlide(5)">
         <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 5</div>
-        <div style="font-size:14px; font-weight:600;">Frontend API Calling</div>
+        <div style="font-size:14px; font-weight:600;">Controllers & Models</div>
       </div>
       <div class="overview-card" onclick="goToSlide(6)">
         <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 6</div>
+        <div style="font-size:14px; font-weight:600;">Frontend API Calling</div>
+      </div>
+      <div class="overview-card" onclick="goToSlide(7)">
+        <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 7</div>
         <div style="font-size:14px; font-weight:600;">Live Demo & Summary</div>
       </div>
     </div>
@@ -789,7 +830,7 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
 
   <script>
     let currentSlide = 1;
-    const totalSlides = 6;
+    const totalSlides = 7;
 
     function updateSlides() {
       for (let i = 1; i <= totalSlides; i++) {

@@ -1,5 +1,5 @@
 # Oryn — Full-Stack MVC & REST API Project
-## Simplified Academic Defense & Presentation Guide
+## Academic Defense & Presentation Guide
 
 > **Interactive Presentation**: Open [`presentation.html`](./presentation.html) in your browser (`open presentation.html`).  
 > **Controls**: `Arrow Keys` or `Space` to move between slides, `T` for Theme, `O` for Slide Overview, `F` for Fullscreen.
@@ -9,29 +9,45 @@
 ## What This Project Demonstrates (Assignment Rubric)
 
 This project was built to clearly demonstrate mastery of:
-1. **Express Routing**: Clean endpoint paths (`/api/emails`, `/api/mailboxes`, etc.) using HTTP verbs (`GET`, `POST`, `PATCH`, `DELETE`).
-2. **MVC Architecture**:
+1. **Real-World Project Utility**: A functioning, self-hosted web mail management application where users create mailboxes, manage domains, and send/receive emails.
+2. **Express Routing**: Clean endpoint paths (`/api/emails`, `/api/mailboxes`, etc.) using standard HTTP verbs (`GET`, `POST`, `PATCH`, `DELETE`).
+3. **MVC Architecture**:
    - **Routes (`src/routes/`)**: Pure route mapping (URL $\to$ Controller method).
    - **Controllers (`src/controllers/`)**: Request validation, status code assignment (`200`, `201`, `400`, `500`), and response serialization.
    - **Models (`src/models/`)**: Data structure definitions and database/storage queries.
-3. **Dedicated Helpers (`src/helpers/`)**:
+4. **Dedicated Helpers (`src/helpers/`)**:
    - Anything outside standard MVC CRUD (like SMTP background listening, DNS queries, or file operations) is placed into `helpers/` so the teacher can see a clean, uncluttered MVC structure.
-4. **Frontend API Calling**:
+5. **Frontend API Calling**:
    - A React 19 single-page application using asynchronous `fetch()` and `async/await` to consume backend REST endpoints and dynamically update the DOM.
 
 ---
 
-## 6-Slide Defense Script & Speaker Notes
+## 7-Slide Defense Script & Speaker Notes
 
-### Slide 1: Title & Project Scope
+### Slide 1: Title & Academic Scope
 * **Slide Title**: Oryn Web Mail System
 * **Subtitle**: Full-Stack MVC & REST API Project
 * **Speaker Script**:  
-  > "Good morning, teacher. Today we are presenting **Oryn**, a full-stack web mail application built with Node.js, Express, and React. The core objective of our project is to demonstrate **MVC Architecture**, clean **RESTful API routing**, and dynamic **frontend-to-backend API communication**."
+  > "Good morning, teacher. Today we are presenting **Oryn**, a full-stack web mail application built with Node.js, Express, and React. The core objective of our project is to demonstrate **MVC Architecture**, clean **RESTful API routing**, and dynamic **frontend-to-backend API communication** in a real-world web application."
 
 ---
 
-### Slide 2: Strict MVC Pattern & Helpers Separation
+### Slide 2: Project Information & Features
+* **Slide Title**: What is Oryn?
+* **Core Topics**:
+  - **The Motivation**: Centralized providers (Google, Microsoft) are closed black boxes with high subscription fees. Oryn gives individuals and small teams full ownership of their email.
+  - **Key Features**:
+    1. **Mailbox Management**: Compose, read, star, archive, and delete emails.
+    2. **Multiple Mailboxes**: Create and switch between personalized accounts (`user@domain.com`).
+    3. **Custom Domains & DNS**: Connect domains and inspect DNS health (MX, SPF, DMARC records).
+    4. **Live Analytics**: Monitor storage usage and email activity in real-time.
+  - **Academic Alignment**: All these practical features are driven by clean REST APIs and modular MVC code.
+* **Speaker Script**:  
+  > "Before diving into the code, let's look at what Oryn actually does. Oryn is a self-hosted web mail system. Instead of relying on third-party services, users can connect their own domains, create personalized mailboxes like `team@ourcollege.edu`, and send or organize emails through an intuitive web interface. Every single user interaction on the screen maps directly to an Express route and controller in our backend."
+
+---
+
+### Slide 3: Strict MVC Pattern & Helpers Separation
 * **Slide Title**: Strict MVC Pattern & Helpers Separation
 * **Key Concept**:
   - **Routes (`src/routes/`)**: Map incoming HTTP requests to controller methods.
@@ -43,7 +59,7 @@ This project was built to clearly demonstrate mastery of:
 
 ---
 
-### Slide 3: RESTful Routes & HTTP Methods
+### Slide 4: RESTful Routes & HTTP Methods
 * **Slide Title**: RESTful Routes & HTTP Methods
 * **Core Endpoints**:
   - `GET /api/emails` $\to$ Fetch emails list
@@ -57,7 +73,7 @@ This project was built to clearly demonstrate mastery of:
 
 ---
 
-### Slide 4: Controller & Model Deep Dive
+### Slide 5: Controller & Model Deep Dive
 * **Slide Title**: Handling Requests & Managing Data
 * **Code Walkthrough**:
   - Show `EmailController.sendEmail`:
@@ -72,7 +88,7 @@ This project was built to clearly demonstrate mastery of:
 
 ---
 
-### Slide 5: Frontend API Calling (React 19)
+### Slide 6: Frontend API Calling (React 19)
 * **Slide Title**: Frontend API Calling (React 19)
 * **How React Connects to Backend**:
   - Uses native `fetch()` with `async/await` inside `useEffect` or button click handlers.
@@ -83,7 +99,7 @@ This project was built to clearly demonstrate mastery of:
 
 ---
 
-### Slide 6: Live Demonstration & Academic Summary
+### Slide 7: Live Demonstration & Academic Summary
 * **Slide Title**: Live Demonstration & Academic Rubric
 * **Live Demo Steps**:
   1. **Fetch & Display**: Open the web application. Show the Network Tab in DevTools making a `GET` request to `/api/emails` and rendering the list.
