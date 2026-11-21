@@ -43,6 +43,44 @@ export default function EmailDetail({
   const [isSendingQuick, setIsSendingQuick] = useState(false);
   const [showSecurityDetails, setShowSecurityDetails] = useState(false);
 
+  // Injects dark mode typography into iframe srcDoc so email bodies seamlessly blend with dark mode
+  const getThemedHtml = (rawHtml) => {
+    if (!rawHtml) return '';
+    const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+    if (!isDark) return rawHtml;
+
+    const darkStyles = `
+      <style>
+        :root { color-scheme: dark; }
+        html, body {
+          background-color: #111318 !important;
+          color: #f4f4f6 !important;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          margin: 16px;
+          line-height: 1.6;
+        }
+        p, span, div, li, td, th {
+          color: #e4e4e7 !important;
+        }
+        h1, h2, h3, h4, strong, b {
+          color: #ffffff !important;
+        }
+        a {
+          color: #60a5fa !important;
+        }
+        code, pre {
+          background-color: #1a1d24 !important;
+          color: #cbd5e1 !important;
+          padding: 2px 6px;
+          border-radius: 4px;
+          border: 1px solid #282c35 !important;
+          font-size: 0.9em;
+        }
+      </style>
+    `;
+    return `<!DOCTYPE html><html><head><meta charset="utf-8">${darkStyles}</head><body>${rawHtml}</body></html>`;
+  };
+
   if (!email) {
     return (
       <div className="flex-1 bg-[#fcfdfd] dark:bg-[#08090b] flex flex-col items-center justify-center text-center p-8 select-none transition-colors">
@@ -103,75 +141,68 @@ export default function EmailDetail({
   };
 
   return (
-    <div key={email.id} className="flex-1 bg-white/70 dark:bg-[#0c0d10]/75 backdrop-blur-md flex flex-col h-full overflow-hidden select-text animate-content-fade-in transition-colors z-10">
-      {/* Action Toolbar with Glass Sheen */}
-      <div className="glass-lens px-4 py-2 border-b border-zinc-200/80 dark:border-zinc-800/80 flex items-center justify-between select-none shrink-0 sticky top-0 z-20">
+    <div key={email.id} className="flex-1 bg-[#fafbfc] dark:bg-[#0c0d11] flex flex-col h-full overflow-hidden select-text animate-content-fade-in transition-colors z-10">
+      {/* Action Toolbar with high-contrast, crystal-clear buttons */}
+      <div className="px-4 py-2 border-b border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-[#111318] flex items-center justify-between select-none shrink-0 sticky top-0 z-20">
         <div className="flex items-center gap-1.5">
-          <Button
-            variant="outline"
-            size="sm"
+          <button
             onClick={() => onReply(email)}
-            className="glass-pill text-xs h-7.5 px-3 gap-1.5"
+            className="flex items-center gap-1.5 h-7.5 px-3 rounded-lg text-xs font-semibold bg-zinc-100 hover:bg-zinc-200 dark:bg-[#1c1f26] dark:hover:bg-[#252932] text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/80 shadow-2xs transition-colors cursor-pointer"
           >
-            <Reply className="w-3.5 h-3.5" />
-            Reply
-            <kbd className="text-[9px] font-mono opacity-60 ml-0.5">R</kbd>
-          </Button>
+            <Reply className="w-3.5 h-3.5 text-zinc-700 dark:text-zinc-300" />
+            <span>Reply</span>
+            <kbd className="text-[9px] font-mono text-zinc-500 dark:text-zinc-400 bg-zinc-200/70 dark:bg-zinc-800 px-1 py-0.2 rounded border border-zinc-300/60 dark:border-zinc-700">R</kbd>
+          </button>
 
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={() => onForward(email)}
-            className="glass-pill text-xs h-7.5 px-3 gap-1.5"
+            className="flex items-center gap-1.5 h-7.5 px-3 rounded-lg text-xs font-semibold bg-zinc-100 hover:bg-zinc-200 dark:bg-[#1c1f26] dark:hover:bg-[#252932] text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/80 shadow-2xs transition-colors cursor-pointer"
           >
-            <Forward className="w-3.5 h-3.5" />
-            Forward
-            <kbd className="text-[9px] font-mono opacity-60 ml-0.5">F</kbd>
-          </Button>
+            <Forward className="w-3.5 h-3.5 text-zinc-700 dark:text-zinc-300" />
+            <span>Forward</span>
+            <kbd className="text-[9px] font-mono text-zinc-500 dark:text-zinc-400 bg-zinc-200/70 dark:bg-zinc-800 px-1 py-0.2 rounded border border-zinc-300/60 dark:border-zinc-700">F</kbd>
+          </button>
 
-          <Separator orientation="vertical" className="h-3.5 mx-1.5 bg-zinc-200 dark:bg-zinc-800" />
+          <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800 mx-1" />
 
-          <Button
-            variant="ghost"
-            size="iconSm"
+          <button
             onClick={() => onToggleStar(email.id, !email.starred)}
-            className={cn("glass-pill text-zinc-500 hover:text-amber-500", email.starred && "text-amber-500")}
+            className={cn(
+              "flex items-center justify-center h-7.5 w-7.5 rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-100 hover:bg-zinc-200 dark:bg-[#1c1f26] dark:hover:bg-[#252932] transition-colors cursor-pointer",
+              email.starred ? "text-amber-500 dark:text-amber-400" : "text-zinc-600 dark:text-zinc-400"
+            )}
             title={email.starred ? "Unstar (S)" : "Star (S)"}
           >
-            <Star className={cn("w-3.5 h-3.5 transition-transform", email.starred ? "fill-amber-400 animate-star-pop" : "hover:scale-115")} />
-          </Button>
+            <Star className={cn("w-3.5 h-3.5", email.starred && "fill-amber-400")} />
+          </button>
 
-          <Button
-            variant="ghost"
-            size="iconSm"
+          <button
             onClick={() => onMarkUnread(email.id)}
-            className="glass-pill text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white"
+            className="flex items-center justify-center h-7.5 w-7.5 rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-100 hover:bg-zinc-200 dark:bg-[#1c1f26] dark:hover:bg-[#252932] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer"
             title="Mark as unread"
           >
-            <Mail className="w-3.5 h-3.5 hover:scale-110 transition-transform" />
-          </Button>
+            <Mail className="w-3.5 h-3.5" />
+          </button>
 
-          <Button
-            variant="ghost"
-            size="iconSm"
+          <button
             onClick={() => onDelete(email.id)}
-            className="glass-pill text-zinc-500 hover:text-rose-600 dark:text-zinc-400 dark:hover:text-rose-400"
+            className="flex items-center justify-center h-7.5 w-7.5 rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-100 hover:bg-rose-50 dark:bg-[#1c1f26] dark:hover:bg-rose-950/40 text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
             title="Delete / Move to Trash (E / ⌫)"
           >
-            <Trash2 className="w-3.5 h-3.5 hover:scale-110 transition-transform" />
-          </Button>
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
         </div>
 
         {/* View Mode Switcher */}
         <Tabs value={viewMode} onValueChange={setViewMode} className="w-auto">
-          <TabsList className="h-7 bg-zinc-200/50 dark:bg-zinc-800/60 backdrop-blur-xs">
-            <TabsTrigger value="html" className="text-[11px] h-5.5 px-2 gap-1 font-medium">
+          <TabsList className="h-7 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700/80">
+            <TabsTrigger value="html" className="text-[11px] h-5.5 px-2 gap-1 font-medium data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-900">
               <Eye className="w-3 h-3" /> Preview
             </TabsTrigger>
-            <TabsTrigger value="text" className="text-[11px] h-5.5 px-2 gap-1 font-medium">
+            <TabsTrigger value="text" className="text-[11px] h-5.5 px-2 gap-1 font-medium data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-900">
               <FileText className="w-3 h-3" /> Plain
             </TabsTrigger>
-            <TabsTrigger value="headers" className="text-[11px] h-5.5 px-2 gap-1 font-medium">
+            <TabsTrigger value="headers" className="text-[11px] h-5.5 px-2 gap-1 font-medium data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-900">
               <Code className="w-3 h-3" /> Headers
             </TabsTrigger>
           </TabsList>
@@ -179,7 +210,7 @@ export default function EmailDetail({
       </div>
 
       {/* Message Header */}
-      <div className="p-5 border-b border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-[#0c0d10] space-y-3 shrink-0">
+      <div className="p-5 border-b border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-[#101217] space-y-3 shrink-0">
         <div className="flex items-start justify-between gap-4">
           <h1 className="text-lg font-bold text-zinc-950 dark:text-white tracking-tight leading-snug">
             {email.subject || '(No Subject)'}
@@ -265,16 +296,16 @@ export default function EmailDetail({
       </div>
 
       {/* Main Email Body Viewer */}
-      <div className="flex-1 overflow-y-auto p-6 bg-[#fcfdfd] dark:bg-[#08090b]">
+      <div className="flex-1 overflow-y-auto p-6 bg-[#f8fafc] dark:bg-[#0c0d11]">
         <div className="max-w-4xl mx-auto space-y-6">
           {viewMode === 'html' ? (
             email.html ? (
-              <div className="w-full rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white shadow-xs overflow-hidden">
+              <div className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#111318] shadow-xs overflow-hidden">
                 <iframe
                   title="Email Body"
-                  srcDoc={email.html}
+                  srcDoc={getThemedHtml(email.html)}
                   sandbox="allow-popups allow-popups-to-escape-sandbox"
-                  className="w-full min-h-[460px] border-0"
+                  className="w-full min-h-[460px] border-0 bg-white dark:bg-[#111318]"
                 />
               </div>
             ) : (
@@ -356,16 +387,16 @@ export default function EmailDetail({
           )}
 
           {/* Inline Quick Reply Dock */}
-          <div className="pt-4 border-t border-zinc-200/80 dark:border-zinc-800/80">
-            <div className="glass-lens rounded-2xl p-4 shadow-sm space-y-2.5 focus-within:border-zinc-400 dark:focus-within:border-zinc-500 transition-all duration-150">
+          <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800/80">
+            <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#111318] p-4 shadow-xs space-y-3">
               <div className="flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400">
                 <span className="flex items-center gap-1.5 font-medium">
-                  <CornerDownRight className="w-3.5 h-3.5 text-zinc-500" />
-                  Quick Reply to <span className="font-bold text-zinc-950 dark:text-white">{email.from.replace(/<.*>/, '').trim()}</span>
+                  <CornerDownRight className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
+                  Quick Reply to <span className="font-bold text-zinc-950 dark:text-zinc-100">{email.from.replace(/<.*>/, '').trim()}</span>
                 </span>
                 <button
                   onClick={() => onReply(email)}
-                  className="text-[11px] text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white flex items-center gap-1 font-semibold transition-colors cursor-pointer"
+                  className="text-[11px] text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 flex items-center gap-1 font-semibold transition-colors cursor-pointer"
                 >
                   <Maximize2 className="w-3 h-3" /> Full Composer
                 </button>
@@ -375,7 +406,7 @@ export default function EmailDetail({
                 value={quickReplyText}
                 onChange={(e) => setQuickReplyText(e.target.value)}
                 placeholder="Write a quick reply..."
-                className="min-h-[75px] text-xs bg-white/60 dark:bg-[#08090b]/60 border-zinc-200 dark:border-zinc-800 focus-visible:ring-zinc-400 resize-none transition-all duration-150"
+                className="min-h-[75px] text-xs bg-zinc-50 dark:bg-[#0c0d11] border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus-visible:ring-zinc-400 resize-none transition-all rounded-xl"
               />
 
               <div className="flex items-center justify-between pt-1">
@@ -386,7 +417,7 @@ export default function EmailDetail({
                   size="sm"
                   onClick={handleSendQuickReply}
                   disabled={!quickReplyText.trim() || isSendingQuick}
-                  className="glass-pill h-7.5 px-3.5 text-xs gap-1.5 font-semibold bg-zinc-950 text-white dark:bg-white dark:text-zinc-950"
+                  className="h-7.5 px-3.5 text-xs gap-1.5 font-semibold bg-zinc-950 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 rounded-lg shadow-xs cursor-pointer"
                 >
                   <Send className="w-3 h-3" />
                   Send Reply

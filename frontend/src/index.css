@@ -191,7 +191,7 @@
 /* Core Glass Lens - High-performance, non-flickering, zero GPU stalling */
 .glass-lens {
   position: relative;
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(228, 231, 236, 0.8);
@@ -203,12 +203,12 @@
 }
 
 .dark .glass-lens {
-  background: rgba(13, 14, 18, 0.82);
+  background: rgba(17, 19, 24, 0.88);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 
-    0 1px 3px rgba(0, 0, 0, 0.25),
-    0 8px 24px -4px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 8px 24px -4px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* Protect all lens children from being covered or blocked by canvas layers */
@@ -222,58 +222,4 @@
 /* WebGL and liquidGL Canvas strict non-interference */
 canvas {
   pointer-events: none !important;
-}
-
-/* Floating Glass Dock */
-.glass-dock {
-  position: relative;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 
-    0 8px 24px -4px rgba(0, 0, 0, 0.06),
-    0 2px 6px -1px rgba(0, 0, 0, 0.03),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
-}
-
-.dark .glass-dock {
-  background: rgba(18, 20, 26, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 
-    0 10px 30px -5px rgba(0, 0, 0, 0.55),
-    0 4px 10px -2px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
-
-/* Glass Pill Button - Immediate click response, no nested blur flicker */
-.glass-pill {
-  position: relative;
-  background: rgba(255, 255, 255, 0.65);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
-  pointer-events: auto !important;
-}
-
-.glass-pill:hover {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(0, 0, 0, 0.14);
-  box-shadow: 0 3px 8px -1px rgba(0, 0, 0, 0.06);
-  transform: translateY(-0.5px);
-}
-
-.dark .glass-pill {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.dark .glass-pill:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 3px 10px -2px rgba(0, 0, 0, 0.4);
-  transform: translateY(-0.5px);
 }

@@ -51,9 +51,9 @@ export default function EmailList({
   };
 
   return (
-    <div className="w-80 md:w-96 border-r border-zinc-200/80 dark:border-zinc-800/80 bg-white/75 dark:bg-[#08090b]/80 backdrop-blur-md flex flex-col h-full shrink-0 select-none z-10">
-      {/* Search & Header Bar with Clean Glass Sheen */}
-      <div className="glass-lens p-3 border-b border-zinc-200/80 dark:border-zinc-800/80 space-y-2.5 sticky top-0 z-20">
+    <div className="w-80 md:w-96 border-r border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-[#101217] flex flex-col h-full shrink-0 select-none z-10">
+      {/* Search & Header Bar */}
+      <div className="p-3 border-b border-zinc-200 dark:border-zinc-800/80 space-y-2.5 bg-white dark:bg-[#101217] sticky top-0 z-20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h2 className="text-xs font-bold tracking-tight text-zinc-950 dark:text-zinc-50 capitalize">
@@ -70,7 +70,7 @@ export default function EmailList({
               size="iconSm"
               onClick={onRefresh}
               disabled={loading}
-              className="text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              className="text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
               title="Refresh inbox"
             >
               <RotateCw className={cn("w-3.5 h-3.5 transition-transform duration-300", loading && "animate-spin")} />
@@ -87,7 +87,7 @@ export default function EmailList({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search messages (press / to focus)..."
-            className="pl-8 pr-12 h-8 text-xs bg-zinc-100/70 dark:bg-[#121316]/80 border-zinc-200/90 dark:border-zinc-700/80 rounded-lg placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus-visible:ring-zinc-400 transition-all duration-150"
+            className="pl-8 pr-12 h-8 text-xs bg-zinc-100 dark:bg-[#161820] border-zinc-200 dark:border-zinc-700/80 text-zinc-900 dark:text-zinc-100 rounded-lg placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus-visible:ring-zinc-400 transition-all"
           />
           {searchQuery ? (
             <button
@@ -134,10 +134,10 @@ export default function EmailList({
                 className={cn(
                   "relative p-3 cursor-pointer transition-row text-left group select-none",
                   isSelected
-                    ? "bg-zinc-100 dark:bg-[#181a22] border-l-[3px] border-l-zinc-950 dark:border-l-zinc-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+                    ? "bg-zinc-100 dark:bg-[#1c1f28] border-l-[3px] border-l-zinc-950 dark:border-l-blue-500 shadow-xs"
                     : isUnread
-                    ? "bg-white dark:bg-[#0c0d10] hover:bg-zinc-100/80 dark:hover:bg-[#15171e] border-l-[3px] border-l-transparent"
-                    : "bg-white/90 dark:bg-[#08090b] hover:bg-zinc-100/80 dark:hover:bg-[#15171e] border-l-[3px] border-l-transparent"
+                    ? "bg-white dark:bg-[#12141a] hover:bg-zinc-50 dark:hover:bg-[#171a22] border-l-[3px] border-l-transparent"
+                    : "bg-white/80 dark:bg-[#0e1015] hover:bg-zinc-50 dark:hover:bg-[#171a22] border-l-[3px] border-l-transparent"
                 )}
               >
                 {/* Header line: Sender & Timestamp */}

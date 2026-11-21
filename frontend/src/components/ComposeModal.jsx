@@ -165,7 +165,7 @@ export default function ComposeModal({
   return (
     <div
       className={cn(
-        "fixed z-50 glass-lens shadow-[0_24px_56px_rgba(0,0,0,0.28)] flex flex-col overflow-hidden transition-all duration-200 animate-in fade-in-0 zoom-in-95",
+        "fixed z-50 bg-white/95 dark:bg-[#111318]/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-50 shadow-2xl flex flex-col overflow-hidden transition-all duration-200 animate-in fade-in-0 zoom-in-95",
         isMaximized
           ? "inset-4 rounded-2xl"
           : "bottom-5 right-6 w-full max-w-xl h-[560px] rounded-2xl"
@@ -176,7 +176,7 @@ export default function ComposeModal({
       onDrop={handleDrop}
     >
       {/* Compose Window Header */}
-      <div className="px-4 py-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-[#131418]/60 backdrop-blur-md flex items-center justify-between select-none shrink-0">
+      <div className="px-4 py-2.5 border-b border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-[#15171f]/80 flex items-center justify-between select-none shrink-0">
         <span className="text-xs font-bold text-zinc-950 dark:text-white tracking-tight">
           New Message
         </span>

@@ -24,7 +24,7 @@ export default function ShortcutsModal({ isOpen, onClose }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md p-6 glass-lens text-zinc-950 dark:text-zinc-50 border-zinc-200/80 dark:border-zinc-800/80">
+      <DialogContent className="max-w-md p-6 bg-white/95 dark:bg-[#111318]/95 backdrop-blur-xl text-zinc-950 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-800 shadow-2xl">
         <DialogHeader className="space-y-1">
           <div className="flex items-center gap-2">
             <div className="h-6 w-6 rounded-md bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center">

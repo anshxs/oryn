@@ -283,9 +283,9 @@ export default function DomainSettingsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl max-h-[88vh] glass-lens text-zinc-950 dark:text-zinc-50 p-0 overflow-hidden shadow-2xl flex flex-col">
+      <DialogContent className="max-w-4xl max-h-[88vh] bg-white/95 dark:bg-[#111318]/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-50 p-0 overflow-hidden shadow-2xl flex flex-col">
         {/* Modal Top Header */}
-        <DialogHeader className="p-4 border-b border-zinc-200/80 dark:border-zinc-800/80 flex flex-row items-center justify-between shrink-0 bg-white/60 dark:bg-[#121316]/60 backdrop-blur-md">
+        <DialogHeader className="p-4 border-b border-zinc-200 dark:border-zinc-800/80 flex flex-row items-center justify-between shrink-0 bg-zinc-50/70 dark:bg-[#15171f]/80">
           <div className="flex items-center gap-2.5">
             <div className="h-7 w-7 rounded-lg bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center shadow-xs">
               <Globe className="w-4 h-4 stroke-[2]" />
