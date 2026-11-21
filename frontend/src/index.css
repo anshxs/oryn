@@ -10,16 +10,16 @@
   body {
     font-family: var(--font-sans);
     letter-spacing: -0.015em;
-    background-color: #fcfcfd;
-    color: #0f1013;
+    background-color: #fcfdfd;
+    color: #090a0d;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   .dark body {
-    background-color: #090a0c;
-    color: #f4f5f7;
+    background-color: #08090b;
+    color: #f9fafb;
   }
 
   code, pre, .font-mono {
@@ -44,24 +44,61 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(15, 16, 19, 0.12);
+  background: rgba(15, 16, 19, 0.16);
   border-radius: 9999px;
-  transition: background 0.15s ease;
+  transition: background 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(244, 245, 247, 0.12);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(15, 16, 19, 0.25);
+  background: rgba(15, 16, 19, 0.35);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(244, 245, 247, 0.25);
+  background: rgba(255, 255, 255, 0.35);
 }
 
-/* Subtle breathing glow for live WebSocket indicator */
+/* Smooth micro-interactions & subtle animations */
+@keyframes star-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.32) rotate(-8deg); }
+  75% { transform: scale(0.92) rotate(4deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.animate-star-pop {
+  animation: star-pop 320ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes content-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-content-fade-in {
+  animation: content-fade-in 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dot-ping-subtle {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.animate-dot-pulse {
+  animation: dot-ping-subtle 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Gentle breathing pulse for connection dot */
 @keyframes pulse-subtle {
   0%, 100% {
     opacity: 1;
@@ -69,7 +106,7 @@
   }
   50% {
     opacity: 0.45;
-    transform: scale(0.92);
+    transform: scale(0.9);
   }
 }
 
@@ -77,9 +114,14 @@
   animation: pulse-subtle 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Interactive row transitions */
+/* Interactive transitions */
+.transition-smooth {
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .transition-row {
   transition: background-color 140ms cubic-bezier(0.16, 1, 0.3, 1),
               border-color 140ms cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 140ms cubic-bezier(0.16, 1, 0.3, 1);
+              box-shadow 140ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 140ms cubic-bezier(0.16, 1, 0.3, 1);
 }

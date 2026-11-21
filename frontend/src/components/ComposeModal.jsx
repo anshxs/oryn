@@ -11,8 +11,6 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
 import { cn } from '../lib/utils';
 
 export default function ComposeModal({
@@ -130,7 +128,6 @@ export default function ComposeModal({
   };
 
   const handleKeyDown = (e) => {
-    // ⌘ + Enter or Ctrl + Enter to send
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
       handleSend();
@@ -140,23 +137,23 @@ export default function ComposeModal({
     }
   };
 
-  // Minimized dock
+  // Minimized floating pill dock
   if (isMinimized) {
     return (
-      <div className="fixed bottom-0 right-8 z-50 w-72 bg-white dark:bg-[#121316] border border-zinc-200/80 dark:border-zinc-800 rounded-t-xl shadow-xl flex items-center justify-between p-3 select-none">
-        <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+      <div className="fixed bottom-0 right-8 z-50 w-72 bg-white dark:bg-[#121316] border border-zinc-200/90 dark:border-zinc-800 rounded-t-xl shadow-xl flex items-center justify-between p-3 select-none animate-in slide-in-from-bottom-2 duration-150">
+        <span className="text-xs font-bold text-zinc-950 dark:text-zinc-100 truncate">
           {subject || 'New Message'}
         </span>
         <div className="flex items-center gap-1">
           <button
             onClick={() => setIsMinimized(false)}
-            className="p-1 rounded text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+            className="p-1 rounded text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white transition-colors"
           >
             <Maximize2 className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={onClose}
-            className="p-1 rounded text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+            className="p-1 rounded text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white transition-colors"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -168,7 +165,7 @@ export default function ComposeModal({
   return (
     <div
       className={cn(
-        "fixed z-50 bg-white dark:bg-[#0e0f11] border border-zinc-200/90 dark:border-zinc-800 shadow-[0_20px_48px_rgba(0,0,0,0.18)] flex flex-col overflow-hidden transition-all duration-200",
+        "fixed z-50 bg-white dark:bg-[#0f1013] border border-zinc-200/90 dark:border-zinc-750 shadow-[0_24px_56px_rgba(0,0,0,0.22)] flex flex-col overflow-hidden transition-all duration-200 animate-in fade-in-0 zoom-in-95",
         isMaximized
           ? "inset-4 rounded-2xl"
           : "bottom-5 right-6 w-full max-w-xl h-[560px] rounded-2xl"
@@ -179,29 +176,29 @@ export default function ComposeModal({
       onDrop={handleDrop}
     >
       {/* Compose Window Header */}
-      <div className="px-4 py-2.5 border-b border-zinc-200/80 dark:border-zinc-850 bg-[#fafbfc] dark:bg-[#121316] flex items-center justify-between select-none">
-        <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
+      <div className="px-4 py-2.5 border-b border-zinc-200/90 dark:border-zinc-800 bg-[#fafbfc] dark:bg-[#131418] flex items-center justify-between select-none shrink-0">
+        <span className="text-xs font-bold text-zinc-950 dark:text-white tracking-tight">
           New Message
         </span>
 
-        <div className="flex items-center gap-1 text-zinc-400">
+        <div className="flex items-center gap-1 text-zinc-500 dark:text-zinc-400">
           <button
             onClick={() => setIsMinimized(true)}
-            className="p-1 rounded-md hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors"
+            className="p-1 rounded-md hover:bg-zinc-200/70 dark:hover:bg-zinc-800 transition-colors"
             title="Minimize"
           >
             <Minus className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => setIsMaximized(!isMaximized)}
-            className="p-1 rounded-md hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors"
+            className="p-1 rounded-md hover:bg-zinc-200/70 dark:hover:bg-zinc-800 transition-colors"
             title={isMaximized ? "Restore" : "Maximize"}
           >
             {isMaximized ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
           </button>
           <button
             onClick={onClose}
-            className="p-1 rounded-md hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors"
+            className="p-1 rounded-md hover:bg-zinc-200/70 dark:hover:bg-zinc-800 transition-colors"
             title="Close (Esc)"
           >
             <X className="w-3.5 h-3.5" />
@@ -210,14 +207,14 @@ export default function ComposeModal({
       </div>
 
       {/* Recipient Configuration Fields */}
-      <div className="divide-y divide-zinc-100 dark:divide-zinc-850/80 px-4 text-xs">
+      <div className="divide-y divide-zinc-150 dark:divide-zinc-800/80 px-4 text-xs shrink-0">
         {/* From selector */}
         <div className="flex items-center py-2 gap-3">
-          <span className="w-12 text-zinc-400 font-mono text-[11px] shrink-0">From</span>
+          <span className="w-12 text-zinc-500 dark:text-zinc-400 font-mono text-[11px] font-semibold shrink-0">From</span>
           <select
             value={from}
             onChange={(e) => setFrom(e.target.value)}
-            className="flex-1 bg-transparent border-0 text-xs font-mono text-zinc-800 dark:text-zinc-200 focus:outline-none cursor-pointer"
+            className="flex-1 bg-transparent border-0 text-xs font-mono text-zinc-900 dark:text-zinc-150 focus:outline-none cursor-pointer"
           >
             {mailboxes.map((mb) => (
               <option key={mb.email} value={mb.email} className="dark:bg-[#121316]">
@@ -229,21 +226,21 @@ export default function ComposeModal({
 
         {/* To field */}
         <div className="flex items-center py-2 gap-3">
-          <span className="w-12 text-zinc-400 font-mono text-[11px] shrink-0">To</span>
+          <span className="w-12 text-zinc-500 dark:text-zinc-400 font-mono text-[11px] font-semibold shrink-0">To</span>
           <input
             type="email"
             value={to}
             onChange={(e) => setTo(e.target.value)}
             placeholder="recipient@domain.com"
             autoFocus
-            className="flex-1 bg-transparent border-0 text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none"
+            className="flex-1 bg-transparent border-0 text-xs text-zinc-950 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none"
           />
-          <div className="flex items-center gap-1.5 text-zinc-400 font-mono text-[10px]">
+          <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400 font-mono text-[10px] font-semibold">
             {!showCc && (
               <button
                 type="button"
                 onClick={() => setShowCc(true)}
-                className="hover:text-zinc-700 dark:hover:text-zinc-200 px-1 py-0.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                className="hover:text-zinc-950 dark:hover:text-white px-1.5 py-0.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
               >
                 Cc
               </button>
@@ -252,7 +249,7 @@ export default function ComposeModal({
               <button
                 type="button"
                 onClick={() => setShowBcc(true)}
-                className="hover:text-zinc-700 dark:hover:text-zinc-200 px-1 py-0.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                className="hover:text-zinc-950 dark:hover:text-white px-1.5 py-0.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
               >
                 Bcc
               </button>
@@ -262,28 +259,28 @@ export default function ComposeModal({
 
         {/* Cc field */}
         {showCc && (
-          <div className="flex items-center py-2 gap-3">
-            <span className="w-12 text-zinc-400 font-mono text-[11px] shrink-0">Cc</span>
+          <div className="flex items-center py-2 gap-3 animate-content-fade-in">
+            <span className="w-12 text-zinc-500 dark:text-zinc-400 font-mono text-[11px] font-semibold shrink-0">Cc</span>
             <input
               type="text"
               value={cc}
               onChange={(e) => setCc(e.target.value)}
               placeholder="comma separated addresses"
-              className="flex-1 bg-transparent border-0 text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none"
+              className="flex-1 bg-transparent border-0 text-xs text-zinc-950 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none"
             />
           </div>
         )}
 
         {/* Bcc field */}
         {showBcc && (
-          <div className="flex items-center py-2 gap-3">
-            <span className="w-12 text-zinc-400 font-mono text-[11px] shrink-0">Bcc</span>
+          <div className="flex items-center py-2 gap-3 animate-content-fade-in">
+            <span className="w-12 text-zinc-500 dark:text-zinc-400 font-mono text-[11px] font-semibold shrink-0">Bcc</span>
             <input
               type="text"
               value={bcc}
               onChange={(e) => setBcc(e.target.value)}
               placeholder="comma separated addresses"
-              className="flex-1 bg-transparent border-0 text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none"
+              className="flex-1 bg-transparent border-0 text-xs text-zinc-950 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none"
             />
           </div>
         )}
@@ -295,24 +292,24 @@ export default function ComposeModal({
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder="Subject"
-            className="flex-1 bg-transparent border-0 text-xs font-semibold text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none tracking-tight"
+            className="flex-1 bg-transparent border-0 text-xs font-bold text-zinc-950 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none tracking-tight"
           />
         </div>
       </div>
 
       {/* Main Message Canvas */}
-      <div className="flex-1 p-4 flex flex-col relative overflow-hidden">
+      <div className="flex-1 p-4 flex flex-col relative overflow-hidden bg-white dark:bg-[#0f1013]">
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
           placeholder="Write your email here..."
-          className="flex-1 w-full bg-transparent border-0 text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none resize-none leading-relaxed font-sans"
+          className="flex-1 w-full bg-transparent border-0 text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none resize-none leading-relaxed font-sans"
         />
 
         {/* Drag Over Overlay */}
         {isDragOver && (
-          <div className="absolute inset-4 rounded-xl border-2 border-dashed border-zinc-400 bg-white/90 dark:bg-[#121316]/90 flex items-center justify-center pointer-events-none">
-            <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+          <div className="absolute inset-4 rounded-xl border-2 border-dashed border-zinc-500 bg-white/95 dark:bg-[#121316]/95 flex items-center justify-center pointer-events-none animate-in fade-in-0 duration-100">
+            <p className="text-xs font-bold text-zinc-900 dark:text-white">
               Drop attachments here
             </p>
           </div>
@@ -320,19 +317,19 @@ export default function ComposeModal({
 
         {/* Attached Files Pill Bar */}
         {attachments.length > 0 && (
-          <div className="pt-2 flex flex-wrap gap-2 border-t border-zinc-100 dark:border-zinc-850">
+          <div className="pt-2 flex flex-wrap gap-2 border-t border-zinc-150 dark:border-zinc-800 shrink-0">
             {attachments.map((file, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800/80 text-[11px] font-mono text-zinc-800 dark:text-zinc-200 border border-zinc-200/80 dark:border-zinc-700/60"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800 text-[11px] font-mono text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700 shadow-2xs"
               >
-                <Paperclip className="w-3 h-3 text-zinc-400" />
-                <span className="truncate max-w-[140px]">{file.filename}</span>
-                <span className="text-[10px] text-zinc-400">({Math.round(file.size / 1024)} KB)</span>
+                <Paperclip className="w-3 h-3 text-zinc-500" />
+                <span className="truncate max-w-[140px] font-medium">{file.filename}</span>
+                <span className="text-[10px] text-zinc-500 dark:text-zinc-400">({Math.round(file.size / 1024)} KB)</span>
                 <button
                   type="button"
                   onClick={() => removeAttachment(idx)}
-                  className="hover:text-rose-500 ml-0.5"
+                  className="hover:text-rose-600 dark:hover:text-rose-400 ml-0.5"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -343,15 +340,15 @@ export default function ComposeModal({
 
         {/* Error notification banner */}
         {error && (
-          <div className="mt-2 p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-400 text-xs flex items-center gap-1.5">
-            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+          <div className="mt-2 p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-1.5 font-medium animate-content-fade-in shrink-0">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
             <span className="truncate">{error}</span>
           </div>
         )}
       </div>
 
       {/* Compose Action Footer */}
-      <div className="px-4 py-3 border-t border-zinc-200/80 dark:border-zinc-850 bg-[#fafbfc] dark:bg-[#121316] flex items-center justify-between select-none">
+      <div className="px-4 py-3 border-t border-zinc-200/90 dark:border-zinc-800 bg-[#fafbfc] dark:bg-[#131418] flex items-center justify-between select-none shrink-0">
         <div className="flex items-center gap-2">
           <input
             type="file"
@@ -365,7 +362,7 @@ export default function ComposeModal({
             variant="ghost"
             size="iconSm"
             onClick={() => fileInputRef.current?.click()}
-            className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+            className="text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white"
             title="Attach files"
           >
             <Paperclip className="w-4 h-4" />
@@ -382,7 +379,7 @@ export default function ComposeModal({
                 onClose();
               }
             }}
-            className="text-zinc-400 hover:text-rose-600"
+            className="text-zinc-500 hover:text-rose-600 dark:text-zinc-400 dark:hover:text-rose-400"
             title="Discard draft"
           >
             <Trash2 className="w-4 h-4" />
@@ -394,7 +391,7 @@ export default function ComposeModal({
             type="button"
             onClick={handleSend}
             disabled={sending}
-            className="h-8 px-4 text-xs gap-2 font-medium"
+            className="h-8 px-4 text-xs gap-2 font-bold"
           >
             {sending ? (
               <>
@@ -405,7 +402,7 @@ export default function ComposeModal({
               <>
                 <Send className="w-3.5 h-3.5" />
                 Send Message
-                <kbd className="text-[10px] font-mono opacity-60 ml-1">⌘↵</kbd>
+                <kbd className="text-[10px] font-mono opacity-70 ml-1 font-bold">⌘↵</kbd>
               </>
             )}
           </Button>
