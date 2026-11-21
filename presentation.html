@@ -3,35 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Oryn — Full-Stack MVC & REST API Project</title>
+  <title>Oryn — Full-Stack MVC & REST API Web Mail System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #09090b;
-      --card-bg: #18181b;
-      --card-border: #27272a;
-      --text: #fafafa;
-      --text-muted: #a1a1aa;
+      --bg: #090a0d;
+      --card-bg: #111317;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-border-hover: rgba(255, 255, 255, 0.18);
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
       --accent: #3b82f6;
-      --accent-soft: rgba(59, 130, 246, 0.15);
+      --accent-hover: #2563eb;
+      --accent-soft: rgba(59, 130, 246, 0.12);
+      --accent-border: rgba(59, 130, 246, 0.3);
       --success: #10b981;
-      --purple: #8b5cf6;
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --success-soft: rgba(16, 185, 129, 0.12);
+      --purple: #a855f7;
+      --purple-soft: rgba(168, 85, 247, 0.12);
+      --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, 0.12);
+      --rose: #f43f5e;
+      --rose-soft: rgba(244, 63, 94, 0.12);
+      --font-sans: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45);
     }
 
     [data-theme="light"] {
-      --bg: #f4f4f5;
+      --bg: #f8fafc;
       --card-bg: #ffffff;
-      --card-border: #e4e4e7;
-      --text: #09090b;
-      --text-muted: #71717a;
+      --card-border: rgba(0, 0, 0, 0.08);
+      --card-border-hover: rgba(0, 0, 0, 0.18);
+      --text: #090a0d;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
       --accent: #2563eb;
-      --accent-soft: rgba(37, 99, 235, 0.1);
+      --accent-hover: #1d4ed8;
+      --accent-soft: rgba(37, 99, 235, 0.08);
+      --accent-border: rgba(37, 99, 235, 0.25);
       --success: #059669;
-      --purple: #7c3aed;
+      --success-soft: rgba(5, 150, 105, 0.08);
+      --purple: #9333ea;
+      --purple-soft: rgba(147, 51, 234, 0.08);
+      --amber: #d97706;
+      --amber-soft: rgba(217, 119, 6, 0.08);
+      --rose: #e11d48;
+      --rose-soft: rgba(225, 29, 72, 0.08);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.08);
     }
 
     * {
@@ -44,26 +70,44 @@
       background-color: var(--bg);
       color: var(--text);
       font-family: var(--font-sans);
+      letter-spacing: -0.015em;
       overflow: hidden;
       height: 100vh;
       width: 100vw;
       user-select: none;
-      transition: background 0.2s, color 0.2s;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
+    /* Top Progress Bar */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 2.5px;
+      background: var(--accent);
+      z-index: 1000;
+      transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    }
+
+    /* Header Nav Bar */
     header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      height: 54px;
+      height: 52px;
       padding: 0 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--card-border);
       background: var(--card-bg);
+      backdrop-filter: blur(12px);
       z-index: 100;
+      transition: background 0.2s, border-color 0.2s;
     }
 
     .brand {
@@ -71,24 +115,39 @@
       align-items: center;
       gap: 10px;
       font-weight: 700;
-      font-size: 15px;
+      font-size: 14px;
       letter-spacing: -0.02em;
+    }
+
+    .brand-logo {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--text);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
     }
 
     .brand-badge {
       background: var(--accent-soft);
       color: var(--accent);
-      border: 1px solid var(--accent);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 8px;
+      border: 1px solid var(--accent-border);
+      font-size: 10px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 2px 7px;
       border-radius: 9999px;
+      letter-spacing: 0.02em;
     }
 
     .nav-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .btn-nav {
@@ -96,67 +155,80 @@
       border: 1px solid var(--card-border);
       color: var(--text-muted);
       padding: 6px 12px;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
+      font-family: var(--font-sans);
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.15s;
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .btn-nav:hover {
       color: var(--text);
-      border-color: var(--text-muted);
+      border-color: var(--card-border-hover);
+      background: var(--accent-soft);
+    }
+
+    .btn-nav:active {
+      transform: scale(0.97);
     }
 
     .btn-nav-primary {
       background: var(--accent);
       color: #ffffff !important;
       border-color: var(--accent);
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
     }
 
     .btn-nav-primary:hover {
-      background: #1d4ed8 !important;
+      background: var(--accent-hover) !important;
       color: #ffffff !important;
-      border-color: #1d4ed8 !important;
-      filter: brightness(1.1);
+      border-color: var(--accent-hover) !important;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
     }
 
     /* Deck Layout */
     .deck-container {
       position: absolute;
-      top: 54px;
+      top: 52px;
       bottom: 50px;
       left: 0;
       right: 0;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 32px;
     }
 
     .slide {
-      position: absolute;
-      inset: 0;
-      padding: 40px 60px;
       display: none;
-      flex-direction: column;
-      justify-content: center;
       opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.25s ease, transform 0.25s ease;
-      max-width: 1200px;
+      transform: translateY(8px) scale(0.99);
+      transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+      width: 100%;
+      max-width: 1140px;
       margin: 0 auto;
     }
 
     .slide.active {
       display: flex;
+      flex-direction: column;
+      justify-content: center;
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
 
+    /* Typography & Hierarchy */
     .slide-badge {
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--font-mono);
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--accent);
@@ -166,56 +238,73 @@
       gap: 6px;
     }
 
+    .slide-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
+
     h1.slide-title {
-      font-size: 34px;
+      font-size: 32px;
       font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.2;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
       margin-bottom: 8px;
+      color: var(--text);
     }
 
     p.slide-sub {
-      font-size: 16px;
+      font-size: 15px;
       color: var(--text-muted);
-      margin-bottom: 24px;
-      line-height: 1.5;
+      margin-bottom: 22px;
+      line-height: 1.55;
+      max-width: 820px;
     }
 
+    /* Grids & Cards */
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 16px;
     }
 
     .grid-3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+      gap: 14px;
     }
 
     .grid-4 {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
+      gap: 14px;
     }
 
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 20px;
-      transition: border-color 0.2s;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .card:hover {
-      border-color: var(--accent);
+      border-color: var(--card-border-hover);
+      transform: translateY(-1.5px);
+      box-shadow: var(--shadow-md);
     }
 
     .card-header {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .card-icon {
@@ -225,39 +314,80 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 15px;
       background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
       color: var(--accent);
+      flex-shrink: 0;
     }
 
     .card-title {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.015em;
     }
 
     .card-desc {
-      font-size: 13px;
+      font-size: 12.5px;
       color: var(--text-muted);
-      line-height: 1.6;
+      line-height: 1.55;
     }
 
-    pre.code-box {
-      background: #000000;
-      color: #e4e4e7;
+    /* Terminal Code Box with Header Chrome */
+    .code-container {
       border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 14px 16px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #050608;
+      box-shadow: var(--shadow-md);
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       font-family: var(--font-mono);
-      font-size: 12px;
-      line-height: 1.5;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .code-dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .code-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+
+    pre.code-box {
+      margin: 0;
+      padding: 14px 16px;
+      background: transparent;
+      color: #e2e8f0;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.55;
       overflow-x: auto;
     }
 
-    .code-comment { color: #71717a; }
-    .code-fn { color: #60a5fa; }
+    .code-comment { color: #64748b; font-style: italic; }
+    .code-fn { color: #60a5fa; font-weight: 600; }
     .code-str { color: #34d399; }
-    .code-kw { color: #f472b6; }
+    .code-kw { color: #f472b6; font-weight: 600; }
+    .code-num { color: #fbbf24; }
 
+    /* Interactive MVC Flowchart */
     .flowchart {
       display: flex;
       align-items: center;
@@ -265,8 +395,9 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
+      padding: 18px 24px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-sm);
     }
 
     .flow-step {
@@ -277,15 +408,33 @@
       flex: 1;
     }
 
+    .flow-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 6px;
+    }
+
     .flow-box {
       background: var(--bg);
-      border: 2px solid var(--accent);
-      padding: 10px 16px;
+      border: 1.5px solid var(--accent);
+      padding: 8px 14px;
       border-radius: 8px;
       font-weight: 700;
       font-size: 13px;
       margin-bottom: 4px;
-      width: 135px;
+      width: 140px;
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
     }
 
     .flow-sub {
@@ -298,50 +447,66 @@
       color: var(--accent);
       font-size: 18px;
       font-weight: 800;
-      padding: 0 8px;
+      padding: 0 10px;
+      opacity: 0.8;
     }
 
+    /* REST API Table */
     table.api-table {
       width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 12.5px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 8px;
+      border-radius: 10px;
       overflow: hidden;
+      box-shadow: var(--shadow-sm);
     }
 
     table.api-table th {
       text-align: left;
-      padding: 9px 12px;
-      background: rgba(255, 255, 255, 0.03);
+      padding: 9px 14px;
+      background: rgba(255, 255, 255, 0.02);
       border-bottom: 1px solid var(--card-border);
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       color: var(--text-muted);
     }
 
     table.api-table td {
-      padding: 9px 12px;
+      padding: 9px 14px;
       border-bottom: 1px solid var(--card-border);
+      color: var(--text);
     }
 
     table.api-table tr:last-child td {
       border-bottom: none;
     }
 
-    .badge-method {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
+    table.api-table tr:hover td {
+      background: var(--accent-soft);
     }
-    .badge-get { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-    .badge-post { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-    .badge-patch { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-    .badge-delete { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
 
+    .badge-method {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .badge-get { background: var(--success-soft); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.25); }
+    .badge-post { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent-border); }
+    .badge-patch { background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.25); }
+    .badge-delete { background: var(--rose-soft); color: var(--rose); border: 1px solid rgba(244, 63, 94, 0.25); }
+
+    /* Footer Bar with Slide Navigation Pills */
     footer {
       position: fixed;
       bottom: 0;
@@ -354,8 +519,11 @@
       justify-content: space-between;
       border-top: 1px solid var(--card-border);
       background: var(--card-bg);
+      backdrop-filter: blur(12px);
       font-size: 12px;
       color: var(--text-muted);
+      z-index: 100;
+      transition: background 0.2s, border-color 0.2s;
     }
 
     .footer-left {
@@ -374,55 +542,103 @@
       background: var(--bg);
       border: 1px solid var(--card-border);
       padding: 2px 6px;
-      border-radius: 4px;
+      border-radius: 5px;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text);
     }
 
+    .slide-dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .slide-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--card-border-hover);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide-dot:hover {
+      background: var(--text-muted);
+      transform: scale(1.2);
+    }
+
+    .slide-dot.active {
+      width: 18px;
+      border-radius: 9999px;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    /* Overview Modal Grid */
     .overview-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
       z-index: 200;
       display: none;
-      padding: 60px 40px;
+      padding: 60px 32px;
       overflow-y: auto;
     }
 
     .overview-overlay.active {
       display: block;
+      animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     .overview-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
-      max-width: 1000px;
+      max-width: 960px;
       margin: 0 auto;
     }
 
     .overview-card {
       background: var(--card-bg);
-      border: 2px solid var(--card-border);
-      border-radius: 10px;
+      border: 1.5px solid var(--card-border);
+      border-radius: 12px;
       padding: 16px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: var(--shadow-sm);
     }
 
     .overview-card:hover {
       border-color: var(--accent);
       transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .overview-card.current {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-soft), var(--shadow-md);
     }
   </style>
 </head>
 <body>
 
+  <!-- Top Progress Bar -->
+  <div id="progress-bar" style="width: 14.28%;"></div>
+
   <!-- Top Navigation -->
   <header>
     <div class="brand">
-      <span>✉️ Oryn Web Mail</span>
-      <span class="brand-badge">MVC & REST API Project</span>
+      <div class="brand-logo">O</div>
+      <span>Oryn Web Mail</span>
+      <span class="brand-badge">MVC & REST API</span>
     </div>
     <div class="nav-actions">
       <button class="btn-nav" onclick="toggleTheme()" title="Toggle Theme (T)">☀️/🌙 Theme</button>
@@ -435,85 +651,89 @@
   <!-- Slide Deck Container -->
   <div class="deck-container">
 
-    <!-- SLIDE 1: TITLE -->
+    <!-- SLIDE 1: TITLE & SCOPE -->
     <div class="slide active" id="slide-1">
       <div class="slide-badge">Academic Project Presentation</div>
-      <h1 class="slide-title" style="font-size: 46px; margin-bottom: 14px;">Oryn Web Mail System</h1>
-      <p class="slide-sub" style="font-size: 19px; max-width: 760px;">
-        A full-stack web application built to demonstrate <strong>MVC Architecture</strong>, <strong>RESTful Express Routing</strong>, and dynamic <strong>Frontend API Integration</strong>.
+      <h1 class="slide-title" style="font-size: 42px; margin-bottom: 12px;">Oryn Web Mail System</h1>
+      <p class="slide-sub" style="font-size: 17px; max-width: 800px; margin-bottom: 24px;">
+        A production-grade, self-hosted web mail engine built to demonstrate <strong>Strict MVC Architecture</strong>, <strong>RESTful Express Routing</strong>, and real-time <strong>React API Integration</strong>.
       </p>
 
-      <div class="grid-4" style="margin-top: 10px;">
+      <div class="grid-4" style="margin-top: 4px;">
         <div class="card">
           <div class="card-icon">🛣️</div>
           <div class="card-title">Routes</div>
-          <div class="card-desc">Express endpoint mapping using HTTP verbs (GET, POST, PATCH, DELETE).</div>
+          <div class="card-desc">Explicit Express endpoint mapping with proper HTTP verbs (GET, POST, PATCH, DELETE).</div>
         </div>
         <div class="card">
           <div class="card-icon">⚙️</div>
           <div class="card-title">Controllers</div>
-          <div class="card-desc">Request validation, parameter handling, and JSON status code responses.</div>
+          <div class="card-desc">Request validation, parameter handling, error handling, and structured JSON status codes.</div>
         </div>
         <div class="card">
           <div class="card-icon">📦</div>
           <div class="card-title">Models</div>
-          <div class="card-desc">Data schema encapsulation and CRUD queries for emails, mailboxes & domains.</div>
+          <div class="card-desc">Data schema encapsulation and CRUD operations for emails, mailboxes, and domains.</div>
         </div>
         <div class="card">
           <div class="card-icon">🌐</div>
           <div class="card-title">API Calling</div>
-          <div class="card-desc">React 19 single-page UI consuming backend REST endpoints with async/await.</div>
+          <div class="card-desc">React 19 single-page UI consuming backend REST endpoints asynchronously via native fetch.</div>
         </div>
       </div>
 
-      <div style="margin-top: 30px; font-size: 13px; color: var(--text-muted); display: flex; gap: 24px;">
+      <div style="margin-top: 26px; font-size: 12.5px; color: var(--text-muted); display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
         <span><strong>Team:</strong> Arpit Rajput, Ansh Sharma, Mayank Chauhan, Swaraj Agarwal</span>
         <span>•</span>
         <span><strong>Tech Stack:</strong> Node.js, Express, React, Vite, Tailwind CSS</span>
+        <span>•</span>
+        <span style="display:inline-flex; align-items:center; gap:5px; color:var(--success); font-family:var(--font-mono); font-weight:700;">
+          <span style="width:6px; height:6px; border-radius:50%; background:var(--success);"></span> SMTP Daemon: Active
+        </span>
       </div>
     </div>
 
-    <!-- SLIDE 2: PROJECT OVERVIEW (NEW) -->
+    <!-- SLIDE 2: PROJECT OVERVIEW & FEATURES -->
     <div class="slide" id="slide-2">
-      <div class="slide-badge">Project Information</div>
+      <div class="slide-badge">Project Scope & Features</div>
       <h1 class="slide-title">What is Oryn?</h1>
       <p class="slide-sub">
-        A lightweight, self-hosted web mail management platform designed to give organizations full ownership of their email.
+        A lightweight, self-hosted web mail management platform designed to give organizations full ownership over their email delivery infrastructure.
       </p>
 
       <div class="grid-2">
-        <div class="card" style="border-left: 4px solid var(--accent);">
+        <div class="card" style="border-left: 3.5px solid var(--accent);">
           <div class="card-header">
             <span class="card-icon">🎯</span>
             <span class="card-title">Project Purpose & Motivation</span>
           </div>
-          <div class="card-desc" style="font-size: 14px; line-height: 1.7;">
-            <p>• Centralized email providers (Google, Microsoft) are expensive and act as closed black boxes.</p>
-            <p style="margin-top: 8px;">• <strong>Oryn provides an independent alternative:</strong> users can connect custom domains, create personalized mailboxes, compose emails, and manage inboxes from one intuitive dashboard.</p>
-            <p style="margin-top: 8px;">• <strong>Academic Goal:</strong> Build a real, working web service while strictly following software engineering principles like <strong>MVC separation</strong> and <strong>standard REST conventions</strong>.</p>
+          <div class="card-desc" style="font-size: 13.5px; line-height: 1.65;">
+            <p>• Commercial email providers (Google Workspace, Microsoft 365) are costly and act as closed black boxes with zero local control.</p>
+            <p style="margin-top: 8px;">• <strong>Oryn provides an independent alternative:</strong> users can attach custom domains, configure DNS records, provision multiple mailboxes, and compose/read emails via an intuitive webmail dashboard.</p>
+            <p style="margin-top: 8px;">• <strong>Academic Objective:</strong> Engineer a full-stack system strictly adhering to software engineering tenets: <strong>MVC separation</strong>, <strong>RESTful routing</strong>, and <strong>asynchronous client integration</strong>.</p>
           </div>
         </div>
 
         <div class="grid-2" style="gap: 12px;">
           <div class="card">
             <div style="font-size: 20px; margin-bottom: 6px;">📥</div>
-            <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">Mail Management</div>
-            <div class="card-desc">Inbox, Sent, Drafts, Starred, and Trash with real-time reading and compose modal.</div>
+            <div style="font-weight: 700; font-size: 13.5px; margin-bottom: 3px; color:var(--text);">Mailbox Feed</div>
+            <div class="card-desc">Inbox, Sent, Drafts, Starred, and Trash with real-time WebSocket push updates.</div>
           </div>
           <div class="card">
             <div style="font-size: 20px; margin-bottom: 6px;">📫</div>
-            <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">Custom Mailboxes</div>
-            <div class="card-desc">Create and switch between multiple user accounts (e.g. <code>team@domain.com</code>).</div>
+            <div style="font-weight: 700; font-size: 13.5px; margin-bottom: 3px; color:var(--text);">Multi-Account Support</div>
+            <div class="card-desc">Create and instantly switch between multiple user mailboxes (e.g. <code>team@domain.com</code>).</div>
           </div>
           <div class="card">
             <div style="font-size: 20px; margin-bottom: 6px;">🌐</div>
-            <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">Domain Management</div>
-            <div class="card-desc">Attach custom domains and inspect DNS health (MX, SPF, DMARC records).</div>
+            <div style="font-weight: 700; font-size: 13.5px; margin-bottom: 3px; color:var(--text);">Domain & DNS Wizard</div>
+            <div class="card-desc">Attach custom domains and inspect DNS health (MX, SPF, DKIM, and DMARC).</div>
           </div>
           <div class="card">
             <div style="font-size: 20px; margin-bottom: 6px;">📊</div>
-            <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">Live Analytics</div>
-            <div class="card-desc">Instant storage usage counters, incoming email volume, and server status.</div>
+            <div style="font-weight: 700; font-size: 13.5px; margin-bottom: 3px; color:var(--text);">Live Telemetry</div>
+            <div class="card-desc">Real-time storage counters, server port indicators, and inbound message counters.</div>
           </div>
         </div>
       </div>
@@ -530,23 +750,27 @@
       <!-- Visual Flowchart -->
       <div class="flowchart">
         <div class="flow-step">
-          <div class="flow-box">React UI</div>
-          <div class="flow-sub">View Layer (Fetch)</div>
+          <div class="flow-num">1</div>
+          <div class="flow-box">React View</div>
+          <div class="flow-sub">User Interaction (Fetch)</div>
         </div>
         <div class="flow-arrow">⇄</div>
         <div class="flow-step">
-          <div class="flow-box">Routes</div>
-          <div class="flow-sub">URL & Method Match</div>
+          <div class="flow-num">2</div>
+          <div class="flow-box">Express Route</div>
+          <div class="flow-sub">Verb & URL Match</div>
         </div>
         <div class="flow-arrow">⇄</div>
         <div class="flow-step">
+          <div class="flow-num">3</div>
           <div class="flow-box">Controller</div>
           <div class="flow-sub">Logic & Status Codes</div>
         </div>
         <div class="flow-arrow">⇄</div>
         <div class="flow-step">
-          <div class="flow-box">Model</div>
-          <div class="flow-sub">Data & Storage</div>
+          <div class="flow-num">4</div>
+          <div class="flow-box">Model Layer</div>
+          <div class="flow-sub">CRUD & Storage Engine</div>
         </div>
       </div>
 
@@ -557,19 +781,19 @@
             <span class="card-title">Standard MVC Folders</span>
           </div>
           <div class="card-desc">
-            <p>• <code>src/routes/</code>: Defines URL paths and connects them to controller functions.</p>
-            <p style="margin-top:6px;">• <code>src/controllers/</code>: Reads <code>req.body</code> & <code>req.params</code>, handles errors, sends <code>res.json()</code>.</p>
-            <p style="margin-top:6px;">• <code>src/models/</code>: Performs CRUD queries and encapsulates data records.</p>
+            <p>• <code>src/routes/</code>: Defines URL paths and connects them directly to controller functions.</p>
+            <p style="margin-top:6px;">• <code>src/controllers/</code>: Reads <code>req.body</code> and <code>req.params</code>, performs validation, and sends <code>res.status().json()</code>.</p>
+            <p style="margin-top:6px;">• <code>src/models/</code>: Executes queries, persists records, and encapsulates data schemas.</p>
           </div>
         </div>
         <div class="card" style="border-color: var(--accent);">
           <div class="card-header">
-            <span class="card-icon" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6;">🧰</span>
+            <span class="card-icon" style="background: var(--purple-soft); color: var(--purple); border-color: rgba(168, 85, 247, 0.25);">🧰</span>
             <span class="card-title">Dedicated Helpers Folder (<code>src/helpers/</code>)</span>
           </div>
           <div class="card-desc">
-            <p>• Specialized utilities (SMTP networking, DNS lookup, file storage) are kept out of controllers.</p>
-            <p style="margin-top:6px;">• <strong>Why?</strong> Prevents controller bloating and keeps the core assignment MVC code 100% textbook clean.</p>
+            <p>• Low-level utilities (RFC 5321 SMTP daemon, DNS resolver, storage engine) are strictly isolated.</p>
+            <p style="margin-top:6px;">• <strong>Architectural Benefit:</strong> Prevents controller bloating and keeps MVC controllers concise, testable, and textbook clean.</p>
           </div>
         </div>
       </div>
@@ -580,7 +804,7 @@
       <div class="slide-badge">Backend Implementation</div>
       <h1 class="slide-title">RESTful Routes & HTTP Methods</h1>
       <p class="slide-sub">
-        Standardized API endpoints matching REST conventions for all mail resources.
+        Standardized API endpoints matching REST conventions for resources.
       </p>
 
       <div class="grid-2">
@@ -596,39 +820,47 @@
             <tbody>
               <tr>
                 <td><span class="badge-method badge-get">GET</span></td>
-                <td><code>/api/emails</code></td>
+                <td><code style="font-family:var(--font-mono); font-size:11.5px;">/api/emails</code></td>
                 <td><code>EmailController.getEmails</code></td>
               </tr>
               <tr>
                 <td><span class="badge-method badge-post">POST</span></td>
-                <td><code>/api/emails/send</code></td>
+                <td><code style="font-family:var(--font-mono); font-size:11.5px;">/api/emails/send</code></td>
                 <td><code>EmailController.sendEmail</code></td>
               </tr>
               <tr>
                 <td><span class="badge-method badge-patch">PATCH</span></td>
-                <td><code>/api/emails/:id</code></td>
+                <td><code style="font-family:var(--font-mono); font-size:11.5px;">/api/emails/:id</code></td>
                 <td><code>EmailController.updateEmail</code></td>
               </tr>
               <tr>
                 <td><span class="badge-method badge-delete">DELETE</span></td>
-                <td><code>/api/emails/:id</code></td>
+                <td><code style="font-family:var(--font-mono); font-size:11.5px;">/api/emails/:id</code></td>
                 <td><code>EmailController.deleteEmail</code></td>
               </tr>
               <tr>
                 <td><span class="badge-method badge-get">GET</span></td>
-                <td><code>/api/mailboxes</code></td>
+                <td><code style="font-family:var(--font-mono); font-size:11.5px;">/api/mailboxes</code></td>
                 <td><code>MailboxController.getMailboxes</code></td>
               </tr>
               <tr>
                 <td><span class="badge-method badge-post">POST</span></td>
-                <td><code>/api/mailboxes</code></td>
+                <td><code style="font-family:var(--font-mono); font-size:11.5px;">/api/mailboxes</code></td>
                 <td><code>MailboxController.createMailbox</code></td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-dots">
+              <span class="code-dot dot-red"></span>
+              <span class="code-dot dot-yellow"></span>
+              <span class="code-dot dot-green"></span>
+            </div>
+            <span>backend/src/routes/email.routes.js</span>
+          </div>
           <pre class="code-box"><span class="code-comment">// backend/src/routes/email.routes.js</span>
 <span class="code-kw">import</span> { Router } <span class="code-kw">from</span> <span class="code-str">'express'</span>;
 <span class="code-kw">import</span> { EmailController } <span class="code-kw">from</span> <span class="code-str">'../controllers/email.controller.js'</span>;
@@ -656,9 +888,14 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
       </p>
 
       <div class="grid-2">
-        <div>
-          <div style="font-size: 13px; font-weight:600; margin-bottom: 8px; color: var(--accent);">
-            Controller Logic (<code>email.controller.js</code>)
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-dots">
+              <span class="code-dot dot-red"></span>
+              <span class="code-dot dot-yellow"></span>
+              <span class="code-dot dot-green"></span>
+            </div>
+            <span>Controller: email.controller.js</span>
           </div>
           <pre class="code-box"><span class="code-kw">static async</span> <span class="code-fn">sendEmail</span>(req, res) {
   <span class="code-kw">try</span> {
@@ -666,37 +903,42 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
 
     <span class="code-comment">// 1. Input Validation</span>
     <span class="code-kw">if</span> (!from || !to || !subject) {
-      <span class="code-kw">return</span> res.status(400).json({ error: <span class="code-str">'Missing required fields'</span> });
+      <span class="code-kw">return</span> res.<span class="code-fn">status</span>(<span class="code-num">400</span>).<span class="code-fn">json</span>({ error: <span class="code-str">'Missing required fields'</span> });
     }
 
     <span class="code-comment">// 2. Call Model to create record</span>
-    <span class="code-kw">const</span> newEmail = <span class="code-kw">await</span> EmailModel.create({
+    <span class="code-kw">const</span> newEmail = <span class="code-kw">await</span> EmailModel.<span class="code-fn">create</span>({
       from, to, subject, text, folder: <span class="code-str">'sent'</span>
     });
 
     <span class="code-comment">// 3. Return HTTP 201 Created</span>
-    res.status(201).json({ success: <span class="code-kw">true</span>, email: newEmail });
+    res.<span class="code-fn">status</span>(<span class="code-num">201</span>).<span class="code-fn">json</span>({ success: <span class="code-kw">true</span>, email: newEmail });
   } <span class="code-kw">catch</span> (err) {
-    res.status(500).json({ error: err.message });
+    res.<span class="code-fn">status</span>(<span class="code-num">500</span>).<span class="code-fn">json</span>({ error: err.message });
   }
 }</pre>
         </div>
 
-        <div>
-          <div style="font-size: 13px; font-weight:600; margin-bottom: 8px; color: var(--success);">
-            Model Layer (<code>email.model.js</code>)
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-dots">
+              <span class="code-dot dot-red"></span>
+              <span class="code-dot dot-yellow"></span>
+              <span class="code-dot dot-green"></span>
+            </div>
+            <span>Model: email.model.js</span>
           </div>
           <pre class="code-box"><span class="code-comment">// backend/src/models/email.model.js</span>
 <span class="code-kw">export class</span> EmailModel {
-  <span class="code-comment">// Encapsulates file-based JSON or DB storage</span>
+  <span class="code-comment">// Encapsulates storage & query execution</span>
   <span class="code-kw">static async</span> <span class="code-fn">findAll</span>(filter = {}) {
-    <span class="code-kw">const</span> emails = <span class="code-kw">await</span> storage.readAll(<span class="code-str">'emails'</span>);
-    <span class="code-kw">return</span> emails.filter(e => (!filter.folder || e.folder === filter.folder));
+    <span class="code-kw">const</span> emails = <span class="code-kw">await</span> storage.<span class="code-fn">readAll</span>(<span class="code-str">'emails'</span>);
+    <span class="code-kw">return</span> emails.<span class="code-fn">filter</span>(e => (!filter.folder || e.folder === filter.folder));
   }
 
   <span class="code-kw">static async</span> <span class="code-fn">create</span>(data) {
-    <span class="code-kw">const</span> record = { id: generateId(), ...data, createdAt: <span class="code-kw">new</span> Date() };
-    <span class="code-kw">await</span> storage.insert(<span class="code-str">'emails'</span>, record);
+    <span class="code-kw">const</span> record = { id: <span class="code-fn">generateId</span>(), ...data, createdAt: <span class="code-kw">new</span> Date() };
+    <span class="code-kw">await</span> storage.<span class="code-fn">insert</span>(<span class="code-str">'emails'</span>, record);
     <span class="code-kw">return</span> record;
   }
 }</pre>
@@ -713,47 +955,51 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
       </p>
 
       <div class="grid-2">
-        <div>
-          <div style="font-size: 13px; font-weight:600; margin-bottom: 8px; color: var(--accent);">
-            React Component Calling Backend API
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-dots">
+              <span class="code-dot dot-red"></span>
+              <span class="code-dot dot-yellow"></span>
+              <span class="code-dot dot-green"></span>
+            </div>
+            <span>frontend/src/components/EmailList.jsx</span>
           </div>
-          <pre class="code-box"><span class="code-comment">// frontend/src/components/MailList.jsx</span>
-<span class="code-kw">import</span> { useState, useEffect } <span class="code-kw">from</span> <span class="code-str">'react'</span>;
+          <pre class="code-box"><span class="code-kw">import</span> { useState, useEffect } <span class="code-kw">from</span> <span class="code-str">'react'</span>;
 
-<span class="code-kw">export function</span> <span class="code-fn">MailList</span>({ currentFolder }) {
-  <span class="code-kw">const</span> [emails, setEmails] = useState([]);
-  <span class="code-kw">const</span> [loading, setLoading] = useState(<span class="code-kw">true</span>);
+<span class="code-kw">export function</span> <span class="code-fn">EmailList</span>({ currentFolder }) {
+  <span class="code-kw">const</span> [emails, setEmails] = <span class="code-fn">useState</span>([]);
+  <span class="code-kw">const</span> [loading, setLoading] = <span class="code-fn">useState</span>(<span class="code-kw">true</span>);
 
   <span class="code-comment">// Call GET /api/emails on load</span>
-  useEffect(() => {
+  <span class="code-fn">useEffect</span>(() => {
     <span class="code-kw">async function</span> <span class="code-fn">fetchEmails</span>() {
       <span class="code-kw">try</span> {
-        <span class="code-kw">const</span> res = <span class="code-kw">await</span> fetch(<span class="code-str">`/api/emails?folder=${currentFolder}`</span>);
-        <span class="code-kw">const</span> data = <span class="code-kw">await</span> res.json();
-        setEmails(data.emails || []);
+        <span class="code-kw">const</span> res = <span class="code-kw">await</span> <span class="code-fn">fetch</span>(<span class="code-str">`/api/emails?folder=${currentFolder}`</span>);
+        <span class="code-kw">const</span> data = <span class="code-kw">await</span> res.<span class="code-fn">json</span>();
+        <span class="code-fn">setEmails</span>(data.emails || []);
       } <span class="code-kw">finally</span> {
-        setLoading(<span class="code-kw">false</span>);
+        <span class="code-fn">setLoading</span>(<span class="code-kw">false</span>);
       }
     }
-    fetchEmails();
+    <span class="code-fn">fetchEmails</span>();
   }, [currentFolder]);
 
-  <span class="code-kw">return</span> &lt;<span class="code-fn">div</span>&gt;{emails.map(e => &lt;<span class="code-fn">MailItem</span> key={e.id} email={e} /&gt;)}&lt;/<span class="code-fn">div</span>&gt;;
+  <span class="code-kw">return</span> &lt;<span class="code-fn">div</span>&gt;{emails.<span class="code-fn">map</span>(e => &lt;<span class="code-fn">EmailItem</span> key={e.id} email={e} /&gt;)}&lt;/<span class="code-fn">div</span>&gt;;
 }</pre>
         </div>
 
-        <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; flex-direction:column; gap:12px;">
           <div class="card">
-            <div class="card-title">1. Asynchronous Fetch & Promises</div>
-            <div class="card-desc">The frontend calls the backend REST routes using native <code>fetch()</code> wrapped in <code>async/await</code> for clean asynchronous flow.</div>
+            <div class="card-title" style="margin-bottom:4px;">1. Asynchronous Fetch & Promises</div>
+            <div class="card-desc">Frontend calls backend REST routes using native <code>fetch()</code> wrapped in <code>async/await</code> for clean non-blocking flow.</div>
           </div>
           <div class="card">
-            <div class="card-title">2. State Synchronization</div>
-            <div class="card-desc">When an email is sent (<code>POST /api/emails/send</code>) or marked read (<code>PATCH /api/emails/:id</code>), React state immediately updates the DOM without full page reload.</div>
+            <div class="card-title" style="margin-bottom:4px;">2. Reactive State Synchronization</div>
+            <div class="card-desc">When emails are dispatched (<code>POST /api/emails/send</code>) or marked read (<code>PATCH /api/emails/:id</code>), React state updates DOM elements instantaneously.</div>
           </div>
           <div class="card">
-            <div class="card-title">3. Error & Loading Boundaries</div>
-            <div class="card-desc">Handles loading spinners during network requests and renders user-friendly toast messages if the backend returns 4xx or 5xx errors.</div>
+            <div class="card-title" style="margin-bottom:4px;">3. Graceful Loading & Error Toasting</div>
+            <div class="card-desc">Manages spinners during network round-trips and renders floating toast notifications if HTTP 4xx or 5xx responses occur.</div>
           </div>
         </div>
       </div>
@@ -767,7 +1013,7 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
         Clear verification of all project requirements in the live demo.
       </p>
 
-      <div class="grid-3" style="margin-bottom: 20px;">
+      <div class="grid-3" style="margin-bottom: 16px;">
         <div class="card">
           <div class="card-icon">1️⃣</div>
           <div class="card-title">Routes Verification</div>
@@ -785,8 +1031,8 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
         </div>
       </div>
 
-      <div class="card" style="background: rgba(59, 130, 246, 0.08); border-color: var(--accent);">
-        <div style="font-weight: 700; font-size: 15px; margin-bottom: 6px;">Key Academic Takeaway:</div>
+      <div class="card" style="background: var(--accent-soft); border-color: var(--accent-border);">
+        <div style="font-weight: 700; font-size: 14.5px; margin-bottom: 6px; color: var(--text);">Key Academic Takeaway:</div>
         <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
           "Oryn demonstrates how modern full-stack web applications organize code. By using a canonical Model-View-Controller backend with Express routers and asynchronous frontend API calling, the codebase remains modular, readable, and easy to maintain."
         </div>
@@ -803,7 +1049,19 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
       <span class="key-hint"><span class="key-badge">O</span> Overview</span>
       <span class="key-hint"><span class="key-badge">F</span> Fullscreen</span>
     </div>
-    <div id="slide-indicator" style="font-weight: 600;">
+
+    <!-- Interactive Slide Dots -->
+    <div class="slide-dots" id="slide-dots">
+      <span class="slide-dot active" onclick="goToSlide(1)" title="Slide 1"></span>
+      <span class="slide-dot" onclick="goToSlide(2)" title="Slide 2"></span>
+      <span class="slide-dot" onclick="goToSlide(3)" title="Slide 3"></span>
+      <span class="slide-dot" onclick="goToSlide(4)" title="Slide 4"></span>
+      <span class="slide-dot" onclick="goToSlide(5)" title="Slide 5"></span>
+      <span class="slide-dot" onclick="goToSlide(6)" title="Slide 6"></span>
+      <span class="slide-dot" onclick="goToSlide(7)" title="Slide 7"></span>
+    </div>
+
+    <div id="slide-indicator" style="font-weight: 700; font-family: var(--font-mono); font-size: 11.5px; color: var(--text);">
       Slide 1 of 7
     </div>
   </footer>
@@ -811,33 +1069,33 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
   <!-- Slide Overview Grid Overlay -->
   <div class="overview-overlay" id="overview-modal" onclick="toggleOverview()">
     <div class="overview-grid" onclick="event.stopPropagation()">
-      <div class="overview-card" onclick="goToSlide(1)">
-        <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 1</div>
-        <div style="font-size:14px; font-weight:600;">Title & Project Scope</div>
+      <div class="overview-card current" onclick="goToSlide(1)">
+        <div style="color:var(--accent); font-weight:700; font-family:var(--font-mono); font-size:11px; margin-bottom:4px;">01 • TITLE</div>
+        <div style="font-size:13.5px; font-weight:700; color:var(--text);">Title & Project Scope</div>
       </div>
       <div class="overview-card" onclick="goToSlide(2)">
-        <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 2</div>
-        <div style="font-size:14px; font-weight:600;">Project Info & Features</div>
+        <div style="color:var(--accent); font-weight:700; font-family:var(--font-mono); font-size:11px; margin-bottom:4px;">02 • OVERVIEW</div>
+        <div style="font-size:13.5px; font-weight:700; color:var(--text);">Project Info & Features</div>
       </div>
       <div class="overview-card" onclick="goToSlide(3)">
-        <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 3</div>
-        <div style="font-size:14px; font-weight:600;">MVC Pattern & Helpers</div>
+        <div style="color:var(--accent); font-weight:700; font-family:var(--font-mono); font-size:11px; margin-bottom:4px;">03 • ARCHITECTURE</div>
+        <div style="font-size:13.5px; font-weight:700; color:var(--text);">MVC Pattern & Helpers</div>
       </div>
       <div class="overview-card" onclick="goToSlide(4)">
-        <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 4</div>
-        <div style="font-size:14px; font-weight:600;">Routes & REST Endpoints</div>
+        <div style="color:var(--accent); font-weight:700; font-family:var(--font-mono); font-size:11px; margin-bottom:4px;">04 • ROUTES</div>
+        <div style="font-size:13.5px; font-weight:700; color:var(--text);">Routes & REST Endpoints</div>
       </div>
       <div class="overview-card" onclick="goToSlide(5)">
-        <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 5</div>
-        <div style="font-size:14px; font-weight:600;">Controllers & Models</div>
+        <div style="color:var(--accent); font-weight:700; font-family:var(--font-mono); font-size:11px; margin-bottom:4px;">05 • BACKEND</div>
+        <div style="font-size:13.5px; font-weight:700; color:var(--text);">Controllers & Models</div>
       </div>
       <div class="overview-card" onclick="goToSlide(6)">
-        <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 6</div>
-        <div style="font-size:14px; font-weight:600;">Frontend API Calling</div>
+        <div style="color:var(--accent); font-weight:700; font-family:var(--font-mono); font-size:11px; margin-bottom:4px;">06 • CLIENT</div>
+        <div style="font-size:13.5px; font-weight:700; color:var(--text);">Frontend API Calling</div>
       </div>
       <div class="overview-card" onclick="goToSlide(7)">
-        <div style="color:var(--accent); font-weight:700; margin-bottom:4px;">Slide 7</div>
-        <div style="font-size:14px; font-weight:600;">Live Demo & Summary</div>
+        <div style="color:var(--accent); font-weight:700; font-family:var(--font-mono); font-size:11px; margin-bottom:4px;">07 • CONCLUSION</div>
+        <div style="font-size:13.5px; font-weight:700; color:var(--text);">Live Demo & Summary</div>
       </div>
     </div>
   </div>
@@ -847,6 +1105,7 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
     const totalSlides = 7;
 
     function updateSlides() {
+      // Update slide visibility
       for (let i = 1; i <= totalSlides; i++) {
         const slide = document.getElementById(`slide-${i}`);
         if (slide) {
@@ -856,7 +1115,33 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
           }
         }
       }
+
+      // Update progress bar
+      const progressPercent = (currentSlide / totalSlides) * 100;
+      document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+      // Update slide indicator
       document.getElementById('slide-indicator').textContent = `Slide ${currentSlide} of ${totalSlides}`;
+
+      // Update footer interactive dots
+      const dots = document.querySelectorAll('.slide-dot');
+      dots.forEach((dot, idx) => {
+        if (idx + 1 === currentSlide) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+
+      // Update overview cards
+      const overviewCards = document.querySelectorAll('.overview-card');
+      overviewCards.forEach((card, idx) => {
+        if (idx + 1 === currentSlide) {
+          card.classList.add('current');
+        } else {
+          card.classList.remove('current');
+        }
+      });
     }
 
     function nextSlide() {
@@ -906,8 +1191,16 @@ router.<span class="code-fn">delete</span>(<span class="code-str">'/:id'</span>,
         } else {
           document.exitFullscreen().catch(() => {});
         }
+      } else if (e.key === 'Escape') {
+        const modal = document.getElementById('overview-modal');
+        if (modal && modal.classList.contains('active')) {
+          modal.classList.remove('active');
+        }
       }
     });
+
+    // Initialize state
+    updateSlides();
   </script>
 </body>
 </html>
