@@ -2,6 +2,8 @@ import fs from 'fs';
 import nodemailer from 'nodemailer';
 import dns from 'dns';
 import { SettingsModel } from '../models/settings.model.js';
+import { DomainModel } from '../models/domain.model.js';
+import { MailboxModel } from '../models/mailbox.model.js';
 import { EmailModel } from '../models/email.model.js';
 
 const dnsPromises = dns.promises;
@@ -106,6 +108,57 @@ export async function sendEmail({ from, to, cc, bcc, subject, text, html, attach
     html: html || (text ? text.replace(/\n/g, '<br/>') : ''),
     attachments: mailerAttachments
   };
+
+  const recipientDomain = (to || '').includes('@') ? to.split('@')[1].trim().toLowerCase() : '';
+  const isLocalDomain = DomainModel.isDomainAllowed(recipientDomain);
+
+  // RFC 5321 Local Destination Loopback:
+  // If destination domain is registered locally, perform direct local mailbox delivery
+  // without sending to third-party public MX servers.
+  if (isLocalDomain) {
+    console.log(`[Mailer] Local destination detected (${recipientDomain}). Performing internal delivery to ${to}`);
+    const recipientMb = MailboxModel.getByEmail(to);
+    if (!recipientMb) {
+      throw new Error(`550 5.1.1 Recipient mailbox "${to}" does not exist on this server.`);
+    }
+
+    // Deliver to recipient inbox
+    EmailModel.create({
+      mailbox: to.toLowerCase(),
+      folder: 'inbox',
+      from: fromAddress,
+      to,
+      cc,
+      bcc,
+      subject: subject || '(No Subject)',
+      text,
+      html: html || (text ? text.replace(/\n/g, '<br/>') : ''),
+      attachments: savedAttachments,
+      date: new Date().toISOString(),
+      read: false,
+      starred: false,
+      security: { isSafe: true, spf: 'PASS', dkim: 'LOCAL', details: 'Local domain delivery' }
+    });
+
+    // Save copy in sender sent box
+    const savedEmail = EmailModel.create({
+      mailbox: fromAddress.toLowerCase(),
+      folder: 'sent',
+      from: fromAddress,
+      to,
+      cc,
+      bcc,
+      subject: subject || '(No Subject)',
+      text,
+      html: html || (text ? text.replace(/\n/g, '<br/>') : ''),
+      attachments: savedAttachments,
+      date: new Date().toISOString(),
+      read: true,
+      starred: false
+    });
+
+    return { info: { accepted: [to], response: '250 2.0.0 OK: Delivered locally' }, savedEmail };
+  }
 
   let info;
 
