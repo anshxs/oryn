@@ -59,7 +59,7 @@ export default function EmailList({
             <h2 className="text-xs font-bold tracking-tight text-zinc-950 dark:text-zinc-50 capitalize">
               {currentFolder}
             </h2>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-md bg-zinc-150 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold tabular-nums border border-zinc-200 dark:border-zinc-700">
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold tabular-nums border border-zinc-200 dark:border-zinc-700">
               {emails.length}
             </span>
           </div>
@@ -87,7 +87,7 @@ export default function EmailList({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search messages (press / to focus)..."
-            className="pl-8 pr-12 h-8 text-xs bg-zinc-50 dark:bg-[#121316] border-zinc-200 dark:border-zinc-750 rounded-lg placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus-visible:ring-zinc-400 transition-all duration-150"
+            className="pl-8 pr-12 h-8 text-xs bg-zinc-50 dark:bg-[#121316] border-zinc-200 dark:border-zinc-700 rounded-lg placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus-visible:ring-zinc-400 transition-all duration-150"
           />
           {searchQuery ? (
             <button
@@ -105,7 +105,7 @@ export default function EmailList({
       </div>
 
       {/* Email Feed */}
-      <div className="flex-1 overflow-y-auto divide-y divide-zinc-150/80 dark:divide-zinc-800/80">
+      <div className="flex-1 overflow-y-auto divide-y divide-zinc-200/80 dark:divide-zinc-800/80">
         {emails.length === 0 ? (
           <div className="h-64 flex flex-col items-center justify-center text-center p-6 text-zinc-400 animate-content-fade-in">
             <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 flex items-center justify-center mb-2.5 shadow-2xs">
@@ -134,59 +134,59 @@ export default function EmailList({
                 className={cn(
                   "relative p-3 cursor-pointer transition-row text-left group select-none",
                   isSelected
-                    ? "bg-zinc-150/90 dark:bg-[#16181f] border-l-[3px] border-l-zinc-950 dark:border-l-zinc-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+                    ? "bg-zinc-100 dark:bg-[#181a22] border-l-[3px] border-l-zinc-950 dark:border-l-zinc-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
                     : isUnread
-                    ? "bg-white dark:bg-[#0c0d10] hover:bg-zinc-50/90 dark:hover:bg-[#121317] border-l-[3px] border-l-transparent"
-                    : "bg-white dark:bg-[#08090b] hover:bg-zinc-50/90 dark:hover:bg-[#121317] border-l-[3px] border-l-transparent"
+                    ? "bg-white dark:bg-[#0c0d10] hover:bg-zinc-100/80 dark:hover:bg-[#15171e] border-l-[3px] border-l-transparent"
+                    : "bg-white/90 dark:bg-[#08090b] hover:bg-zinc-100/80 dark:hover:bg-[#15171e] border-l-[3px] border-l-transparent"
                 )}
               >
                 {/* Header line: Sender & Timestamp */}
                 <div className="flex items-center justify-between gap-2 mb-1">
-                  <div className="flex items-center gap-1.5 min-w-0">
+                  <div className="flex items-center gap-1.5 min-w-0 flex-1">
                     {/* Unread Indicator Dot */}
                     {isUnread && (
                       <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 shrink-0 shadow-[0_0_6px_rgba(59,130,246,0.6)] animate-dot-pulse" />
                     )}
                     <span className={cn(
-                      "text-xs truncate tracking-tight",
+                      "text-xs truncate tracking-tight transition-colors",
                       isUnread
                         ? "font-bold text-zinc-950 dark:text-white"
-                        : "font-semibold text-zinc-800 dark:text-zinc-250"
+                        : "font-semibold text-zinc-800 dark:text-zinc-200"
                     )}>
                       {cleanSenderName(email.from)}
                     </span>
                   </div>
 
-                  {/* Timestamp & Hover Action Dock */}
-                  <div className="shrink-0 flex items-center relative min-w-[50px] justify-end">
-                    <span className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 tabular-nums font-medium group-hover:opacity-0 transition-opacity duration-100">
+                  {/* Timestamp & Hover Action Dock - high contrast and always readable */}
+                  <div className="shrink-0 flex items-center relative min-w-[56px] justify-end">
+                    <span className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 tabular-nums font-medium group-hover:opacity-0 transition-opacity duration-150">
                       {getDisplayDate(email.date)}
                     </span>
 
-                    {/* Smooth sliding hover action dock */}
-                    <div className="absolute right-0 flex items-center gap-0.5 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150 ease-out">
+                    {/* High-contrast floating action pill on hover */}
+                    <div className="absolute right-0 flex items-center gap-0.5 opacity-0 pointer-events-none group-hover:pointer-events-auto group-hover:opacity-100 transition-opacity duration-150 bg-white dark:bg-[#1f2129] border border-zinc-200 dark:border-zinc-700 px-1 py-0.5 rounded-md shadow-xs">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           onToggleStar(email.id, !email.starred);
                         }}
                         className={cn(
-                          "p-1 rounded-md text-zinc-400 hover:text-amber-500 hover:bg-zinc-200 dark:hover:bg-zinc-750 transition-colors",
-                          email.starred && "text-amber-500"
+                          "p-0.5 rounded text-zinc-500 hover:text-amber-500 dark:text-zinc-400 dark:hover:text-amber-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors",
+                          email.starred && "text-amber-500 dark:text-amber-400"
                         )}
                         title={email.starred ? "Unstar (S)" : "Star (S)"}
                       >
-                        <Star className={cn("w-3.5 h-3.5 transition-transform", email.starred ? "fill-amber-400 animate-star-pop" : "hover:scale-115")} />
+                        <Star className={cn("w-3.5 h-3.5 transition-transform", email.starred ? "fill-amber-400 animate-star-pop" : "hover:scale-110")} />
                       </button>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           onDeleteEmail(email.id);
                         }}
-                        className="p-1 rounded-md text-zinc-400 hover:text-rose-600 hover:bg-zinc-200 dark:hover:bg-zinc-750 transition-colors"
+                        className="p-0.5 rounded text-zinc-500 hover:text-rose-600 dark:text-zinc-400 dark:hover:text-rose-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
                         title="Delete (E / ⌫)"
                       >
-                        <Trash2 className="w-3.5 h-3.5 hover:scale-115 transition-transform" />
+                        <Trash2 className="w-3.5 h-3.5 hover:scale-110 transition-transform" />
                       </button>
                     </div>
                   </div>
@@ -195,10 +195,10 @@ export default function EmailList({
                 {/* Subject Line */}
                 <div className="flex items-center gap-1.5 mb-1">
                   <p className={cn(
-                    "text-xs truncate tracking-tight flex-1",
+                    "text-xs truncate tracking-tight flex-1 transition-colors",
                     isUnread
                       ? "font-bold text-zinc-950 dark:text-zinc-100"
-                      : "font-medium text-zinc-800 dark:text-zinc-300"
+                      : "font-medium text-zinc-700 dark:text-zinc-300"
                   )}>
                     {email.subject || '(No Subject)'}
                   </p>

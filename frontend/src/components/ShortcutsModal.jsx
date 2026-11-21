@@ -43,7 +43,7 @@ export default function ShortcutsModal({ isOpen, onClose }) {
           {shortcuts.map((s, idx) => (
             <div key={idx} className="flex items-center justify-between py-2 text-xs">
               <span className="text-zinc-600 dark:text-zinc-400">{s.description}</span>
-              <kbd className="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-750 font-mono text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 shadow-2xs">
+              <kbd className="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700 font-mono text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 shadow-2xs">
                 {s.key}
               </kbd>
             </div>

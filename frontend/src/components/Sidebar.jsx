@@ -86,7 +86,7 @@ export default function Sidebar({
               <span className="font-bold text-xs tracking-tight text-zinc-950 dark:text-white">
                 Oryn
               </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-150 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold border border-zinc-200 dark:border-zinc-700">
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold border border-zinc-200 dark:border-zinc-700">
                 MTA
               </span>
             </div>
@@ -129,7 +129,7 @@ export default function Sidebar({
                     <p className="text-xs font-bold text-zinc-950 dark:text-zinc-100 truncate leading-tight">
                       {currentMailboxObj?.name || currentMailboxObj?.username || 'Default User'}
                     </p>
-                    <p className="text-[11px] text-zinc-600 dark:text-zinc-350 font-mono truncate leading-tight mt-0.5">
+                    <p className="text-[11px] text-zinc-600 dark:text-zinc-400 font-mono truncate leading-tight mt-0.5">
                       {activeMailbox || 'admin@domain.com'}
                     </p>
                   </div>
@@ -175,7 +175,7 @@ export default function Sidebar({
           <div className="mt-2.5">
             <Button
               onClick={onOpenCompose}
-              className="w-full h-8.5 justify-between px-3 text-xs bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 hover:bg-zinc-850 dark:hover:bg-white shadow-xs rounded-xl font-semibold transition-all duration-150 hover:shadow-sm"
+              className="w-full h-8.5 justify-between px-3 text-xs bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-white shadow-xs rounded-xl font-semibold transition-all duration-150 hover:shadow-sm"
             >
               <span className="flex items-center gap-2">
                 <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -203,8 +203,8 @@ export default function Sidebar({
                 className={cn(
                   "w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition-all duration-150 group cursor-pointer",
                   isActive
-                    ? "bg-zinc-200/90 text-zinc-950 dark:bg-zinc-800/90 dark:text-white font-bold shadow-2xs"
-                    : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-850/80 hover:text-zinc-950 dark:hover:text-white font-medium"
+                    ? "bg-zinc-200 text-zinc-950 dark:bg-zinc-800 dark:text-white font-bold shadow-2xs"
+                    : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white font-medium"
                 )}
               >
                 <div className="flex items-center gap-2.5">
@@ -219,7 +219,7 @@ export default function Sidebar({
                     "text-[10px] font-mono px-1.5 py-0.2 rounded-full tabular-nums font-bold transition-colors",
                     isActive
                       ? "bg-zinc-950 text-white dark:bg-white dark:text-zinc-950"
-                      : "bg-zinc-200/90 text-zinc-850 dark:bg-zinc-750 dark:text-zinc-200"
+                      : "bg-zinc-200 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-200"
                   )}>
                     {folder.count}
                   </span>
@@ -236,7 +236,7 @@ export default function Sidebar({
           <button
             onClick={onSimulateInbound}
             disabled={isSimulating}
-            className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-850/80 hover:text-zinc-950 dark:hover:text-white transition-all duration-150 group cursor-pointer"
+            className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white transition-all duration-150 group cursor-pointer"
           >
             <div className="flex items-center gap-2.5">
               <Zap className={cn("w-4 h-4 text-amber-500 transition-transform duration-150 group-hover:scale-110", isSimulating && "animate-spin")} />
@@ -249,7 +249,7 @@ export default function Sidebar({
 
           <button
             onClick={() => onOpenSettings('domains')}
-            className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-850/80 hover:text-zinc-950 dark:hover:text-white transition-all duration-150 group cursor-pointer"
+            className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white transition-all duration-150 group cursor-pointer"
           >
             <div className="flex items-center gap-2.5">
               <Server className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 transition-transform duration-150 group-hover:scale-110" />

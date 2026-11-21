@@ -165,7 +165,7 @@ export default function ComposeModal({
   return (
     <div
       className={cn(
-        "fixed z-50 bg-white dark:bg-[#0f1013] border border-zinc-200/90 dark:border-zinc-750 shadow-[0_24px_56px_rgba(0,0,0,0.22)] flex flex-col overflow-hidden transition-all duration-200 animate-in fade-in-0 zoom-in-95",
+        "fixed z-50 bg-white dark:bg-[#0f1013] border border-zinc-200/90 dark:border-zinc-700 shadow-[0_24px_56px_rgba(0,0,0,0.22)] flex flex-col overflow-hidden transition-all duration-200 animate-in fade-in-0 zoom-in-95",
         isMaximized
           ? "inset-4 rounded-2xl"
           : "bottom-5 right-6 w-full max-w-xl h-[560px] rounded-2xl"
@@ -207,14 +207,14 @@ export default function ComposeModal({
       </div>
 
       {/* Recipient Configuration Fields */}
-      <div className="divide-y divide-zinc-150 dark:divide-zinc-800/80 px-4 text-xs shrink-0">
+      <div className="divide-y divide-zinc-200/80 dark:divide-zinc-800/80 px-4 text-xs shrink-0">
         {/* From selector */}
         <div className="flex items-center py-2 gap-3">
           <span className="w-12 text-zinc-500 dark:text-zinc-400 font-mono text-[11px] font-semibold shrink-0">From</span>
           <select
             value={from}
             onChange={(e) => setFrom(e.target.value)}
-            className="flex-1 bg-transparent border-0 text-xs font-mono text-zinc-900 dark:text-zinc-150 focus:outline-none cursor-pointer"
+            className="flex-1 bg-transparent border-0 text-xs font-mono text-zinc-900 dark:text-zinc-100 focus:outline-none cursor-pointer"
           >
             {mailboxes.map((mb) => (
               <option key={mb.email} value={mb.email} className="dark:bg-[#121316]">
@@ -317,7 +317,7 @@ export default function ComposeModal({
 
         {/* Attached Files Pill Bar */}
         {attachments.length > 0 && (
-          <div className="pt-2 flex flex-wrap gap-2 border-t border-zinc-150 dark:border-zinc-800 shrink-0">
+          <div className="pt-2 flex flex-wrap gap-2 border-t border-zinc-200 dark:border-zinc-800 shrink-0">
             {attachments.map((file, idx) => (
               <span
                 key={idx}

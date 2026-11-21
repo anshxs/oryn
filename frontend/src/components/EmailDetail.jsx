@@ -53,7 +53,7 @@ export default function EmailDetail({
           No conversation selected
         </h3>
         <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1.5 max-w-xs leading-relaxed">
-          Select an email from the list, or navigate with <kbd className="px-1.5 py-0.5 rounded bg-zinc-150 dark:bg-zinc-800 font-mono text-[10px] font-bold text-zinc-700 dark:text-zinc-300">J</kbd> / <kbd className="px-1.5 py-0.5 rounded bg-zinc-150 dark:bg-zinc-800 font-mono text-[10px] font-bold text-zinc-700 dark:text-zinc-300">K</kbd> to read.
+          Select an email from the list, or navigate with <kbd className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 font-mono text-[10px] font-bold text-zinc-700 dark:text-zinc-300">J</kbd> / <kbd className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 font-mono text-[10px] font-bold text-zinc-700 dark:text-zinc-300">K</kbd> to read.
         </p>
       </div>
     );
@@ -207,7 +207,7 @@ export default function EmailDetail({
                 </span>
               </div>
               <p className="text-[11px] text-zinc-600 dark:text-zinc-400 font-mono truncate mt-0.5">
-                To: <span className="text-zinc-850 dark:text-zinc-250 font-medium">{email.to || email.mailbox}</span>
+                To: <span className="text-zinc-800 dark:text-zinc-200 font-medium">{email.to || email.mailbox}</span>
                 {email.cc && <span className="ml-2 font-normal text-zinc-500">Cc: {email.cc}</span>}
               </p>
             </div>
@@ -236,7 +236,7 @@ export default function EmailDetail({
 
         {/* Expandable Security Breakdown */}
         {showSecurityDetails && (
-          <div className="p-3 rounded-xl bg-zinc-50 dark:bg-[#121316] border border-zinc-200 dark:border-zinc-750 text-xs space-y-1.5 font-mono animate-content-fade-in shadow-2xs">
+          <div className="p-3 rounded-xl bg-zinc-50 dark:bg-[#121316] border border-zinc-200 dark:border-zinc-700 text-xs space-y-1.5 font-mono animate-content-fade-in shadow-2xs">
             <div className="flex justify-between">
               <span className="text-zinc-500 dark:text-zinc-400">SPF Validation:</span>
               <span className={email.security?.spf === 'pass' ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-zinc-600 dark:text-zinc-300'}>
@@ -283,7 +283,7 @@ export default function EmailDetail({
               </div>
             )
           ) : viewMode === 'text' ? (
-            <div className="text-xs text-zinc-900 dark:text-zinc-150 leading-relaxed whitespace-pre-wrap font-mono p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#111216] shadow-2xs">
+            <div className="text-xs text-zinc-900 dark:text-zinc-200 leading-relaxed whitespace-pre-wrap font-mono p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#111216] shadow-2xs">
               {email.text || email.html || '(Empty body)'}
             </div>
           ) : (
@@ -319,7 +319,7 @@ export default function EmailDetail({
           {/* Attachments Section */}
           {hasAttachments && (
             <div className="pt-4 border-t border-zinc-200/90 dark:border-zinc-800 space-y-2.5">
-              <h4 className="text-xs font-bold text-zinc-600 dark:text-zinc-350 uppercase tracking-wider flex items-center gap-1.5 font-mono">
+              <h4 className="text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-1.5 font-mono">
                 <Paperclip className="w-3.5 h-3.5 text-zinc-500" />
                 Attachments ({email.attachments.length})
               </h4>
@@ -327,7 +327,7 @@ export default function EmailDetail({
                 {email.attachments.map((att, idx) => (
                   <Card
                     key={att.id || idx}
-                    className="p-3 flex items-center justify-between bg-white dark:bg-[#121316] border-zinc-200/90 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-650 transition-colors shadow-2xs"
+                    className="p-3 flex items-center justify-between bg-white dark:bg-[#121316] border-zinc-200/90 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors shadow-2xs"
                   >
                     <div className="truncate pr-2">
                       <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">

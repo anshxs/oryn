@@ -15,11 +15,11 @@ const buttonVariants = cva(
         destructive:
           "bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950/50 dark:text-rose-300 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-800 font-medium",
         outline:
-          "border border-zinc-200/90 bg-white text-zinc-800 hover:bg-zinc-50 dark:border-zinc-750 dark:bg-zinc-900/60 dark:text-zinc-200 dark:hover:bg-zinc-800/80 shadow-[0_1px_2px_rgba(0,0,0,0.04)] font-medium",
+          "border border-zinc-200/90 bg-white text-zinc-800 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-zinc-200 dark:hover:bg-zinc-800 shadow-[0_1px_2px_rgba(0,0,0,0.04)] font-medium",
         secondary:
-          "bg-zinc-100 text-zinc-850 hover:bg-zinc-200/90 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 font-medium",
+          "bg-zinc-100 text-zinc-800 hover:bg-zinc-200/90 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 font-medium",
         ghost:
-          "text-zinc-650 hover:bg-zinc-100/90 hover:text-zinc-950 dark:text-zinc-350 dark:hover:bg-zinc-800/80 dark:hover:text-zinc-100 font-medium",
+          "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100 font-medium",
         link: "text-zinc-900 underline-offset-4 hover:underline dark:text-zinc-100 p-0 h-auto font-medium",
       },
       size: {

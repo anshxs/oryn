@@ -111,6 +111,20 @@
       border-color: var(--text-muted);
     }
 
+    .btn-nav-primary {
+      background: var(--accent);
+      color: #ffffff !important;
+      border-color: var(--accent);
+    }
+
+    .btn-nav-primary:hover {
+      background: #1d4ed8 !important;
+      color: #ffffff !important;
+      border-color: #1d4ed8 !important;
+      filter: brightness(1.1);
+    }
+
+    /* Deck Layout */
     .deck-container {
       position: absolute;
       top: 54px;
@@ -414,7 +428,7 @@
       <button class="btn-nav" onclick="toggleTheme()" title="Toggle Theme (T)">☀️/🌙 Theme</button>
       <button class="btn-nav" onclick="toggleOverview()" title="Slide Grid (O)">⊞ All Slides</button>
       <button class="btn-nav" onclick="prevSlide()">← Prev</button>
-      <button class="btn-nav" onclick="nextSlide()" style="background:var(--accent); color:#fff; border-color:var(--accent);">Next →</button>
+      <button class="btn-nav btn-nav-primary" onclick="nextSlide()">Next →</button>
     </div>
   </header>
 
