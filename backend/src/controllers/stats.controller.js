@@ -2,6 +2,19 @@ import { EmailModel } from '../models/email.model.js';
 import { SettingsModel } from '../models/settings.model.js';
 import { detectPublicIp } from '../helpers/networkHelper.js';
 
+function sanitizeSettings(settings) {
+  if (!settings) return settings;
+  const sanitized = { ...settings };
+  if (sanitized.relay) {
+    sanitized.relay = {
+      ...sanitized.relay,
+      hasPass: Boolean(sanitized.relay.pass),
+      pass: sanitized.relay.pass ? '••••••••' : ''
+    };
+  }
+  return sanitized;
+}
+
 export const StatsController = {
   /**
    * GET /api/stats
@@ -40,11 +53,12 @@ export const StatsController = {
 
   /**
    * GET /api/settings
+   * Returns application settings with credentials strictly masked.
    */
   async getSettings(req, res) {
     try {
       const settings = SettingsModel.get();
-      return res.status(200).json({ success: true, settings });
+      return res.status(200).json({ success: true, settings: sanitizeSettings(settings) });
     } catch (err) {
       console.error('[StatsController.getSettings] Error:', err);
       return res.status(500).json({ success: false, error: err.message });
@@ -57,11 +71,12 @@ export const StatsController = {
   async updateSettings(req, res) {
     try {
       const updated = SettingsModel.update(req.body);
+      const sanitized = sanitizeSettings(updated);
       const broadcast = req.app.get('broadcast');
       if (broadcast) {
-        broadcast('settings_updated', updated);
+        broadcast('settings_updated', sanitized);
       }
-      return res.status(200).json({ success: true, settings: updated });
+      return res.status(200).json({ success: true, settings: sanitized });
     } catch (err) {
       console.error('[StatsController.updateSettings] Error:', err);
       return res.status(500).json({ success: false, error: err.message });

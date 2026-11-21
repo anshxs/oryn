@@ -3,6 +3,7 @@ import fs from 'fs';
 import { EmailModel } from '../models/email.model.js';
 import { sendEmail as mailerSend } from '../helpers/mailerEngine.js';
 import { ATTACHMENTS_DIR } from '../helpers/fileStorage.js';
+import { analyzeSecurityHeaders } from '../helpers/securityEngine.js';
 
 export const EmailController = {
   /**
@@ -38,6 +39,7 @@ export const EmailController = {
 
   /**
    * POST /api/emails/send
+   * Dispatches email via SMTP Relay or Direct MX.
    */
   async sendEmail(req, res) {
     try {
@@ -49,9 +51,11 @@ export const EmailController = {
         return res.status(400).json({ success: false, error: 'Sender mailbox ("from") is required.' });
       }
 
+      const broadcast = req.app.get('broadcast');
+
+      // Dispatch mail delivery and persist to Sent folder
       const result = await mailerSend({ from, to, cc, bcc, subject, text, html, attachments });
 
-      const broadcast = req.app.get('broadcast');
       if (broadcast) {
         broadcast('email_sent', result.savedEmail);
       }
@@ -75,18 +79,21 @@ export const EmailController = {
     try {
       const { mailbox, from, to, subject, text, html } = req.body;
       const targetMailbox = (mailbox || to || 'ansh@example.com').toLowerCase();
+      const fromAddress = from || 'customer@clientdomain.com';
+      const security = await analyzeSecurityHeaders({}, fromAddress, '127.0.0.1');
 
       const simulatedEmail = EmailModel.create({
         mailbox: targetMailbox,
         folder: 'inbox',
-        from: from || `customer@clientdomain.com`,
+        from: fromAddress,
         to: to || targetMailbox,
         subject: subject || `Welcome to ${targetMailbox}!`,
         text: text || `This is a test inbound email sent to your custom address ${targetMailbox}.`,
         html: html || `<p>This is a <strong>test inbound email</strong> sent to your mailbox <code>${targetMailbox}</code>.</p>`,
         date: new Date().toISOString(),
         read: false,
-        starred: false
+        starred: false,
+        security
       });
 
       const broadcast = req.app.get('broadcast');
@@ -148,11 +155,32 @@ export const EmailController = {
 
   /**
    * GET /api/attachments/:fileId
+   * Secure attachment download handler with strict path traversal prevention.
    */
   async downloadAttachment(req, res) {
     try {
       const { fileId } = req.params;
-      const filePath = path.join(ATTACHMENTS_DIR, fileId);
+
+      // 1. Reject invalid or malicious input containing path traversal characters
+      if (
+        !fileId ||
+        typeof fileId !== 'string' ||
+        fileId.includes('..') ||
+        fileId.includes('/') ||
+        fileId.includes('\\') ||
+        fileId.includes('\0')
+      ) {
+        return res.status(400).send('Invalid attachment identifier.');
+      }
+
+      // 2. Resolve safe path and verify boundary containment
+      const safeBaseDir = path.resolve(ATTACHMENTS_DIR);
+      const filePath = path.resolve(safeBaseDir, fileId);
+
+      if (!filePath.startsWith(safeBaseDir + path.sep)) {
+        console.warn(`[Security Alert] Blocked path traversal attempt targeting: ${fileId}`);
+        return res.status(403).send('Access denied.');
+      }
 
       if (!fs.existsSync(filePath)) {
         return res.status(404).send('Attachment not found.');

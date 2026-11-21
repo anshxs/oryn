@@ -33,13 +33,19 @@ export function createSmtpServer(onNewEmail) {
       const recipient = address.address.toLowerCase();
       const domain = recipient.split('@')[1];
 
-      // Allow recipient if domain matches any registered domain
-      const isAllowed = DomainModel.isDomainAllowed(domain);
-      if (!isAllowed) {
-        console.warn(`[SMTP] Relaying notice: domain "${domain}" not explicitly registered.`);
+      if (!domain) {
+        return callback(new Error('501 5.1.3 Bad recipient address syntax'));
       }
 
-      console.log(`[SMTP] Mail to: ${recipient} (Domain ${domain} allowed: ${isAllowed})`);
+      // Reject recipients for domains not explicitly hosted on this server
+      // This strictly eliminates the Open Relay vulnerability.
+      const isAllowed = DomainModel.isDomainAllowed(domain);
+      if (!isAllowed) {
+        console.warn(`[SMTP Security] Rejected open relay attempt to external domain "${domain}" from IP ${session.remoteAddress}`);
+        return callback(new Error(`550 5.1.1 Recipient address rejected: Domain "${domain}" is not hosted on this server`));
+      }
+
+      console.log(`[SMTP] Mail to: ${recipient} (Domain ${domain} accepted)`);
       return callback();
     },
 
@@ -78,7 +84,8 @@ export function createSmtpServer(onNewEmail) {
         }
 
         const headersObj = Object.fromEntries(parsed.headers);
-        const securityStatus = analyzeSecurityHeaders(headersObj);
+        // Independent DNS SPF and Cryptographic Header Security Validation
+        const securityStatus = await analyzeSecurityHeaders(headersObj, fromAddress, session.remoteAddress);
 
         // Save email to model layer routed to target mailbox
         const savedEmail = EmailModel.create({

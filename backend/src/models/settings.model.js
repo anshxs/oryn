@@ -24,12 +24,21 @@ export const SettingsModel = {
 
   update(updates) {
     const current = this.get();
+    const relayUpdates = { ...(updates.relay || {}) };
+
+    // Prevent clobbering existing SMTP relay password when masked value or undefined is sent
+    if (relayUpdates.pass === '••••••••' || relayUpdates.pass === undefined) {
+      if (current.relay && current.relay.pass) {
+        relayUpdates.pass = current.relay.pass;
+      }
+    }
+
     const updated = {
       ...current,
       ...updates,
       relay: {
         ...current.relay,
-        ...(updates.relay || {})
+        ...relayUpdates
       }
     };
     writeJson(SETTINGS_FILE, updated);

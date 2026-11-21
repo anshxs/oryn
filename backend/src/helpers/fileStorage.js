@@ -38,13 +38,21 @@ export function readJson(filePath, defaultValue = []) {
 }
 
 /**
- * Low-level synchronous JSON file writer
+ * Low-level atomic JSON file writer
+ * Writes to a temporary file first and renames it atomically to eliminate
+ * partial write corruption during concurrent requests or abrupt shutdowns.
  */
 export function writeJson(filePath, data) {
+  const dir = path.dirname(filePath);
+  const tempFile = path.join(dir, `.tmp_${path.basename(filePath)}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`);
   try {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
+    fs.renameSync(tempFile, filePath);
     return true;
   } catch (err) {
+    if (fs.existsSync(tempFile)) {
+      try { fs.unlinkSync(tempFile); } catch (_) {}
+    }
     console.error(`[FileStorage] Error writing ${filePath}:`, err.message);
     throw err;
   }

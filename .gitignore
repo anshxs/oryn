@@ -2,7 +2,7 @@ node_modules/
 .env
 dist/
 build/
-backend/data/emails.json
+backend/data/*.json
 backend/data/attachments/
 .DS_Store
 *.log

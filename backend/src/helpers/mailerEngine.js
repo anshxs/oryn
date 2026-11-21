@@ -1,3 +1,4 @@
+import fs from 'fs';
 import nodemailer from 'nodemailer';
 import dns from 'dns';
 import { SettingsModel } from '../models/settings.model.js';
@@ -11,13 +12,20 @@ const dnsPromises = dns.promises;
 export async function testRelayConnection({ host, port, secure, user, pass }) {
   if (!host) throw new Error('Relay host is required.');
 
+  // If password was sent masked or omitted, fallback to saved password
+  let resolvedPass = pass;
+  if (!resolvedPass || resolvedPass === '••••••••') {
+    const currentSettings = SettingsModel.get();
+    resolvedPass = currentSettings.relay?.pass || '';
+  }
+
   const transporter = nodemailer.createTransport({
     host: host.trim(),
     port: parseInt(port || '587', 10),
     secure: !!secure,
-    auth: (user && pass) ? {
+    auth: (user && resolvedPass) ? {
       user: user.trim(),
-      pass: pass.trim()
+      pass: resolvedPass.trim()
     } : undefined,
     tls: {
       rejectUnauthorized: false
@@ -35,8 +43,42 @@ export async function sendEmail({ from, to, cc, bcc, subject, text, html, attach
   const settings = SettingsModel.get();
   const fromAddress = from || settings.defaultFromAddress || `admin@${settings.domain}`;
 
-  // Process attachments for nodemailer
+  // Process attachments for nodemailer and persist outbound files to disk so they can be downloaded from Sent folder
+  const savedAttachments = [];
   const mailerAttachments = attachments.map(att => {
+    let contentBuffer = null;
+    if (att.content && typeof att.content === 'string') {
+      const encoding = att.encoding === 'base64' ? 'base64' : (att.encoding || 'utf-8');
+      try {
+        contentBuffer = Buffer.from(att.content, encoding);
+      } catch (_) {
+        contentBuffer = Buffer.from(att.content, 'utf-8');
+      }
+    } else if (Buffer.isBuffer(att.content)) {
+      contentBuffer = att.content;
+    } else if (att.path && fs.existsSync(att.path)) {
+      try {
+        contentBuffer = fs.readFileSync(att.path);
+      } catch (err) {
+        console.warn('[Mailer] Could not read attachment from path:', att.path);
+      }
+    }
+
+    if (contentBuffer) {
+      try {
+        const saved = EmailModel.saveAttachment(att.filename || 'attachment', contentBuffer);
+        savedAttachments.push({
+          id: saved.id,
+          filename: att.filename || 'attachment',
+          contentType: att.contentType || 'application/octet-stream',
+          size: saved.size,
+          path: saved.path
+        });
+      } catch (err) {
+        console.error('[Mailer] Failed to save outbound attachment to disk:', err);
+      }
+    }
+
     if (att.content && typeof att.content === 'string') {
       return {
         filename: att.filename,
@@ -106,12 +148,17 @@ export async function sendEmail({ from, to, cc, bcc, subject, text, html, attach
       }
     }
 
+    const serverHostname = settings.serverHost || (settings.domain ? `mail.${settings.domain}` : 'localhost');
     const transporter = nodemailer.createTransport({
       host: targetHost,
       port: targetPort,
       secure: false,
-      ignoreTLS: true,
-      name: settings.serverHost || 'mail.glennesports.app',
+      ignoreTLS: false,
+      requireTLS: false,
+      name: serverHostname,
+      tls: {
+        rejectUnauthorized: false
+      },
       connectionTimeout: 8000
     });
 
@@ -139,7 +186,7 @@ export async function sendEmail({ from, to, cc, bcc, subject, text, html, attach
     }
   }
 
-  // Save the sent email in the Sent folder
+  // Save the sent email in the Sent folder with downloadable attachment records
   const savedEmail = EmailModel.create({
     mailbox: fromAddress.toLowerCase(),
     folder: 'sent',
@@ -152,7 +199,7 @@ export async function sendEmail({ from, to, cc, bcc, subject, text, html, attach
     html: html || (text ? text.replace(/\n/g, '<br/>') : ''),
     date: new Date().toISOString(),
     read: true,
-    attachments: attachments.map(a => ({
+    attachments: savedAttachments.length > 0 ? savedAttachments : attachments.map(a => ({
       filename: a.filename,
       contentType: a.contentType,
       size: a.size || 0
